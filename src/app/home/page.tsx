@@ -9,12 +9,12 @@ import {
   Text,
   extendTheme,
   Flex,
-  Grid,
-  Image,
   Center,
   IconButton,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
+import NextLink from "next/link";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 // Define custom colors
 const colors = {
@@ -26,30 +26,6 @@ const colors = {
 
 // Extend the theme
 const theme = extendTheme({ colors });
-
-interface SocialWorker {
-  name: string;
-  location: string;
-  profileImage: string;
-}
-
-const socialWorkers: SocialWorker[] = [
-  {
-    name: "John Doe",
-    location: "New York, NY",
-    profileImage: "https://via.placeholder.com/150",
-  },
-  {
-    name: "Jane Smith",
-    location: "Los Angeles, CA",
-    profileImage: "https://via.placeholder.com/150",
-  },
-  {
-    name: "Emily Johnson",
-    location: "Chicago, IL",
-    profileImage: "https://via.placeholder.com/150",
-  },
-];
 
 const SocialWorkerLocator = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,20 +45,36 @@ const SocialWorkerLocator = () => {
         padding={4}
         backgroundColor="gray.50"
       >
-        {/* Header Section */}
+        {/* Admin Dashboard Button */}
         <Box
           width="full"
-          padding={5}
+          padding={4}
+          display="flex"
+          alignItems="center"
           backgroundColor="white"
           boxShadow="md"
           borderRadius="md"
         >
+          {/* Admin Dashboard Link */}
+          <NextLink href="/admindashboard" passHref>
+            <IconButton
+              as="a"
+              aria-label="Admin Dashboard"
+              icon={<MdAdminPanelSettings />}
+              colorScheme="purple"
+              boxShadow="md"
+              _hover={{ boxShadow: "lg" }}
+              borderRadius="full"
+              fontSize="2xl" // Increase the icon size
+            />
+          </NextLink>
+
+          {/* Heading */}
           <Heading
-            textAlign="center"
-            justifyContent="center"
-            mt={-4}
             size="lg"
             color="brand.purple"
+            textAlign="center"
+            flexGrow={1}
           >
             Locate Social Workers
           </Heading>
@@ -119,6 +111,7 @@ const SocialWorkerLocator = () => {
           />
         </Flex>
 
+        {/* Footer Section */}
         <Box
           width="full"
           padding={4}
