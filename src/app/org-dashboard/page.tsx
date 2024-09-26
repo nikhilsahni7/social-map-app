@@ -55,7 +55,7 @@ const SocialWorkerDashboard = () => {
     }
   };
 
-  const removeDonor = (id) => {
+  const removeDonor = (id: number) => {
     setDonors(donors.filter((donor) => donor.id !== id));
   };
 
