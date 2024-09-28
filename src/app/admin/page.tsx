@@ -80,7 +80,7 @@ const AdminDashboard: React.FC = () => {
     useState<Organization[]>(initialOrganizations);
   const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
 
-  const handleAddOrg = (newOrg: Omit<Organization, "id">) => {
+  const handleAddOrg = (newOrg: Organization) => {
     setOrganizations([...organizations, { ...newOrg, id: Date.now() }]);
     toast.toast({
       title: "Organization Added",
@@ -232,7 +232,7 @@ const AdminDashboard: React.FC = () => {
 
 interface OrgFormProps {
   org?: Organization | null;
-  onSubmit: (org: Organization | Omit<Organization, "id">) => void;
+  onSubmit: (org: Organization) => void;
 }
 
 const OrgForm: React.FC<OrgFormProps> = ({ org, onSubmit }) => {
@@ -253,7 +253,9 @@ const OrgForm: React.FC<OrgFormProps> = ({ org, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(org ? { ...formData, id: org.id } : formData);
+    onSubmit(
+      org ? { ...formData, id: org.id } : { ...formData, id: Date.now() }
+    );
   };
 
   return (
