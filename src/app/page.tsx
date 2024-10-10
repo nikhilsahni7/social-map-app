@@ -99,6 +99,8 @@ const HomePage: React.FC = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isMapMaximized, setIsMapMaximized] = useState<boolean>(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -133,13 +135,45 @@ const HomePage: React.FC = () => {
     }
   }, [map]);
 
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (typeof window !== "undefined") {
+        if (window.scrollY > lastScrollY) {
+          // if scroll down hide the navbar
+          setIsNavbarVisible(false);
+        } else {
+          // if scroll up show the navbar
+          setIsNavbarVisible(true);
+        }
+        // remember current page location to use in the next move
+        setLastScrollY(window.scrollY);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", controlNavbar);
+
+      // cleanup function
+      return () => {
+        window.removeEventListener("scroll", controlNavbar);
+      };
+    }
+  }, [lastScrollY]);
+
   const toggleMapSize = () => {
     setIsMapMaximized(!isMapMaximized);
   };
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-teal-100 to-indigo-100 bg-cover bg-center">
-      <header className="bg-[#F9FAFB] shadow-md sticky top-0 z-10">
+    <div className="min-h-screen bg-white bg-cover bg-center">
+      <motion.header
+        className={`bg-[#F9FAFB] shadow-md sticky top-0 z-10 transition-all duration-400 ${
+          isNavbarVisible ? "translate-y-0" : "-translate-y-full"
+        }`}
+        initial={false}
+        animate={{ y: isNavbarVisible ? 0 : -100 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <motion.div
@@ -149,12 +183,12 @@ const HomePage: React.FC = () => {
               className="flex items-center"
             >
               <h1
-                className="text-5xl font-bold text-black "
+                className="text-5xl font-bold text-black"
                 style={{
                   fontFamily:
                     "Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
-                  fontSize: "50px",
-                  lineHeight: "74px",
+                  fontSize: "30px",
+                  lineHeight: "50px",
                   fontWeight: 700,
                 }}
               >
@@ -165,14 +199,14 @@ const HomePage: React.FC = () => {
               <Button
                 asChild
                 variant="ghost"
-                className="text-[#2196F3] hover:text-[#1B2250]"
+                className="text-[#2196F3] hover:text-[#1B2250] text-base"
               >
                 <Link href="/org-dashboard">Dashboard</Link>
               </Button>
               <Button
                 asChild
                 variant="ghost"
-                className="text-[#2196F3] hover:text-[#1B2250]"
+                className="text-[#2196f3] hover:text-[#1B2250] text-base"
               >
                 <Link href="/admin">Admin</Link>
               </Button>
@@ -186,7 +220,7 @@ const HomePage: React.FC = () => {
             </Button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -220,12 +254,12 @@ const HomePage: React.FC = () => {
             style={{
               fontFamily:
                 '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-              fontSize: "50px",
+              fontSize: "60px",
               lineHeight: "74px",
               fontWeight: 700,
             }}
           >
-            Find Social Workers Near You ✨
+            Find Social Workers Near You
           </h2>
           <p className="text-xl text-[#14171A] mb-8 font-family-inter">
             Connect with professionals dedicated to making a difference in your
@@ -237,7 +271,7 @@ const HomePage: React.FC = () => {
                 placeholder="Enter your location..."
                 className="flex-grow text-lg py-6 rounded-full"
               />
-              <Button className="bg-[#2196F3] hover:bg-[#1B2250] text-white text-lg py-6 px-8 rounded-full">
+              <Button className="bg-[#2196F3] hover:bg-[#465ade] text-white text-lg py-6 px-8 rounded-full">
                 <Search className="mr-2 h-5 w-5" /> Search
               </Button>
             </div>
@@ -290,12 +324,7 @@ const HomePage: React.FC = () => {
                   fontWeight: 700,
                 }}
               >
-                <CardTitle
-                  className="text-2xl 
-
-               
-                "
-                >
+                <CardTitle className="text-2xl">
                   Social Work Organizations Map
                 </CardTitle>
                 <CardDescription className="text-gray-200">
@@ -435,7 +464,7 @@ const HomePage: React.FC = () => {
             Featured Organizations
           </h2>
           <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 "
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             style={{
               fontFamily:
                 '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
@@ -470,7 +499,7 @@ const HomePage: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter className="bg-[#F9FAFB]">
-                  <Button className="w-full bg-[#1B2250] hover:bg-[#2196F3] text-white">
+                  <Button className="w-full bg-[#2196f3] hover:bg-[#1B2250] text-white">
                     View Full Profile <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardFooter>
@@ -481,7 +510,7 @@ const HomePage: React.FC = () => {
       </main>
 
       <footer
-        className="bg-[#F9FAFB] text-black border-t border-gray-200 "
+        className="bg-[#F9FAFB] text-black border-t border-gray-200"
         style={{
           fontFamily:
             '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
