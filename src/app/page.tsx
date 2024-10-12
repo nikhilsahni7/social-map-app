@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -67,7 +68,7 @@ const organizations: Organization[] = [
     phone: "+1 (555) 123-4567",
     email: "contact@org1.com",
     donationInfo: "Support our cause with a donation",
-    avatar: "/api/placeholder/40/40",
+    avatar: "/placeholder.svg?height=40&width=40",
   },
   {
     id: 2,
@@ -78,7 +79,7 @@ const organizations: Organization[] = [
     phone: "+1 (555) 987-6543",
     email: "info@org2.com",
     donationInfo: "Your donation makes a difference",
-    avatar: "/api/placeholder/40/40",
+    avatar: "/placeholder.svg?height=40&width=40",
   },
   {
     id: 3,
@@ -89,11 +90,11 @@ const organizations: Organization[] = [
     phone: "+1 (555) 246-8135",
     email: "hello@org3.com",
     donationInfo: "Help us empower the next generation",
-    avatar: "/api/placeholder/40/40",
+    avatar: "/placeholder.svg?height=40&width=40",
   },
 ];
 
-const HomePage: React.FC = () => {
+export default function Component() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [hoveredOrg, setHoveredOrg] = useState<Organization | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -139,21 +140,16 @@ const HomePage: React.FC = () => {
     const controlNavbar = () => {
       if (typeof window !== "undefined") {
         if (window.scrollY > lastScrollY) {
-          // if scroll down hide the navbar
           setIsNavbarVisible(false);
         } else {
-          // if scroll up show the navbar
           setIsNavbarVisible(true);
         }
-        // remember current page location to use in the next move
         setLastScrollY(window.scrollY);
       }
     };
 
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", controlNavbar);
-
-      // cleanup function
       return () => {
         window.removeEventListener("scroll", controlNavbar);
       };
@@ -165,16 +161,16 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white bg-cover bg-center">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <motion.header
-        className={`bg-[#F9FAFB] shadow-md sticky top-0 z-10 transition-all duration-400 ${
+        className={`bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-10 transition-all duration-400 ${
           isNavbarVisible ? "translate-y-0" : "-translate-y-full"
         }`}
         initial={false}
         animate={{ y: isNavbarVisible ? 0 : -100 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -182,38 +178,29 @@ const HomePage: React.FC = () => {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="flex items-center"
             >
-              <h1
-                className="text-5xl font-bold text-black"
-                style={{
-                  fontFamily:
-                    "Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
-                  fontSize: "30px",
-                  lineHeight: "50px",
-                  fontWeight: 700,
-                }}
-              >
-                SocialConnect
+              <h1 className="text-3xl font-bold text-blue-600">
+                Social<span className="text-blue-800">Connect</span>
               </h1>
             </motion.div>
             <nav className="hidden md:flex space-x-4">
               <Button
                 asChild
                 variant="ghost"
-                className="text-[#2196F3] hover:text-[#1B2250] text-base"
+                className="text-blue-600 hover:text-blue-800"
               >
                 <Link href="/org-dashboard">Dashboard</Link>
               </Button>
               <Button
                 asChild
                 variant="ghost"
-                className="text-[#2196f3] hover:text-[#1B2250] text-base"
+                className="text-blue-600 hover:text-blue-800"
               >
                 <Link href="/admin">Admin</Link>
               </Button>
             </nav>
             <Button
               variant="ghost"
-              className="md:hidden text-[#2196F3]"
+              className="md:hidden text-blue-600"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <Menu />
@@ -228,13 +215,13 @@ const HomePage: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white shadow-md md:hidden"
+            className="bg-white/80 backdrop-blur-md shadow-md md:hidden"
           >
             <nav className="container mx-auto px-4 py-2 flex flex-col space-y-2">
-              <Button asChild variant="ghost" className="w-full">
+              <Button asChild variant="ghost" className="w-full text-blue-600">
                 <Link href="/org-dashboard">Dashboard</Link>
               </Button>
-              <Button asChild variant="ghost" className="w-full">
+              <Button asChild variant="ghost" className="w-full text-blue-600">
                 <Link href="/admin">Admin</Link>
               </Button>
             </nav>
@@ -249,61 +236,34 @@ const HomePage: React.FC = () => {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2
-            className="text-4xl font-bold text-[#2196F3] mb-4"
-            style={{
-              fontFamily:
-                '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-              fontSize: "60px",
-              lineHeight: "74px",
-              fontWeight: 700,
-            }}
-          >
+          <h2 className="text-4xl md:text-5xl font-bold text-blue-800 mb-4">
             Find Social Workers Near You
           </h2>
-          <p className="text-xl text-[#14171A] mb-8 font-family-inter">
+          <p className="text-xl text-gray-600 mb-8 mt-3 max-w-2xl mx-auto">
             Connect with professionals dedicated to making a difference in your
             community
           </p>
           <div className="max-w-3xl mx-auto">
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <Input
                 placeholder="Enter your location..."
-                className="flex-grow text-lg py-6 rounded-full"
+                className="flex-grow text-lg py-6 rounded-full border-2 border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
               />
-              <Button className="bg-[#2196F3] hover:bg-[#465ade] text-white text-lg py-6 px-8 rounded-full">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
                 <Search className="mr-2 h-5 w-5" /> Search
               </Button>
             </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full text-[#2196F3] border-[#2196F3] hover:bg-[#2196F3] hover:text-white"
-              >
-                New Delhi
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full text-[#2196F3] border-[#2196F3] hover:bg-[#2196F3] hover:text-white"
-              >
-                Mumbai
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full text-[#2196F3] border-[#2196F3] hover:bg-[#2196F3] hover:text-white"
-              >
-                Kolkata
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full text-[#2196F3] border-[#2196F3] hover:bg-[#2196F3] hover:text-white"
-              >
-                Bangalore
-              </Button>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {["New Delhi", "Mumbai", "Kolkata", "Bangalore"].map((city) => (
+                <Button
+                  key={city}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full text-blue-600 border-blue-300 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300"
+                >
+                  {city}
+                </Button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -314,20 +274,12 @@ const HomePage: React.FC = () => {
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           <Card className="shadow-xl bg-white overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between bg-[#2196F3] text-white">
-              <div
-                style={{
-                  fontFamily:
-                    '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-                  fontSize: "30px",
-                  lineHeight: "44px",
-                  fontWeight: 700,
-                }}
-              >
-                <CardTitle className="text-2xl">
+            <CardHeader className="flex flex-row items-center justify-between bg-blue-600 text-white">
+              <div>
+                <CardTitle className="text-2xl font-bold">
                   Social Work Organizations Map
                 </CardTitle>
-                <CardDescription className="text-gray-200">
+                <CardDescription className="text-blue-100">
                   Interactive map showing social worker locations
                 </CardDescription>
               </div>
@@ -335,7 +287,7 @@ const HomePage: React.FC = () => {
                 variant="ghost"
                 size="icon"
                 onClick={toggleMapSize}
-                className="text-white hover:text-[#1B2250]"
+                className="text-white hover:text-blue-200"
               >
                 {isMapMaximized ? <Minimize2 /> : <Maximize2 />}
               </Button>
@@ -388,10 +340,10 @@ const HomePage: React.FC = () => {
                       }}
                     >
                       <div className="p-2 max-w-xs">
-                        <h3 className="text-lg font-semibold text-[#2196F3]">
+                        <h3 className="text-lg font-semibold text-blue-600">
                           {hoveredOrg.name}
                         </h3>
-                        <p className="text-sm text-[#14171A]">
+                        <p className="text-sm text-gray-600">
                           {hoveredOrg.description}
                         </p>
                       </div>
@@ -403,33 +355,33 @@ const HomePage: React.FC = () => {
                       onCloseClick={() => setSelectedOrg(null)}
                     >
                       <div className="p-4 max-w-sm">
-                        <h3 className="text-xl font-semibold mb-2 text-[#2196F3]">
+                        <h3 className="text-xl font-semibold mb-2 text-blue-600">
                           {selectedOrg.name}
                         </h3>
-                        <p className="text-sm mb-3 text-[#14171A]">
+                        <p className="text-sm mb-3 text-gray-600">
                           {selectedOrg.description}
                         </p>
                         <div className="flex items-center mb-2">
-                          <MapPin className="h-4 w-4 mr-2 text-[#1B2250]" />
+                          <MapPin className="h-4 w-4 mr-2 text-blue-600" />
                           <span className="text-sm">{`${selectedOrg.lat.toFixed(
                             4
                           )}, ${selectedOrg.lng.toFixed(4)}`}</span>
                         </div>
                         <div className="flex items-center mb-2">
-                          <Phone className="h-4 w-4 mr-2 text-[#1B2250]" />
+                          <Phone className="h-4 w-4 mr-2 text-blue-600" />
                           <span className="text-sm">{selectedOrg.phone}</span>
                         </div>
                         <div className="flex items-center mb-3">
-                          <Mail className="h-4 w-4 mr-2 text-[#1B2250]" />
+                          <Mail className="h-4 w-4 mr-2 text-blue-600" />
                           <span className="text-sm">{selectedOrg.email}</span>
                         </div>
                         <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-2 text-[#2196F3]" />
-                          <span className="text-sm text-[#2196F3]">
+                          <DollarSign className="h-4 w-4 mr-2 text-blue-600" />
+                          <span className="text-sm text-blue-600">
                             {selectedOrg.donationInfo}
                           </span>
                         </div>
-                        <Button className="mt-3 w-full bg-[#2196F3] hover:bg-[#1B2250] text-white">
+                        <Button className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white">
                           View Full Profile
                         </Button>
                       </div>
@@ -438,7 +390,7 @@ const HomePage: React.FC = () => {
                 </GoogleMap>
               ) : (
                 <div className="h-[500px] flex items-center justify-center">
-                  <p className="text-xl text-[#2196F3]">Loading map...</p>
+                  <p className="text-xl text-blue-600">Loading map...</p>
                 </div>
               )}
             </CardContent>
@@ -451,55 +403,39 @@ const HomePage: React.FC = () => {
           transition={{ delay: 0.7, duration: 0.5 }}
           className="mt-16"
         >
-          <h2
-            className="text-3xl font-bold text-[#2196F3] mb-8 text-center"
-            style={{
-              fontFamily:
-                '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-              fontSize: "50px",
-              lineHeight: "74px",
-              fontWeight: 700,
-            }}
-          >
+          <h2 className="text-3xl md:text-4xl font-bold  text-blue-800 mb-8 text-center">
             Featured Organizations
           </h2>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            style={{
-              fontFamily:
-                '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-              fontSize: "16px",
-              lineHeight: "24px",
-              fontWeight: 400,
-            }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {organizations.map((org) => (
               <Card
                 key={org.id}
-                className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+                className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-lg transform hover:-translate-y-2"
               >
-                <CardHeader className="bg-[#2196F3] text-white">
+                <CardHeader className="bg-blue-600 text-white">
                   <CardTitle className="text-xl">{org.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <p className="text-[#14171A] mb-4">{org.description}</p>
-                  <div className="flex items-center mb-2">
-                    <Phone className="h-4 w-4 mr-2 text-[#1B2250]" />
-                    <span className="text-sm">{org.phone}</span>
-                  </div>
-                  <div className="flex items-center mb-2">
-                    <Mail className="h-4 w-4 mr-2 text-[#1B2250]" />
-                    <span className="text-sm">{org.email}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <DollarSign className="h-4 w-4 mr-2 text-[#2196F3]" />
-                    <span className="text-sm text-[#2196F3]">
-                      {org.donationInfo}
-                    </span>
+                  <p className="text-gray-600 mb-4">{org.description}</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2 text-blue-600" />
+                      <span className="text-sm text-gray-600">{org.phone}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 mr-2 text-blue-600" />
+                      <span className="text-sm text-gray-600">{org.email}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <DollarSign className="h-4 w-4 mr-2 text-blue-600" />
+                      <span className="text-sm text-blue-600">
+                        {org.donationInfo}
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
-                <CardFooter className="bg-[#F9FAFB]">
-                  <Button className="w-full bg-[#2196f3] hover:bg-[#1B2250] text-white">
+                <CardFooter className="bg-gray-50">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                     View Full Profile <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardFooter>
@@ -509,72 +445,44 @@ const HomePage: React.FC = () => {
         </motion.div>
       </main>
 
-      <footer
-        className="bg-[#F9FAFB] text-black border-t border-gray-200"
-        style={{
-          fontFamily:
-            '"Inter", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-          fontSize: "16px",
-          lineHeight: "24px",
-          fontWeight: 400,
-        }}
-      >
+      <footer className="bg-gray-100 text-gray-600 mt-16">
         <div className="container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Branding Section */}
             <div className="mb-8 md:mb-0 text-center md:text-left">
-              <h3
-                className="text-2xl font-bold mb-2"
-                style={{
-                  fontFamily:
-                    '"Avenir Next", "Helvetica Neue", "Helvetica", "Arial", sans-serif',
-                  fontSize: "30px",
-                  lineHeight: "44px",
-                  fontWeight: 700,
-                }}
-              >
-                SocialConnect
+              <h3 className="text-2xl font-bold text-blue-800 mb-2">
+                Social<span className="text-blue-600">Connect</span>
               </h3>
-              <p className="text-blue-500 border-spacing-2 font-bold">
+              <p className="text-blue-600">
                 Connecting communities with social work professionals
               </p>
             </div>
-
-            {/* Navigation Links */}
             <nav className="flex flex-wrap justify-center md:justify-end space-x-8">
               <Link
                 href="/about"
-                className="hover:text-blue-500 hover:underline transition-all duration-300"
+                className="hover:text-blue-600 transition-all duration-300"
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="hover:text-blue-500 hover:underline transition-all duration-300"
+                className="hover:text-blue-600 transition-all duration-300"
               >
                 Contact
               </Link>
               <Link
                 href="/privacy"
-                className="hover:text-blue-500 hover:underline transition-all duration-300"
+                className="hover:text-blue-600 transition-all duration-300"
               >
                 Privacy Policy
               </Link>
             </nav>
           </div>
-
-          {/* Divider */}
           <hr className="my-8 border-gray-300" />
-
-          {/* Copyright Section */}
           <div className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} Social Worker Locator. All rights
-            reserved.
+            © {new Date().getFullYear()} SocialConnect. All rights reserved.
           </div>
         </div>
       </footer>
     </div>
   );
-};
-
-export default HomePage;
+}
