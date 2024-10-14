@@ -247,7 +247,7 @@ export default function Component() {
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <Input
                 placeholder="Enter your location..."
-                className="flex-grow text-lg py-6 rounded-full border-2 border-blue-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                className="flex-grow text-lg py-6 px-6 rounded-full border-2 border-blue-200 focus:border-blue-400 placeholder:text-sm"
               />
               <Button className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
                 <Search className="mr-2 h-5 w-5" /> Search

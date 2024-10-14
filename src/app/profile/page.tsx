@@ -1,9 +1,7 @@
 "use client";
-import { useState } from "react";
-import { Calendar, User, Tag as TagIcon, Info, HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
+import React, { useState } from "react";
+import { Calendar, User, Tag as TagIcon, HelpCircle } from "lucide-react";
 import Image from "next/image";
 
 interface ProjectDetailsProps {
@@ -14,7 +12,6 @@ interface ProjectDetailsProps {
   category: string;
   dateRange: string;
   photoCaption: string;
-  supportNeeded: string;
   others: string;
 }
 
@@ -26,10 +23,26 @@ export default function ProjectDetails({
   category,
   dateRange,
   photoCaption,
-  supportNeeded,
   others,
 }: ProjectDetailsProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedSupport, setSelectedSupport] = useState<string[]>([]);
+  const [otherSupport, setOtherSupport] = useState("");
+
+  const supportTypes = [
+    { id: "cash", label: "Cash" },
+    { id: "food", label: "Food" },
+    { id: "items", label: "Items" },
+    { id: "volunteers", label: "Volunteers" },
+  ];
+
+  const handleSupportChange = (supportId: string) => {
+    setSelectedSupport((prev) =>
+      prev.includes(supportId)
+        ? prev.filter((id) => id !== supportId)
+        : [...prev, supportId]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -52,25 +65,23 @@ export default function ProjectDetails({
         </div>
 
         {/* Preview Image */}
-        <Card className="mb-8 overflow-hidden">
+        <div className="mb-8 overflow-hidden rounded-lg shadow-lg">
           <Image
             src={preview}
             alt={`${title} Preview`}
-            width={500}
-            height={500}
+            width={800}
+            height={400}
             className="w-full h-64 object-cover"
           />
-          <CardContent>
-            <p className="text-sm text-gray-500 mt-2">{photoCaption}</p>
-          </CardContent>
-        </Card>
+          <p className="text-sm text-gray-500 mt-2 p-4">{photoCaption}</p>
+        </div>
 
         {/* Category and Date Range */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <Badge variant="secondary" className="text-lg py-1 px-3">
-            <TagIcon size={18} className="mr-2 inline" />
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <TagIcon size={18} className="mr-2" />
             {category}
-          </Badge>
+          </span>
           <div className="flex items-center text-gray-600">
             <Calendar size={18} className="mr-2" />
             <span>{dateRange}</span>
@@ -78,53 +89,69 @@ export default function ProjectDetails({
         </div>
 
         {/* Project Details */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-blue-600">
-              Project Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{details}</p>
-          </CardContent>
-        </Card>
+        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-2xl font-semibold text-blue-600 mb-4">
+            Project Details
+          </h3>
+          <p className="text-gray-700">{details}</p>
+        </div>
 
-        {/* Support Needed */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-blue-600">
-              Support Needed
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{supportNeeded}</p>
-          </CardContent>
-        </Card>
+        {/* Support Needed Form */}
+        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-2xl font-semibold text-blue-600 mb-4">
+            Support Needed
+          </h3>
+          <div className="space-y-4">
+            {supportTypes.map((type) => (
+              <div key={type.id} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={type.id}
+                  checked={selectedSupport.includes(type.id)}
+                  onChange={() => handleSupportChange(type.id)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor={type.id} className="text-gray-700">
+                  {type.label}
+                </label>
+              </div>
+            ))}
+            <div className="space-y-2">
+              <label htmlFor="other-support" className="block text-gray-700">
+                Other (please specify)
+              </label>
+              <textarea
+                id="other-support"
+                placeholder="Describe any other support needed..."
+                value={otherSupport}
+                onChange={(e) => setOtherSupport(e.target.value)}
+                className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                rows={4}
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Additional Information */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-blue-600">
-              Additional Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{others}</p>
-          </CardContent>
-        </Card>
+        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-2xl font-semibold text-blue-600 mb-4">
+            Additional Information
+          </h3>
+          <p className="text-gray-700">{others}</p>
+        </div>
 
         {/* Call to Action */}
         <div className="text-center">
-          <Button
-            size="lg"
-            className={`bg-gradient-to-r bg-blue-600 text-white px-8 py-8 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out ${
+          <button
+            className={`bg-gradient-to-r from-blue-600 to-blue-400 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out ${
               isHovered ? "shadow-lg scale-105" : ""
             }`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
+            <HelpCircle size={24} className="inline mr-2" />
             Contact for Support
-          </Button>
+          </button>
         </div>
       </div>
     </div>
@@ -141,8 +168,6 @@ ProjectDetails.defaultProps = {
   category: "HDA, Duralin",
   dateRange: "January 2023 - March 2023",
   photoCaption: "Preview of the interactive map project interface",
-  supportNeeded:
-    "We are currently looking for experienced frontend and backend developers to join our team. We need assistance in improving the map rendering performance, implementing advanced search algorithms, and creating a robust API for third-party integrations.",
   others:
     "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform.",
 };
