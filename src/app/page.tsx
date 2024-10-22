@@ -1,13 +1,32 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
   Marker,
   InfoWindow,
+  OverlayView,
 } from "@react-google-maps/api";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Search,
+  X,
+  Menu,
+  Phone,
+  Mail,
+  DollarSign,
+  Layers,
+  ZoomIn,
+  ZoomOut,
+  Compass,
+  ChevronRight,
+  Heart,
+  Eye,
+  MapPin,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -16,30 +35,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
-  Search,
-  MapPin,
-  Phone,
-  Mail,
-  DollarSign,
-  Menu,
-  Maximize2,
-  Minimize2,
-  ChevronRight,
-} from "lucide-react";
-import Link from "next/link";
-
-interface MapContainerStyle {
-  width: string;
-  height: string;
-}
-
-interface LatLng {
-  lat: number;
-  lng: number;
-}
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Organization {
   id: number;
@@ -51,67 +53,124 @@ interface Organization {
   email: string;
   donationInfo: string;
   avatar: string;
+  category: string;
 }
-
-const center: LatLng = {
-  lat: 40.7128,
-  lng: -74.006,
-};
 
 const organizations: Organization[] = [
   {
     id: 1,
-    name: "Social Work Org 1",
+    name: "Community Support Center",
     lat: 40.7128,
     lng: -74.006,
-    description: "Helping communities thrive",
+    description: "Helping communities thrive through various support programs",
     phone: "+1 (555) 123-4567",
-    email: "contact@org1.com",
-    donationInfo: "Support our cause with a donation",
+    email: "contact@communitysupport.org",
+    donationInfo: "Your donation helps us reach more people in need",
     avatar: "/placeholder.svg?height=40&width=40",
+    category: "Community Services",
   },
   {
     id: 2,
-    name: "Social Work Org 2",
+    name: "Family Care Network",
     lat: 40.72,
     lng: -74.01,
-    description: "Supporting families in need",
+    description: "Supporting families with comprehensive care and resources",
     phone: "+1 (555) 987-6543",
-    email: "info@org2.com",
-    donationInfo: "Your donation makes a difference",
+    email: "info@familycarenetwork.org",
+    donationInfo: "Help us strengthen families in our community",
     avatar: "/placeholder.svg?height=40&width=40",
+    category: "Family Services",
   },
   {
     id: 3,
-    name: "Social Work Org 3",
+    name: "Youth Empowerment Alliance",
     lat: 40.73,
     lng: -73.99,
-    description: "Empowering youth through education",
+    description: "Empowering youth through education and mentorship programs",
     phone: "+1 (555) 246-8135",
-    email: "hello@org3.com",
-    donationInfo: "Help us empower the next generation",
+    email: "hello@youthempowerment.org",
+    donationInfo: "Invest in the future of our youth",
     avatar: "/placeholder.svg?height=40&width=40",
+    category: "Youth Services",
   },
 ];
 
-export default function Component() {
+const mapStyles = [
+  {
+    featureType: "all",
+    elementType: "geometry",
+    stylers: [{ color: "#1a202c" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#2c5282" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#4a5568" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "geometry",
+    stylers: [{ color: "#3182ce" }],
+  },
+  {
+    featureType: "transit",
+    elementType: "geometry",
+    stylers: [{ color: "#3182ce" }],
+  },
+  {
+    featureType: "landscape",
+    elementType: "geometry",
+    stylers: [{ color: "#2d3748" }],
+  },
+  {
+    featureType: "administrative",
+    elementType: "geometry",
+    stylers: [{ color: "#3182ce" }],
+  },
+  {
+    featureType: "all",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#e2e8f0" }],
+  },
+  {
+    featureType: "all",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#1a202c" }],
+  },
+];
+
+const quickNavLocations = [
+  { name: "New Delhi", lat: 28.6139, lng: 77.209 },
+  { name: "Mumbai", lat: 19.076, lng: 72.8777 },
+  { name: "Kolkata", lat: 22.5726, lng: 88.3639 },
+  { name: "Chennai", lat: 13.0827, lng: 80.2707 },
+];
+
+export default function SocialConnectMap() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [hoveredOrg, setHoveredOrg] = useState<Organization | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isMapMaximized, setIsMapMaximized] = useState<boolean>(false);
-  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredOrgs, setFilteredOrgs] = useState(organizations);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mapType, setMapType] = useState<google.maps.MapTypeId | null>(null);
+  const [showSatelliteView, setShowSatelliteView] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
 
-  const mapContainerStyle: MapContainerStyle = {
-    width: "100%",
-    height: isMapMaximized ? "80vh" : "50vh",
-  };
+  useEffect(() => {
+    if (isLoaded && mapType === null) {
+      setMapType(google.maps.MapTypeId.ROADMAP);
+    }
+  }, [isLoaded, mapType]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     const bounds = new window.google.maps.LatLngBounds();
@@ -127,362 +186,380 @@ export default function Component() {
   }, []);
 
   useEffect(() => {
-    if (map) {
-      const listener = map.addListener("click", () => {
-        setSelectedOrg(null);
-        setHoveredOrg(null);
-      });
-      return () => google.maps.event.removeListener(listener);
-    }
-  }, [map]);
+    const filtered = organizations.filter(
+      (org) =>
+        org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        org.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredOrgs(filtered);
+  }, [searchQuery]);
 
-  useEffect(() => {
-    const controlNavbar = () => {
-      if (typeof window !== "undefined") {
-        if (window.scrollY > lastScrollY) {
-          setIsNavbarVisible(false);
-        } else {
-          setIsNavbarVisible(true);
-        }
-        setLastScrollY(window.scrollY);
-      }
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", controlNavbar);
-      return () => {
-        window.removeEventListener("scroll", controlNavbar);
-      };
-    }
-  }, [lastScrollY]);
-
-  const toggleMapSize = () => {
-    setIsMapMaximized(!isMapMaximized);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // You can add more complex search logic here if needed
   };
 
+  const handleMarkerClick = (org: Organization) => {
+    setSelectedOrg(org);
+    if (map) {
+      map.panTo({ lat: org.lat, lng: org.lng });
+    }
+  };
+
+  const toggleSatelliteView = () => {
+    if (isLoaded) {
+      setShowSatelliteView(!showSatelliteView);
+      setMapType(
+        showSatelliteView
+          ? google.maps.MapTypeId.ROADMAP
+          : google.maps.MapTypeId.HYBRID
+      );
+    }
+  };
+
+  const handleZoomIn = () => {
+    if (map) {
+      map.setZoom(map.getZoom()! + 1);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (map) {
+      map.setZoom(map.getZoom()! - 1);
+    }
+  };
+
+  const handleResetView = () => {
+    if (map) {
+      const bounds = new window.google.maps.LatLngBounds();
+      organizations.forEach((org) =>
+        bounds.extend({ lat: org.lat, lng: org.lng })
+      );
+      map.fitBounds(bounds);
+    }
+  };
+
+  const handleQuickNav = (location: { lat: number; lng: number }) => {
+    if (map) {
+      map.panTo(location);
+      map.setZoom(12);
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-black">
+        <p className="text-xl text-white font-medium">Loading map...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <motion.header
-        className={`bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-10 transition-all duration-400 ${
-          isNavbarVisible ? "translate-y-0" : "-translate-y-full"
-        }`}
-        initial={false}
-        animate={{ y: isNavbarVisible ? 0 : -100 }}
-        transition={{ duration: 0.3 }}
+    <div className="h-screen w-full relative bg-gray-900">
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        center={{ lat: 40.7128, lng: -74.006 }}
+        zoom={10}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        options={{
+          styles: mapStyles,
+          mapTypeId: mapType || undefined,
+        }}
       >
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex items-center"
-            >
-              <h1 className="text-3xl font-bold text-blue-600">
-                Social<span className="text-blue-800">Connect</span>
-              </h1>
-            </motion.div>
-            <nav className="hidden md:flex space-x-4">
-              <Button
-                asChild
-                variant="ghost"
-                className="text-blue-600 hover:text-blue-800"
+        {filteredOrgs.map((org) => (
+          <React.Fragment key={org.id}>
+            <Marker
+              position={{ lat: org.lat, lng: org.lng }}
+              onClick={() => handleMarkerClick(org)}
+              onMouseOver={() => setHoveredOrg(org)}
+              onMouseOut={() => setHoveredOrg(null)}
+              icon={{
+                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              }}
+            />
+            {hoveredOrg === org && (
+              <OverlayView
+                position={{ lat: org.lat, lng: org.lng }}
+                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
               >
-                <Link href="/org-dashboard">Dashboard</Link>
-              </Button>
+                <Card className="w-64 bg-gray-800 border-blue-500 shadow-lg">
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-lg text-white">
+                      {org.name}
+                    </CardTitle>
+                    <CardDescription className="text-gray-300">
+                      {org.category}
+                    </CardDescription>
+                    <CardDescription className="text-gray-300">
+                      {org.description}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </OverlayView>
+            )}
+          </React.Fragment>
+        ))}
+        {selectedOrg && (
+          <InfoWindow
+            position={{ lat: selectedOrg.lat, lng: selectedOrg.lng }}
+            onCloseClick={() => setSelectedOrg(null)}
+          >
+            <Card className="w-80 bg-gray-800 border-blue-500 shadow-lg">
+              <CardHeader className="p-4 bg-gradient-to-r from-blue-600 to-blue-800">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-xl text-white">
+                      {selectedOrg.name}
+                    </CardTitle>
+                    <Badge
+                      variant="secondary"
+                      className="mt-1 bg-blue-500 text-white"
+                    >
+                      {selectedOrg.category}
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:text-blue-200 -mt-2 -mr-2"
+                    onClick={() => setSelectedOrg(null)}
+                  >
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close</span>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <p className="text-sm text-gray-300">
+                  {selectedOrg.description}
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center text-gray-300">
+                    <Phone className="h-4 w-4 mr-2 text-blue-400" />
+                    <span className="text-sm">{selectedOrg.phone}</span>
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <Mail className="h-4 w-4 mr-2 text-blue-400" />
+                    <span className="text-sm">{selectedOrg.email}</span>
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <DollarSign className="h-4 w-4 mr-2 text-green-400" />
+                    <span className="text-sm">{selectedOrg.donationInfo}</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="p-4">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300">
+                  View Full Profile
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+
+      <div className="absolute top-4 left-4 right-20 z-10">
+        <form onSubmit={handleSearch} className="flex items-center">
+          <Input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search for social work organizations or categories..."
+            className="flex-grow rounded-l-full border-2 border-blue-500 bg-gray-800 text-white placeholder-gray-400 focus:border-blue-400 h-12"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button
+            type="submit"
+            className="rounded-r-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 h-12 px-6 transition-all duration-300"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+        </form>
+      </div>
+
+      <div className="absolute top-20 left-5 z-10 space-x-3">
+        {quickNavLocations.map((location) => (
+          <TooltipProvider key={location.name}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-28 bg-gray-800 rounded-full text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={() => handleQuickNav(location)}
+                >
+                  <MapPin className="h-4 w-4" />
+                  {location.name}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Navigate to {location.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ))}
+      </div>
+
+      <div className="absolute bottom-8 left-4 z-10 space-x-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button
-                asChild
-                variant="ghost"
-                className="text-blue-600 hover:text-blue-800"
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                onClick={toggleSatelliteView}
               >
-                <Link href="/admin">Admin</Link>
+                <Layers className="h-5 w-5" />
               </Button>
-            </nav>
-            <Button
-              variant="ghost"
-              className="md:hidden text-blue-600"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu />
-            </Button>
-          </div>
-        </div>
-      </motion.header>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {showSatelliteView
+                  ? "Hide Satellite View"
+                  : "Show Satellite View"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                onClick={handleZoomIn}
+              >
+                <ZoomIn className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Zoom In</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                onClick={handleZoomOut}
+              >
+                <ZoomOut className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Zoom Out</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                onClick={handleResetView}
+              >
+                <Compass className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Reset View</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <Button
+        variant="outline"
+        className="absolute top-4 right-4 z-20 h-11 rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
 
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-white/80 backdrop-blur-md shadow-md md:hidden"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="absolute top-0 right-0 h-full w-80 bg-gray-800 shadow-lg z-30 overflow-y-auto overflow-x-auto"
           >
-            <nav className="container mx-auto px-4 py-2 flex flex-col space-y-2">
-              <Button asChild variant="ghost" className="w-full text-blue-600">
-                <Link href="/org-dashboard">Dashboard</Link>
-              </Button>
-              <Button asChild variant="ghost" className="w-full text-blue-600">
-                <Link href="/admin">Admin</Link>
-              </Button>
-            </nav>
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-blue-400">Menu</h2>
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-blue-400 hover:text-blue-300"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <nav className="space-y-2">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                >
+                  <a href="/about">About</a>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                >
+                  <a href="/contact">Contact</a>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="w-full justify-start text-blue-300 hover:text-blue-200  hover:bg-blue-700 transition-all duration-300"
+                >
+                  <a href="/login">Login</a>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                >
+                  <a href="/signup">Sign Up</a>
+                </Button>
+              </nav>
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-blue-400 mb-2">
+                  Map Settings
+                </h3>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                  onClick={toggleSatelliteView}
+                >
+                  <Layers className="h-5 w-5 mr-2" />
+                  {showSatelliteView
+                    ? "Hide Satellite View"
+                    : "Show Satellite View"}
+                </Button>
+              </div>
+              <div className="mt-6">
+                <Button className="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white transition-all duration-300">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Support Our Cause
+                </Button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <main className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-blue-800 mb-4">
-            Find Social Workers Near You
-          </h2>
-          <p className="text-xl text-gray-600 mb-8 mt-3 max-w-2xl mx-auto">
-            Connect with professionals dedicated to making a difference in your
-            community
-          </p>
-          <div className="max-w-3xl mx-auto">
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <Input
-                placeholder="Enter your location..."
-                className="flex-grow text-lg py-6 px-6 rounded-full border-2 border-blue-200 focus:border-blue-400 placeholder:text-sm"
-              />
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
-                <Search className="mr-2 h-5 w-5" /> Search
-              </Button>
-            </div>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {["New Delhi", "Mumbai", "Kolkata", "Bangalore"].map((city) => (
-                <Button
-                  key={city}
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full text-blue-600 border-blue-300 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300"
-                >
-                  {city}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          <Card className="shadow-xl bg-white overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between bg-blue-600 text-white">
-              <div>
-                <CardTitle className="text-2xl font-bold">
-                  Social Work Organizations Map
-                </CardTitle>
-                <CardDescription className="text-blue-100">
-                  Interactive map showing social worker locations
-                </CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleMapSize}
-                className="text-white hover:text-blue-200"
-              >
-                {isMapMaximized ? <Minimize2 /> : <Maximize2 />}
-              </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-              {isLoaded ? (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={center}
-                  zoom={10}
-                  onLoad={onLoad}
-                  onUnmount={onUnmount}
-                  options={{
-                    styles: [
-                      {
-                        featureType: "all",
-                        elementType: "geometry",
-                        stylers: [{ color: "#E6EEFF" }],
-                      },
-                      {
-                        featureType: "water",
-                        elementType: "geometry",
-                        stylers: [{ color: "#A5C0FF" }],
-                      },
-                      {
-                        featureType: "road",
-                        elementType: "geometry",
-                        stylers: [{ color: "#FFFFFF" }],
-                      },
-                    ],
-                  }}
-                >
-                  {organizations.map((org) => (
-                    <Marker
-                      key={org.id}
-                      position={{ lat: org.lat, lng: org.lng }}
-                      onClick={() => setSelectedOrg(org)}
-                      onMouseOver={() => setHoveredOrg(org)}
-                      onMouseOut={() => setHoveredOrg(null)}
-                      icon={{
-                        url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                      }}
-                    />
-                  ))}
-                  {hoveredOrg && !selectedOrg && (
-                    <InfoWindow
-                      position={{ lat: hoveredOrg.lat, lng: hoveredOrg.lng }}
-                      options={{
-                        pixelOffset: new window.google.maps.Size(0, -40),
-                      }}
-                    >
-                      <div className="p-2 max-w-xs">
-                        <h3 className="text-lg font-semibold text-blue-600">
-                          {hoveredOrg.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {hoveredOrg.description}
-                        </p>
-                      </div>
-                    </InfoWindow>
-                  )}
-                  {selectedOrg && (
-                    <InfoWindow
-                      position={{ lat: selectedOrg.lat, lng: selectedOrg.lng }}
-                      onCloseClick={() => setSelectedOrg(null)}
-                    >
-                      <div className="p-4 max-w-sm">
-                        <h3 className="text-xl font-semibold mb-2 text-blue-600">
-                          {selectedOrg.name}
-                        </h3>
-                        <p className="text-sm mb-3 text-gray-600">
-                          {selectedOrg.description}
-                        </p>
-                        <div className="flex items-center mb-2">
-                          <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="text-sm">{`${selectedOrg.lat.toFixed(
-                            4
-                          )}, ${selectedOrg.lng.toFixed(4)}`}</span>
-                        </div>
-                        <div className="flex items-center mb-2">
-                          <Phone className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="text-sm">{selectedOrg.phone}</span>
-                        </div>
-                        <div className="flex items-center mb-3">
-                          <Mail className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="text-sm">{selectedOrg.email}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="text-sm text-blue-600">
-                            {selectedOrg.donationInfo}
-                          </span>
-                        </div>
-                        <Button className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white">
-                          View Full Profile
-                        </Button>
-                      </div>
-                    </InfoWindow>
-                  )}
-                </GoogleMap>
-              ) : (
-                <div className="h-[500px] flex items-center justify-center">
-                  <p className="text-xl text-blue-600">Loading map...</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          className="mt-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold  text-blue-800 mb-8 text-center">
-            Featured Organizations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {organizations.map((org) => (
-              <Card
-                key={org.id}
-                className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-lg transform hover:-translate-y-2"
-              >
-                <CardHeader className="bg-blue-600 text-white">
-                  <CardTitle className="text-xl">{org.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <p className="text-gray-600 mb-4">{org.description}</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-2 text-blue-600" />
-                      <span className="text-sm text-gray-600">{org.phone}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-2 text-blue-600" />
-                      <span className="text-sm text-gray-600">{org.email}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2 text-blue-600" />
-                      <span className="text-sm text-blue-600">
-                        {org.donationInfo}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="bg-gray-50">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                    View Full Profile <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </motion.div>
-      </main>
-
-      <footer className="bg-gray-100 text-gray-600 mt-16">
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-8 md:mb-0 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-blue-800 mb-2">
-                Social<span className="text-blue-600">Connect</span>
-              </h3>
-              <p className="text-blue-600">
-                Connecting communities with social work professionals
-              </p>
-            </div>
-            <nav className="flex flex-wrap justify-center md:justify-end space-x-8">
-              <Link
-                href="/about"
-                className="hover:text-blue-600 transition-all duration-300"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="hover:text-blue-600 transition-all duration-300"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/privacy"
-                className="hover:text-blue-600 transition-all duration-300"
-              >
-                Privacy Policy
-              </Link>
-            </nav>
-          </div>
-          <hr className="my-8 border-gray-300" />
-          <div className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} SocialConnect. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
