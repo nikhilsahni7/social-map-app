@@ -24,6 +24,7 @@ import {
   Heart,
   Eye,
   MapPin,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 interface Organization {
   id: number;
@@ -150,6 +152,13 @@ const quickNavLocations = [
   { name: "Chennai", lat: 13.0827, lng: 80.2707 },
 ];
 
+const organizationTypes = [
+  "Community Services",
+  "Youth Services",
+  "Animal Services",
+  "Environmental Services",
+];
+
 export default function SocialConnectMap() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [hoveredOrg, setHoveredOrg] = useState<Organization | null>(null);
@@ -159,6 +168,7 @@ export default function SocialConnectMap() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mapType, setMapType] = useState<google.maps.MapTypeId | null>(null);
   const [showSatelliteView, setShowSatelliteView] = useState(false);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { isLoaded } = useJsApiLoader({
@@ -237,6 +247,11 @@ export default function SocialConnectMap() {
       );
       map.fitBounds(bounds);
     }
+  };
+
+  const handleCreateOrganization = () => {
+    // Implement the logic to create a new organization
+    console.log("Create new organization");
   };
 
   const handleQuickNav = (location: { lat: number; lng: number }) => {
@@ -379,7 +394,8 @@ export default function SocialConnectMap() {
         </form>
       </div>
 
-      <div className="absolute top-20 left-5 z-10 space-x-3">
+      <div className="absolute top-20 left-5 z-10 flex space-x-3 items-center">
+
         {quickNavLocations.map((location) => (
           <TooltipProvider key={location.name}>
             <Tooltip>
@@ -400,7 +416,23 @@ export default function SocialConnectMap() {
             </Tooltip>
           </TooltipProvider>
         ))}
+
+        {organizationTypes.map((type) => (
+          <Button
+            key={type}
+            variant={selectedType === type ? "default" : "outline"}
+            size="sm"
+            className="w-40 rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+            onClick={() =>
+              setSelectedType(selectedType === type ? null : type)
+            }
+          >
+            {type}
+          </Button>
+        ))}
+
       </div>
+
 
       <div className="absolute bottom-8 left-4 z-10 space-x-2">
         <TooltipProvider>
@@ -485,6 +517,17 @@ export default function SocialConnectMap() {
         <Menu className="h-5 w-5" />
       </Button>
 
+      <Link href={"create-org"}>
+        <Button
+          variant="default"
+          className="absolute bottom-8 right-20 z-20 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+          onClick={handleCreateOrganization}
+        >
+          <Plus className="h-5 w-5 mr-2" />
+          Create Organization
+        </Button>
+      </Link>
+
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -511,7 +554,7 @@ export default function SocialConnectMap() {
                   variant="ghost"
                   className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
                 >
-                  <a href="/about">About</a>
+                  <a href="/aboutpage">About</a>
                 </Button>
                 <Button
                   asChild
