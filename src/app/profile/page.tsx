@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react"
 import Image from "next/image"
-import { Calendar, User, Tag as TagIcon, Download, Plus, Check, ThumbsUp, ThumbsDown, Send } from "lucide-react"
+import { Calendar, User, Tag as TagIcon, Download, Plus, Check, ThumbsUp, ThumbsDown, Send, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +31,8 @@ interface ProjectDetailsProps {
   photoCaption: string
   others: string
   supportNeeded: SupportItem[]
+  location?: string
+  deadline?: Date
 }
 
 interface SupportItem {
@@ -159,6 +161,8 @@ export default function ProjectDetails({
   photoCaption,
   others,
   supportNeeded,
+  location,
+  deadline,
 }: ProjectDetailsProps) {
   const [supportItems, setSupportItems] = useState<SupportItem[]>(supportNeeded)
   const [newItemName, setNewItemName] = useState("")
@@ -167,6 +171,8 @@ export default function ProjectDetails({
   const [newItemUnits, setNewItemUnits] = useState("")
   const [startDate, setStartDate] = useState<Date | undefined>(new Date())
   const [endDate, setEndDate] = useState<Date | undefined>(new Date())
+  const [projectLocation, setProjectLocation] = useState(location || "")
+  const [projectDeadline, setProjectDeadline] = useState<Date | undefined>(deadline)
   const projectDetailsRef = useRef<HTMLDivElement>(null)
 
   const handleAddSupportItem = () => {
@@ -280,6 +286,36 @@ export default function ProjectDetails({
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
               <p className="text-gray-700 leading-relaxed">{details}</p>
             </div>
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Location</h3>
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-5 w-5 text-gray-500" />
+                <Input
+                  placeholder="Enter project location"
+                  value={projectLocation}
+                  onChange={(e) => setProjectLocation(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Deadline</h3>
+              <div className="w-full">
+                <DatePicker
+                  selected={projectDeadline}
+                  onSelect={setProjectDeadline}
+                  customInput={
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {projectDeadline ? format(projectDeadline, "PPP") : "Select deadline"}
+                    </Button>
+                  }
+                />
+              </div>
+            </div>
+
+
 
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
