@@ -541,9 +541,9 @@ export default function SocialConnectMap() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-blue-400">Menu</h2>
                 <Button
-                  variant="ghost"
+
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-blue-400 hover:text-blue-300"
+                  className="text-blue-400 bg-transparent hover:bg-transparent border-none"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -584,7 +584,7 @@ export default function SocialConnectMap() {
                 </h3>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                  className="w-full justify-start text-black  transition-all duration-300"
                   onClick={toggleSatelliteView}
                 >
                   <Layers className="h-5 w-5 mr-2" />
