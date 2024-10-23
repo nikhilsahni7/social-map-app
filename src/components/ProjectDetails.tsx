@@ -1,95 +1,69 @@
-// src/app/profile/page.tsx
 "use client";
 
-<<<<<<< HEAD
-import React, { useState, useRef } from "react"
-import Image from "next/image"
-import { Calendar, User, Tag as TagIcon, Download, Plus, Check, ThumbsUp, ThumbsDown, Send, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import React, { useState, useRef } from "react";
+import Image from "next/image";
+import {
+  Tag as TagIcon,
+  Download,
+  Plus,
+  ThumbsUp,
+  ThumbsDown,
+  Send,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { DatePicker } from "@/components/ui/date-picker"
-import { format } from "date-fns"
-import html2canvas from "html2canvas"
+} from "@/components/ui/select";
+import { format } from "date-fns";
+import html2canvas from "html2canvas";
 
 interface ProjectDetailsProps {
-  creator: string
-  title: string
-  preview: string
-  details: string
-  category: string
-  photoCaption: string
-  others: string
-  supportNeeded: SupportItem[]
-  location?: string
-  deadline?: Date
+  creator: string;
+  title: string;
+  preview: string;
+  details: string;
+  category: string;
+  photoCaption: string;
+  others: string;
+  supportNeeded: SupportItem[];
 }
-=======
-import React from "react";
-import ProjectDetails from "@/components/ProjectDetails"; 
 
-const ProfilePage = () => {
->>>>>>> 2b6a1e6fb4468a66664c826d816ea355d1ae4ff6
+interface SupportItem {
+  id: string;
+  name: string;
+  quantity: number;
+  units: string;
+  type: string;
+}
 
-  const projectDetails = {
-    creator: "John Doe",
-    title: "Innovative Map Project",
-    preview: "/placeholder.svg?height=400&width=800",
-    details:
-      "This project is focused on creating an interactive map platform that helps users navigate and explore different regions. Our goal is to provide a user-friendly interface that combines detailed geographical data with real-time information, making it easier for people to discover and learn about various locations around the world.",
-    category: "HDA, Duralin",
-    photoCaption: "Preview of the interactive map project interface",
-    others:
-      "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform.",
-    supportNeeded: [
-      {
-        id: "1",
-        name: "Volunteers",
-        quantity: 5,
-        units: "",
-        type: "Volunteers",
-      },
-      { id: "2", name: "Laptops", quantity: 3, units: "", type: "Items" },
-      {
-        id: "3",
-        name: "Office Space",
-        quantity: 500,
-        units: "sqft",
-        type: "Other",
-      },
-      {
-        id: "4",
-        name: "Funding",
-        quantity: 10000,
-        units: "USD",
-        type: "Financial",
-      },
-    ],
-  };
+interface Comment {
+  id: string;
+  user: string;
+  avatar: string;
+  content: string;
+  likes: number;
+  dislikes: number;
+  timestamp: Date;
+}
 
-  return <ProjectDetails {...projectDetails} />;
-};
-
-<<<<<<< HEAD
 const supportTypes = [
   "Items",
   "Medical Support",
   "Financial Support",
   "Volunteers",
   "Other",
-]
+];
 
 function CommentSection() {
   const [comments, setComments] = useState<Comment[]>([
@@ -97,10 +71,11 @@ function CommentSection() {
       id: "1",
       user: "Alice Johnson",
       avatar: "/placeholder.svg?height=40&width=40",
-      content: "This project looks amazing! I'd love to contribute as a volunteer.",
+      content:
+        "This project looks amazing! I'd love to contribute as a volunteer.",
       likes: 15,
       dislikes: 2,
-      timestamp: new Date(2023, 5, 15, 10, 30)
+      timestamp: new Date(2023, 5, 15, 10, 30),
     },
     {
       id: "2",
@@ -109,10 +84,10 @@ function CommentSection() {
       content: "Great initiative! How can I donate some laptops?",
       likes: 8,
       dislikes: 0,
-      timestamp: new Date(2023, 5, 16, 14, 45)
-    }
-  ])
-  const [newComment, setNewComment] = useState("")
+      timestamp: new Date(2023, 5, 16, 14, 45),
+    },
+  ]);
+  const [newComment, setNewComment] = useState("");
 
   const handleAddComment = () => {
     if (newComment.trim()) {
@@ -123,19 +98,22 @@ function CommentSection() {
         content: newComment,
         likes: 0,
         dislikes: 0,
-        timestamp: new Date()
-      }
-      setComments([comment, ...comments])
-      setNewComment("")
+        timestamp: new Date(),
+      };
+      setComments([comment, ...comments]);
+      setNewComment("");
     }
-  }
+  };
 
   return (
     <div className="mt-8">
       <h3 className="text-xl font-semibold text-blue-600 mb-4">Comments</h3>
       <div className="flex items-start space-x-4 mb-6">
         <Avatar>
-          <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Current user" />
+          <AvatarImage
+            src="/placeholder.svg?height=40&width=40"
+            alt="Current user"
+          />
           <AvatarFallback>CU</AvatarFallback>
         </Avatar>
         <div className="flex-grow">
@@ -156,12 +134,16 @@ function CommentSection() {
             <div className="flex items-start space-x-4">
               <Avatar>
                 <AvatarImage src={comment.avatar} alt={comment.user} />
-                <AvatarFallback>{comment.user.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {comment.user.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="flex-grow">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold">{comment.user}</h4>
-                  <span className="text-sm text-gray-500">{format(comment.timestamp, "PPp")}</span>
+                  <span className="text-sm text-gray-500">
+                    {format(comment.timestamp, "PPp")}
+                  </span>
                 </div>
                 <p className="mt-1 text-gray-700">{comment.content}</p>
                 <div className="mt-2 flex items-center space-x-4">
@@ -171,7 +153,9 @@ function CommentSection() {
                   <Button variant="ghost" size="sm">
                     <ThumbsDown className="mr-1 h-4 w-4" /> {comment.dislikes}
                   </Button>
-                  <Button variant="ghost" size="sm">Reply</Button>
+                  <Button variant="ghost" size="sm">
+                    Reply
+                  </Button>
                 </div>
               </div>
             </div>
@@ -179,7 +163,7 @@ function CommentSection() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default function ProjectDetails({
@@ -191,19 +175,16 @@ export default function ProjectDetails({
   photoCaption,
   others,
   supportNeeded,
-  location,
-  deadline,
 }: ProjectDetailsProps) {
-  const [supportItems, setSupportItems] = useState<SupportItem[]>(supportNeeded)
-  const [newItemName, setNewItemName] = useState("")
-  const [newItemQuantity, setNewItemQuantity] = useState(1)
-  const [newItemType, setNewItemType] = useState(supportTypes[0])
-  const [newItemUnits, setNewItemUnits] = useState("")
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
-  const [projectLocation, setProjectLocation] = useState(location || "")
-  const [projectDeadline, setProjectDeadline] = useState<Date | undefined>(deadline)
-  const projectDetailsRef = useRef<HTMLDivElement>(null)
+  const [supportItems, setSupportItems] =
+    useState<SupportItem[]>(supportNeeded);
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemQuantity, setNewItemQuantity] = useState(1);
+  const [newItemType, setNewItemType] = useState(supportTypes[0]);
+  const [newItemUnits, setNewItemUnits] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const projectDetailsRef = useRef<HTMLDivElement>(null);
 
   const handleAddSupportItem = () => {
     if (newItemName && newItemQuantity > 0) {
@@ -216,13 +197,13 @@ export default function ProjectDetails({
           units: newItemUnits,
           type: newItemType,
         },
-      ])
-      setNewItemName("")
-      setNewItemQuantity(1)
-      setNewItemUnits("")
-      setNewItemType(supportTypes[0])
+      ]);
+      setNewItemName("");
+      setNewItemQuantity(1);
+      setNewItemUnits("");
+      setNewItemType(supportTypes[0]);
     }
-  }
+  };
 
   const handleDownloadPDF = async () => {
     if (projectDetailsRef.current) {
@@ -231,23 +212,22 @@ export default function ProjectDetails({
           scale: 2,
           logging: false,
           useCORS: true,
-        })
-        const image = canvas.toDataURL("image/png")
-        const link = document.createElement("a")
-        link.href = image
-        link.download = `${title.replace(/\s+/g, "_")}_project_details.png`
-        link.click()
+        });
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = `${title.replace(/\s+/g, "_")}_project_details.png`;
+        link.click();
       } catch (error) {
-        console.error("Error generating screenshot:", error)
+        console.error("Error generating screenshot:", error);
       }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-900">
       <div className="max-w-4xl mx-auto p-6" ref={projectDetailsRef}>
         <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
-
           <CardContent className="p-8">
             <div className="mb-8 text-center">
               <h2 className="text-2xl font-bold mb-2">{creator}</h2>
@@ -266,7 +246,9 @@ export default function ProjectDetails({
                   className="transition-transform duration-300 hover:scale-105"
                 />
               </div>
-              <p className="text-sm text-gray-500 mt-2 text-center">{photoCaption}</p>
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                {photoCaption}
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-4 mb-8 justify-center">
@@ -277,78 +259,52 @@ export default function ProjectDetails({
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Duration</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Project Duration
+              </h3>
               <div className="flex flex-wrap gap-4 justify-between">
                 <div className="w-full md:w-auto">
                   <Label htmlFor="start-date" className="mb-2 block">
                     Start Date
                   </Label>
-                  <DatePicker
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : "Pick a start date"}
-                      </Button>
-                    }
-                  />
+                  <div className="relative">
+                    <Input
+                      type="date"
+                      id="start-date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
                 <div className="w-full md:w-auto mt-4 md:mt-0">
                   <Label htmlFor="end-date" className="mb-2 block">
                     End Date
                   </Label>
-                  <DatePicker
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : "Pick an end date"}
-                      </Button>
-                    }
-                  />
+                  <div className="relative">
+                    <Input
+                      type="date"
+                      id="end-date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Project Details
+              </h3>
               <p className="text-gray-700 leading-relaxed">{details}</p>
             </div>
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Location</h3>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-gray-500" />
-                <Input
-                  placeholder="Enter project location"
-                  value={projectLocation}
-                  onChange={(e) => setProjectLocation(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
-            </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Deadline</h3>
-              <div className="w-full">
-                <DatePicker
-                  selected={projectDeadline}
-                  onSelect={setProjectDeadline}
-                  customInput={
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {projectDeadline ? format(projectDeadline, "PPP") : "Select deadline"}
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-
-
-
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Support Needed
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 {supportItems.map((item) => (
                   <Card key={item.id} className="p-4">
@@ -387,7 +343,9 @@ export default function ProjectDetails({
                       type="number"
                       placeholder="Quantity"
                       value={newItemQuantity}
-                      onChange={(e) => setNewItemQuantity(parseInt(e.target.value))}
+                      onChange={(e) =>
+                        setNewItemQuantity(parseInt(e.target.value))
+                      }
                       min={1}
                       className="w-1/2"
                     />
@@ -406,7 +364,9 @@ export default function ProjectDetails({
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Additional Information</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Additional Information
+              </h3>
               <p className="text-gray-700 leading-relaxed">{others}</p>
             </div>
           </CardContent>
@@ -415,13 +375,16 @@ export default function ProjectDetails({
         <CommentSection />
 
         <div className="mt-8 flex justify-end">
-          <Button onClick={handleDownloadPDF} className="bg-green-600 hover:bg-green-700">
+          <Button
+            onClick={handleDownloadPDF}
+            className="bg-green-600 hover:bg-green-700"
+          >
             <Download className="mr-2 h-4 w-4" /> Download Screenshot
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 ProjectDetails.defaultProps = {
@@ -437,10 +400,19 @@ ProjectDetails.defaultProps = {
   supportNeeded: [
     { id: "1", name: "Volunteers", quantity: 5, units: "", type: "Volunteers" },
     { id: "2", name: "Laptops", quantity: 3, units: "", type: "Items" },
-    { id: "3", name: "Office Space", quantity: 500, units: "sqft", type: "Other" },
-    { id: "4", name: "Funding", quantity: 10000, units: "USD", type: "Financial" },
+    {
+      id: "3",
+      name: "Office Space",
+      quantity: 500,
+      units: "sqft",
+      type: "Other",
+    },
+    {
+      id: "4",
+      name: "Funding",
+      quantity: 10000,
+      units: "USD",
+      type: "Financial",
+    },
   ],
-}
-=======
-export default ProfilePage;
->>>>>>> 2b6a1e6fb4468a66664c826d816ea355d1ae4ff6
+};
