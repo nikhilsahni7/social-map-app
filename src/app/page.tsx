@@ -153,11 +153,11 @@ const quickNavLocations = [
 ];
 
 const organizationTypes = [
-  "Community Services",
-  "Youth Services",
-  "Animal Services",
-  "Environmental Services",
+  "Humans",
+  "Animals",
+  "Plants"
 ];
+
 
 export default function SocialConnectMap() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
@@ -170,6 +170,25 @@ export default function SocialConnectMap() {
   const [showSatelliteView, setShowSatelliteView] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileDevice(window.innerWidth < 768);
+    };
+
+    // Initial check
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -394,68 +413,80 @@ export default function SocialConnectMap() {
         </form>
       </div>
 
-      <div className="absolute top-20 left-5 z-10 flex space-x-3 items-center">
+      <div className="absolute top-20 left-5 right-5 z-10 flex justify-between items-center space-x-3">
+        <div className="flex space-x-3 items-center">
+          {!isMobileDevice &&
+            quickNavLocations.map((location) => (
+              <TooltipProvider key={location.name}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-28 bg-gray-800 rounded-full text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                      onClick={() => handleQuickNav(location)}
+                    >
+                      <MapPin className="h-4 w-4" />
+                      {location.name}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Navigate to {location.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
 
-        {quickNavLocations.map((location) => (
-          <TooltipProvider key={location.name}>
+          {organizationTypes.map((type) => (
+            <Button
+              key={type}
+              variant={selectedType === type ? "default" : "outline"}
+              size="sm"
+              className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
+                ? "bg-blue-600 text-white shadow-lg"
+                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                }`}
+              onClick={() => setSelectedType(selectedType === type ? null : type)}
+            >
+              {type}
+            </Button>
+          ))}
+
+        </div>
+
+        {!isMobileDevice && (
+          <div className="flex items-center space-x-2 text-sm font-semibold text-blue-400 bg-gray-800 px-4 py-2 rounded-full transition-all duration-300">
+            <span>Total Projects: </span>
+            <span className="text-sm">{"3"}</span>
+          </div>)}
+      </div>
+
+
+
+      <div className="absolute bottom-8 left-4 z-10 space-x-2">
+        {!isMobileDevice && (
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="w-28 bg-gray-800 rounded-full text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                  onClick={() => handleQuickNav(location)}
+                  size="icon"
+                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={toggleSatelliteView}
                 >
-                  <MapPin className="h-4 w-4" />
-                  {location.name}
+                  <Layers className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Navigate to {location.name}</p>
+                <p>
+                  {showSatelliteView
+                    ? "Hide Satellite View"
+                    : "Show Satellite View"}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ))}
-
-        {organizationTypes.map((type) => (
-          <Button
-            key={type}
-            variant={selectedType === type ? "default" : "outline"}
-            size="sm"
-            className="w-40 rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-            onClick={() =>
-              setSelectedType(selectedType === type ? null : type)
-            }
-          >
-            {type}
-          </Button>
-        ))}
-
-      </div>
-
-
-      <div className="absolute bottom-8 left-4 z-10 space-x-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={toggleSatelliteView}
-              >
-                <Layers className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {showSatelliteView
-                  ? "Hide Satellite View"
-                  : "Show Satellite View"}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        )}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -490,23 +521,25 @@ export default function SocialConnectMap() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={handleResetView}
-              >
-                <Compass className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Reset View</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {!isMobileDevice && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={handleResetView}
+                >
+                  <Compass className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reset View</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
 
       <Button
@@ -523,8 +556,8 @@ export default function SocialConnectMap() {
           className="absolute bottom-8 right-20 z-20 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
           onClick={handleCreateOrganization}
         >
-          <Plus className="h-5 w-5 mr-2" />
-          Create Organization
+          <Plus className="h-5 w-5" />
+          Create Your Project
         </Button>
       </Link>
 
@@ -599,6 +632,7 @@ export default function SocialConnectMap() {
                   Support Our Cause
                 </Button>
               </div>
+
             </div>
           </motion.div>
         )}
