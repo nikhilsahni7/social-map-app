@@ -1,60 +1,74 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  MessageSquare, 
-  Send, 
-  Linkedin, 
-  Twitter, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  MessageSquare,
+  Send,
+  Linkedin,
+  Twitter,
   Facebook,
   Check,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-    inquiryType: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+    inquiryType: "",
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const inquiryTypes = [
-    { id: 'general', label: 'General Inquiry' },
-    { id: 'partnership', label: 'Partnership Opportunity' },
-    { id: 'support', label: 'Technical Support' },
-    { id: 'feedback', label: 'Feedback' },
-    { id: 'other', label: 'Other' }
+    { id: "general", label: "General Inquiry" },
+    { id: "partnership", label: "Partnership Opportunity" },
+    { id: "support", label: "Technical Support" },
+    { id: "feedback", label: "Feedback" },
+    { id: "other", label: "Other" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
-    
+    setStatus("loading");
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '', inquiryType: '' });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+        inquiryType: "",
+      });
     } catch (error) {
-      setStatus('error');
+      setStatus("error");
     }
   };
 
   const handleChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -64,7 +78,7 @@ const ContactPage = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
           <p className="text-xl text-blue-100">
-            We're here to help and answer any questions you might have
+            We&apos;re here to help and answer any questions you might have
           </p>
         </div>
       </section>
@@ -114,19 +128,22 @@ const ContactPage = () => {
         <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="text-5xl mb-4 font-bold text-center">Send Us a Message</CardTitle>
+              <CardTitle className="text-5xl mb-4 font-bold text-center">
+                Send Us a Message
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {status === 'success' && (
+              {status === "success" && (
                 <Alert className="mb-6 bg-green-50 text-green-700 border-green-200">
                   <Check className="h-4 w-4" />
                   <AlertDescription>
-                    Your message has been sent successfully! We'll get back to you soon.
+                    Your message has been sent successfully! We&apos;ll get back
+                    to you soon.
                   </AlertDescription>
                 </Alert>
               )}
 
-              {status === 'error' && (
+              {status === "error" && (
                 <Alert className="mb-6 bg-red-50 text-red-700 border-red-200">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
@@ -142,7 +159,7 @@ const ContactPage = () => {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
+                      onChange={(e) => handleChange("name", e.target.value)}
                       placeholder="John Doe"
                       required
                     />
@@ -153,7 +170,7 @@ const ContactPage = () => {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleChange('email', e.target.value)}
+                      onChange={(e) => handleChange("email", e.target.value)}
                       placeholder="john@example.com"
                       required
                     />
@@ -164,7 +181,9 @@ const ContactPage = () => {
                   <Label htmlFor="inquiryType">Type of Inquiry</Label>
                   <Select
                     value={formData.inquiryType}
-                    onValueChange={(value) => handleChange('inquiryType', value)}
+                    onValueChange={(value) =>
+                      handleChange("inquiryType", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select inquiry type" />
@@ -184,7 +203,7 @@ const ContactPage = () => {
                   <Input
                     id="subject"
                     value={formData.subject}
-                    onChange={(e) => handleChange('subject', e.target.value)}
+                    onChange={(e) => handleChange("subject", e.target.value)}
                     placeholder="What is this regarding?"
                     required
                   />
@@ -195,19 +214,19 @@ const ContactPage = () => {
                   <Textarea
                     id="message"
                     value={formData.message}
-                    onChange={(e) => handleChange('message', e.target.value)}
+                    onChange={(e) => handleChange("message", e.target.value)}
                     placeholder="Your message here..."
                     className="min-h-[150px]"
                     required
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full"
-                  disabled={status === 'loading'}
+                  disabled={status === "loading"}
                 >
-                  {status === 'loading' ? (
+                  {status === "loading" ? (
                     <span className="flex items-center gap-2">
                       Sending... <Send className="h-4 w-4 animate-pulse" />
                     </span>
@@ -248,13 +267,25 @@ const ContactPage = () => {
                   Connect With Us
                 </h3>
                 <div className="flex gap-4">
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Linkedin className="h-5 w-5" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Twitter className="h-5 w-5" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Facebook className="h-5 w-5" />
                   </Button>
                 </div>
