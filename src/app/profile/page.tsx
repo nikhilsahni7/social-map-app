@@ -1,28 +1,33 @@
-// src/app/profile/page.tsx
-"use client";
+"use client"
 
-<<<<<<< HEAD
 import React, { useState, useRef } from "react"
 import Image from "next/image"
-import { Calendar, User, Tag as TagIcon, Download, Plus, Check, ThumbsUp, ThumbsDown, Send, MapPin } from "lucide-react"
+import {
+  Calendar,
+  User,
+  Tag as TagIcon,
+  Download,
+  ThumbsUp,
+  ThumbsDown,
+  Send,
+  MapPin,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { DatePicker } from "@/components/ui/date-picker"
 import { format } from "date-fns"
 import html2canvas from "html2canvas"
+
+interface SupportItem {
+  id: string
+  name: string
+  quantity: number
+  units: string
+  type: string
+}
 
 interface ProjectDetailsProps {
   creator: string
@@ -33,66 +38,14 @@ interface ProjectDetailsProps {
   photoCaption: string
   others: string
   supportNeeded: SupportItem[]
-  location?: string
-  deadline?: Date
+  location: string
+  deadline: Date
+  startDate: Date
+  endDate: Date
 }
-=======
-import React from "react";
-import ProjectDetails from "@/components/ProjectDetails"; 
-
-const ProfilePage = () => {
->>>>>>> 2b6a1e6fb4468a66664c826d816ea355d1ae4ff6
-
-  const projectDetails = {
-    creator: "John Doe",
-    title: "Innovative Map Project",
-    preview: "/placeholder.svg?height=400&width=800",
-    details:
-      "This project is focused on creating an interactive map platform that helps users navigate and explore different regions. Our goal is to provide a user-friendly interface that combines detailed geographical data with real-time information, making it easier for people to discover and learn about various locations around the world.",
-    category: "HDA, Duralin",
-    photoCaption: "Preview of the interactive map project interface",
-    others:
-      "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform.",
-    supportNeeded: [
-      {
-        id: "1",
-        name: "Volunteers",
-        quantity: 5,
-        units: "",
-        type: "Volunteers",
-      },
-      { id: "2", name: "Laptops", quantity: 3, units: "", type: "Items" },
-      {
-        id: "3",
-        name: "Office Space",
-        quantity: 500,
-        units: "sqft",
-        type: "Other",
-      },
-      {
-        id: "4",
-        name: "Funding",
-        quantity: 10000,
-        units: "USD",
-        type: "Financial",
-      },
-    ],
-  };
-
-  return <ProjectDetails {...projectDetails} />;
-};
-
-<<<<<<< HEAD
-const supportTypes = [
-  "Items",
-  "Medical Support",
-  "Financial Support",
-  "Volunteers",
-  "Other",
-]
 
 function CommentSection() {
-  const [comments, setComments] = useState<Comment[]>([
+  const [comments, setComments] = useState([
     {
       id: "1",
       user: "Alice Johnson",
@@ -100,7 +53,7 @@ function CommentSection() {
       content: "This project looks amazing! I'd love to contribute as a volunteer.",
       likes: 15,
       dislikes: 2,
-      timestamp: new Date(2023, 5, 15, 10, 30)
+      timestamp: new Date(2023, 5, 15, 10, 30),
     },
     {
       id: "2",
@@ -109,21 +62,21 @@ function CommentSection() {
       content: "Great initiative! How can I donate some laptops?",
       likes: 8,
       dislikes: 0,
-      timestamp: new Date(2023, 5, 16, 14, 45)
-    }
+      timestamp: new Date(2023, 5, 16, 14, 45),
+    },
   ])
   const [newComment, setNewComment] = useState("")
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      const comment: Comment = {
+      const comment = {
         id: Date.now().toString(),
         user: "Current User",
         avatar: "/placeholder.svg?height=40&width=40",
         content: newComment,
         likes: 0,
         dislikes: 0,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
       setComments([comment, ...comments])
       setNewComment("")
@@ -133,19 +86,19 @@ function CommentSection() {
   return (
     <div className="mt-8">
       <h3 className="text-xl font-semibold text-blue-600 mb-4">Comments</h3>
-      <div className="flex items-start space-x-4 mb-6">
-        <Avatar>
+      <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4 mb-6">
+        <Avatar className="w-12 h-12">
           <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Current user" />
           <AvatarFallback>CU</AvatarFallback>
         </Avatar>
-        <div className="flex-grow">
+        <div className="flex-grow w-full md:w-auto">
           <Textarea
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             className="w-full mb-2"
           />
-          <Button onClick={handleAddComment}>
+          <Button onClick={handleAddComment} className="w-full md:w-auto">
             <Send className="mr-2 h-4 w-4" /> Post Comment
           </Button>
         </div>
@@ -153,18 +106,18 @@ function CommentSection() {
       <div className="space-y-4">
         {comments.map((comment) => (
           <Card key={comment.id} className="p-4">
-            <div className="flex items-start space-x-4">
-              <Avatar>
+            <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4">
+              <Avatar className="w-12 h-12">
                 <AvatarImage src={comment.avatar} alt={comment.user} />
                 <AvatarFallback>{comment.user.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-grow">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row md:items-center justify-between">
                   <h4 className="font-semibold">{comment.user}</h4>
                   <span className="text-sm text-gray-500">{format(comment.timestamp, "PPp")}</span>
                 </div>
                 <p className="mt-1 text-gray-700">{comment.content}</p>
-                <div className="mt-2 flex items-center space-x-4">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   <Button variant="ghost" size="sm">
                     <ThumbsUp className="mr-1 h-4 w-4" /> {comment.likes}
                   </Button>
@@ -193,38 +146,12 @@ export default function ProjectDetails({
   supportNeeded,
   location,
   deadline,
+  startDate,
+  endDate,
 }: ProjectDetailsProps) {
-  const [supportItems, setSupportItems] = useState<SupportItem[]>(supportNeeded)
-  const [newItemName, setNewItemName] = useState("")
-  const [newItemQuantity, setNewItemQuantity] = useState(1)
-  const [newItemType, setNewItemType] = useState(supportTypes[0])
-  const [newItemUnits, setNewItemUnits] = useState("")
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
-  const [projectLocation, setProjectLocation] = useState(location || "")
-  const [projectDeadline, setProjectDeadline] = useState<Date | undefined>(deadline)
   const projectDetailsRef = useRef<HTMLDivElement>(null)
 
-  const handleAddSupportItem = () => {
-    if (newItemName && newItemQuantity > 0) {
-      setSupportItems([
-        ...supportItems,
-        {
-          id: Date.now().toString(),
-          name: newItemName,
-          quantity: newItemQuantity,
-          units: newItemUnits,
-          type: newItemType,
-        },
-      ])
-      setNewItemName("")
-      setNewItemQuantity(1)
-      setNewItemUnits("")
-      setNewItemType(supportTypes[0])
-    }
-  }
-
-  const handleDownloadPDF = async () => {
+  const handleDownloadScreenshot = async () => {
     if (projectDetailsRef.current) {
       try {
         const canvas = await html2canvas(projectDetailsRef.current, {
@@ -245,19 +172,18 @@ export default function ProjectDetails({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-900">
-      <div className="max-w-4xl mx-auto p-6" ref={projectDetailsRef}>
+      <div className="max-w-4xl mx-auto p-4 md:p-6" ref={projectDetailsRef}>
         <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
-
-          <CardContent className="p-8">
+          <CardContent className="p-4 md:p-8">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold mb-2">{creator}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">{creator}</h2>
               <p className="text-gray-600">Project Creator</p>
             </div>
 
             <Separator className="my-8" />
 
             <div className="mb-8">
-              <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-md">
+              <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-md">
                 <Image
                   src={preview}
                   alt={`${title} Preview`}
@@ -278,36 +204,14 @@ export default function ProjectDetails({
 
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Duration</h3>
-              <div className="flex flex-wrap gap-4 justify-between">
+              <div className="flex flex-col md:flex-row gap-4 justify-between">
                 <div className="w-full md:w-auto">
-                  <Label htmlFor="start-date" className="mb-2 block">
-                    Start Date
-                  </Label>
-                  <DatePicker
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : "Pick a start date"}
-                      </Button>
-                    }
-                  />
+                  <p className="font-semibold">Start Date:</p>
+                  <p>{format(startDate, "PPP")}</p>
                 </div>
-                <div className="w-full md:w-auto mt-4 md:mt-0">
-                  <Label htmlFor="end-date" className="mb-2 block">
-                    End Date
-                  </Label>
-                  <DatePicker
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : "Pick an end date"}
-                      </Button>
-                    }
-                  />
+                <div className="w-full md:w-auto">
+                  <p className="font-semibold">End Date:</p>
+                  <p>{format(endDate, "PPP")}</p>
                 </div>
               </div>
             </div>
@@ -316,41 +220,27 @@ export default function ProjectDetails({
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
               <p className="text-gray-700 leading-relaxed">{details}</p>
             </div>
+
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Location</h3>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-gray-500" />
-                <Input
-                  placeholder="Enter project location"
-                  value={projectLocation}
-                  onChange={(e) => setProjectLocation(e.target.value)}
-                  className="flex-1"
-                />
+                <p>{location}</p>
               </div>
             </div>
 
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Deadline</h3>
-              <div className="w-full">
-                <DatePicker
-                  selected={projectDeadline}
-                  onSelect={setProjectDeadline}
-                  customInput={
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {projectDeadline ? format(projectDeadline, "PPP") : "Select deadline"}
-                    </Button>
-                  }
-                />
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5 text-gray-500" />
+                <p>{format(deadline, "PPP")}</p>
               </div>
             </div>
-
-
 
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {supportItems.map((item) => (
+                {supportNeeded.map((item) => (
                   <Card key={item.id} className="p-4">
                     <p className="font-medium">{item.name}</p>
                     <p className="text-sm text-gray-500">
@@ -362,48 +252,26 @@ export default function ProjectDetails({
                   </Card>
                 ))}
               </div>
-              <Card className="p-4">
-                <h4 className="font-semibold mb-2">Add New Support Item</h4>
-                <div className="space-y-2">
-                  <Select value={newItemType} onValueChange={setNewItemType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select support type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supportTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder="Support item name"
-                    value={newItemName}
-                    onChange={(e) => setNewItemName(e.target.value)}
-                  />
-                  <div className="flex space-x-2">
-                    <Input
-                      type="number"
-                      placeholder="Quantity"
-                      value={newItemQuantity}
-                      onChange={(e) => setNewItemQuantity(parseInt(e.target.value))}
-                      min={1}
-                      className="w-1/2"
-                    />
-                    <Input
-                      placeholder="Units"
-                      value={newItemUnits}
-                      onChange={(e) => setNewItemUnits(e.target.value)}
-                      className="w-1/2"
-                    />
-                  </div>
-                  <Button onClick={handleAddSupportItem} className="w-full">
-                    <Plus className="mr-2 h-4 w-4" /> Add Support Item
-                  </Button>
-                </div>
-              </Card>
             </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-black mb-4">Asmi wants to support Organization Name by giving</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {supportNeeded.map((item) => (
+                  <Card key={item.id} className="p-4">
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-sm text-gray-500">
+                      Quantity: {item.quantity} {item.units}
+                    </p>
+                    <Badge variant="outline" className="mt-2">
+                      {item.type}
+                    </Badge>
+                  </Card>
+                ))}
+              </div>
+
+            </div>
+
 
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-blue-600 mb-4">Additional Information</h3>
@@ -412,13 +280,13 @@ export default function ProjectDetails({
           </CardContent>
         </Card>
 
-        <CommentSection />
-
         <div className="mt-8 flex justify-end">
-          <Button onClick={handleDownloadPDF} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={handleDownloadScreenshot} className="bg-green-600 hover:bg-green-700">
             <Download className="mr-2 h-4 w-4" /> Download Screenshot
           </Button>
         </div>
+
+        <CommentSection />
       </div>
     </div>
   )
@@ -440,7 +308,8 @@ ProjectDetails.defaultProps = {
     { id: "3", name: "Office Space", quantity: 500, units: "sqft", type: "Other" },
     { id: "4", name: "Funding", quantity: 10000, units: "USD", type: "Financial" },
   ],
+  location: "San Francisco, CA",
+  deadline: new Date(2023, 11, 31),
+  startDate: new Date(2023, 6, 1),
+  endDate: new Date(2023, 11, 31),
 }
-=======
-export default ProfilePage;
->>>>>>> 2b6a1e6fb4468a66664c826d816ea355d1ae4ff6

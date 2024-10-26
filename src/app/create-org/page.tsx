@@ -1,200 +1,293 @@
 "use client"
-import React, { useState, FormEvent } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Building2, MapPin, FileText, Check, AlertCircle } from "lucide-react";
 
-interface Organization {
-    orgName: string;
-    orgType: string;
-    location: string;
-    description: string;
+import React, { useState, useRef } from "react"
+import Image from "next/image"
+import {
+  Calendar,
+  User,
+  Tag as TagIcon,
+  Download,
+  Plus,
+  Check,
+  Upload,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Separator } from "@/components/ui/separator"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { DatePicker } from "@/components/ui/date-picker"
+import { format } from "date-fns"
+import html2canvas from "html2canvas"
+
+interface SupportItem {
+  id: string
+  name: string
+  quantity: number
+  units: string
+  type: string
 }
 
-interface FormErrors {
-    orgName?: string;
-    orgType?: string;
-    location?: string;
-    description?: string;
+const supportTypes = [
+  "Items",
+  "Medical Support",
+  "Financial Support",
+  "Volunteers",
+  "Other",
+]
+
+export default function CreateProjectDetails() {
+  const [formData, setFormData] = useState({
+    creator: "",
+    title: "",
+    preview: "/placeholder.svg?height=400&width=800",
+    details: "",
+    category: "",
+    photoCaption: "",
+    others: "",
+  })
+  const [supportItems, setSupportItems] = useState<SupportItem[]>([])
+  const [newItemName, setNewItemName] = useState("")
+  const [newItemQuantity, setNewItemQuantity] = useState(1)
+  const [newItemType, setNewItemType] = useState(supportTypes[0])
+  const [newItemUnits, setNewItemUnits] = useState("")
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
+  const projectDetailsRef = useRef<HTMLDivElement>(null)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleAddSupportItem = () => {
+    if (newItemName && newItemQuantity > 0) {
+      setSupportItems([
+        ...supportItems,
+        {
+          id: Date.now().toString(),
+          name: newItemName,
+          quantity: newItemQuantity,
+          units: newItemUnits,
+          type: newItemType,
+        },
+      ])
+      setNewItemName("")
+      setNewItemQuantity(1)
+      setNewItemUnits("")
+      setNewItemType(supportTypes[0])
+    }
+  }
+
+  const handleDownloadPDF = async () => {
+    if (projectDetailsRef.current) {
+      try {
+        const canvas = await html2canvas(projectDetailsRef.current, {
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        })
+        const image = canvas.toDataURL("image/png")
+        const link = document.createElement("a")
+        link.href = image
+        link.download = `${formData.title.replace(/\s+/g, "_")}_project_details.png`
+        link.click()
+      } catch (error) {
+        console.error("Error generating screenshot:", error)
+      }
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-900">
+      <div className="max-w-4xl mx-auto p-6" ref={projectDetailsRef}>
+        <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
+          <CardContent className="p-8">
+            <div className="mb-8 text-center">
+              <Input
+                name="creator"
+                placeholder="Enter project creator name"
+                value={formData.creator}
+                onChange={handleInputChange}
+                className="text-2xl font-semibold mb-2 text-center"
+              />
+              <p className="text-gray-600">Project Creator</p>
+            </div>
+
+            <Separator className="my-8" />
+
+            <div className="mb-8">
+              <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-md">
+                <Image
+                  src={formData.preview}
+                  alt={`${formData.title} Preview`}
+                  layout="fill"
+                  objectFit="cover"
+                  className="transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+              <Input
+                name="photoCaption"
+                placeholder="Enter photo caption"
+                value={formData.photoCaption}
+                onChange={handleInputChange}
+                className="text-sm text-gray-500 mt-2 text-center"
+              />
+              <div className="mt-4">
+                <Label htmlFor="preview-upload">Upload Preview Image</Label>
+                <Input
+                  id="preview-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, preview: reader.result as string }))
+                      }
+                      reader.readAsDataURL(file)
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+              <Input
+                name="category"
+                placeholder="Enter project category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="text-lg py-1 px-3"
+              />
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Duration</h3>
+              <div className="flex flex-wrap gap-4 justify-between">
+                <div className="w-full md:w-auto">
+                  <Label htmlFor="start-date" className="mb-2 block">Start Date</Label>
+                  <DatePicker
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    customInput={
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "PPP") : "Pick a start date"}
+                      </Button>
+                    }
+                  />
+                </div>
+                <div className="w-full md:w-auto mt-4 md:mt-0">
+                  <Label htmlFor="end-date" className="mb-2 block">End Date</Label>
+                  <DatePicker
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    customInput={
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "PPP") : "Pick an end date"}
+                      </Button>
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
+              <Textarea
+                name="details"
+                placeholder="Enter project details"
+                value={formData.details}
+                onChange={handleInputChange}
+                className="w-full h-32"
+              />
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {supportItems.map((item) => (
+                  <Card key={item.id} className="p-4">
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-sm text-gray-500">
+                      Quantity: {item.quantity} {item.units}
+                    </p>
+                    <Badge variant="outline" className="mt-2">
+                      {item.type}
+                    </Badge>
+                  </Card>
+                ))}
+              </div>
+              <Card className="p-4">
+                <h4 className="font-semibold text-2xl mb-2">Add New Support Item</h4>
+                <div className="space-y-2">
+                  <Select value={newItemType} onValueChange={setNewItemType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select support type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supportTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Support item name"
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                  />
+                  <div className="flex space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Quantity"
+                      value={newItemQuantity}
+                      onChange={(e) => setNewItemQuantity(parseInt(e.target.value))}
+                      min={1}
+                      className="w-1/2"
+                    />
+                    <Input
+                      placeholder="Units"
+                      value={newItemUnits}
+                      onChange={(e) => setNewItemUnits(e.target.value)}
+                      className="w-1/2"
+                    />
+                  </div>
+                  <Button onClick={handleAddSupportItem} className="w-full">
+                    <Plus className="mr-2 h-4 w-4" /> Add Support Item
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">Additional Information</h3>
+              <Textarea
+                name="others"
+                placeholder="Enter additional information"
+                value={formData.others}
+                onChange={handleInputChange}
+                className="w-full h-32"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+
+      </div>
+    </div>
+  )
 }
-
-const SocialOrgCreation = () => {
-    const [formData, setFormData] = useState<Organization>({
-        orgName: "",
-        orgType: "",
-        location: "",
-        description: "",
-    });
-    const [errors, setErrors] = useState<FormErrors>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-    const organizationTypes = [
-        { id: "non-profit", label: "Non-profit Organization" },
-        { id: "charity", label: "Charitable Foundation" },
-        { id: "community", label: "Community Group" },
-        { id: "ngo", label: "Non-Governmental Organization" },
-        { id: "social-enterprise", label: "Social Enterprise" },
-        { id: "advocacy", label: "Advocacy Group" },
-        { id: "others", label: "Other Organization Type" }
-    ];
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setSubmitStatus('idle');
-
-        const formErrors: FormErrors = {};
-        if (!formData.orgName.trim()) formErrors.orgName = "Organization name is required";
-        if (!formData.orgType) formErrors.orgType = "Please select an organization type";
-        if (!formData.location.trim()) formErrors.location = "Location is required";
-        if (!formData.description.trim()) formErrors.description = "Please provide a description";
-
-        setErrors(formErrors);
-
-        if (Object.keys(formErrors).length === 0) {
-            try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setSubmitStatus('success');
-                console.log("Form submitted:", formData);
-            } catch (error) {
-                setSubmitStatus('error');
-            }
-        }
-        setIsSubmitting(false);
-    };
-
-    const handleInputChange = (name: string, value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name as keyof FormErrors]) {
-            setErrors(prev => ({ ...prev, [name]: undefined }));
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-            <Card className="max-w-2xl mx-auto">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-3xl font-bold">Create a Social Organization</CardTitle>
-                    <CardDescription>
-                        Fill out the form below to register your social organization. All fields are required.
-                    </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                    {submitStatus === 'success' && (
-                        <Alert className="mb-6 bg-green-50 text-green-700 border-green-200">
-                            <Check className="h-4 w-4" />
-                            <AlertDescription>
-                                Organization successfully created! You will receive a confirmation email shortly.
-                            </AlertDescription>
-                        </Alert>
-                    )}
-
-                    {submitStatus === 'error' && (
-                        <Alert className="mb-6 bg-red-50 text-red-700 border-red-200">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>
-                                There was an error creating your organization. Please try again.
-                            </AlertDescription>
-                        </Alert>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="orgName" className="flex items-center gap-2">
-                                <Building2 className="h-4 w-4" />
-                                Organization Name
-                            </Label>
-                            <Input
-                                id="orgName"
-                                placeholder="Enter your organization's name"
-                                value={formData.orgName}
-                                onChange={(e) => handleInputChange('orgName', e.target.value)}
-                                className={errors.orgName ? "border-red-500" : ""}
-                            />
-                            {errors.orgName && (
-                                <p className="text-sm text-red-500">{errors.orgName}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="orgType" className="flex items-center gap-2">
-                                <FileText className="h-4 w-4" />
-                                Organization Type
-                            </Label>
-                            <Select
-                                value={formData.orgType}
-                                onValueChange={(value) => handleInputChange('orgType', value)}
-                            >
-                                <SelectTrigger className={errors.orgType ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select organization type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {organizationTypes.map((type) => (
-                                        <SelectItem key={type.id} value={type.id}>
-                                            {type.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.orgType && (
-                                <p className="text-sm text-red-500">{errors.orgType}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="location" className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4" />
-                                Location
-                            </Label>
-                            <Input
-                                id="location"
-                                placeholder="City, Country"
-                                value={formData.location}
-                                onChange={(e) => handleInputChange('location', e.target.value)}
-                                className={errors.location ? "border-red-500" : ""}
-                            />
-                            {errors.location && (
-                                <p className="text-sm text-red-500">{errors.location}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="description" className="flex items-center gap-2">
-                                <FileText className="h-4 w-4" />
-                                Description
-                            </Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Describe your organization's mission and goals..."
-                                value={formData.description}
-                                onChange={(e) => handleInputChange('description', e.target.value)}
-                                className={`min-h-[120px] ${errors.description ? "border-red-500" : ""}`}
-                            />
-                            {errors.description && (
-                                <p className="text-sm text-red-500">{errors.description}</p>
-                            )}
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Creating..." : "Create Organization"}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    );
-};
-
-export default SocialOrgCreation;
