@@ -44,6 +44,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+
+
+const searchSuggestions = [
+  "Community Support Center",
+  "Family Care Network",
+  "Youth Empowerment Alliance",
+  "Animal Welfare Society",
+  "Environmental Conservation Group",
+  "Senior Care Foundation",
+  "Education for All Initiative",
+  "Mental Health Awareness Project",
+  "Homeless Shelter Network",
+  "Disaster Relief Organization"
+]
+
 
 interface Organization {
   id: number;
@@ -100,50 +117,66 @@ const organizations: Organization[] = [
 const mapStyles = [
   {
     featureType: "all",
-    elementType: "geometry",
-    stylers: [{ color: "#1a202c" }],
+    elementType: "geometry.fill",
+    stylers: [{ color: "#f1f1f1" }]
   },
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#2c5282" }],
+    stylers: [{ color: "#e9e9e9" }]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }]
   },
   {
     featureType: "road",
     elementType: "geometry",
-    stylers: [{ color: "#4a5568" }],
+    stylers: [{ color: "#ffffff" }]
+  },
+  {
+    featureType: "road.arterial",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#757575" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#dadada" }]
   },
   {
     featureType: "poi",
     elementType: "geometry",
-    stylers: [{ color: "#3182ce" }],
+    stylers: [{ color: "#eeeeee" }]
   },
   {
-    featureType: "transit",
-    elementType: "geometry",
-    stylers: [{ color: "#3182ce" }],
-  },
-  {
-    featureType: "landscape",
-    elementType: "geometry",
-    stylers: [{ color: "#2d3748" }],
-  },
-  {
-    featureType: "administrative",
-    elementType: "geometry",
-    stylers: [{ color: "#3182ce" }],
-  },
-  {
-    featureType: "all",
+    featureType: "poi",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#e2e8f0" }],
+    stylers: [{ color: "#757575" }]
   },
   {
-    featureType: "all",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#1a202c" }],
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }]
   },
-];
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }]
+  },
+  {
+    featureType: "transit.line",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }]
+  },
+  {
+    featureType: "transit.station",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }]
+  }
+]
+
 
 const quickNavLocations = [
   { name: "New Delhi", lat: 28.6139, lng: 77.209 },
@@ -153,23 +186,79 @@ const quickNavLocations = [
 ];
 
 const organizationTypes = [
-  "Community Services",
-  "Youth Services",
-  "Animal Services",
-  "Environmental Services",
+  "Humans",
+  "Animals",
+  "Plants"
 ];
+
+const tags = [
+  "Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai",
+  "NGO", "Environment", "Women Empowerment", "Animal Welfare"
+]
+
+
+
+const handleCreateOrganization = () => {
+  // Implement the logic to create a new organization
+  console.log("Create new organization")
+}
+
+
+
+
+
+
 
 export default function SocialConnectMap() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [hoveredOrg, setHoveredOrg] = useState<Organization | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [filteredOrgs, setFilteredOrgs] = useState(organizations);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mapType, setMapType] = useState<google.maps.MapTypeId | null>(null);
   const [showSatelliteView, setShowSatelliteView] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("")
+
+
+  const [filteredSuggestions, setFilteredSuggestions] = useState(searchSuggestions)
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    const filtered = searchSuggestions.filter(suggestion =>
+      suggestion.toLowerCase().includes(value.toLowerCase())
+    )
+    setFilteredSuggestions(filtered)
+  }
+
+
+  const handleSelectSuggestion = (value: string) => {
+    setSearchQuery(value)
+    // Implement your search logic here
+    console.log("Searching for:", value)
+  }
+
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileDevice(window.innerWidth < 768);
+    };
+
+    // Initial check
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -204,10 +293,7 @@ export default function SocialConnectMap() {
     setFilteredOrgs(filtered);
   }, [searchQuery]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // You can add more complex search logic here if needed
-  };
+
 
   const handleMarkerClick = (org: Organization) => {
     setSelectedOrg(org);
@@ -260,6 +346,9 @@ export default function SocialConnectMap() {
       map.setZoom(12);
     }
   };
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+
 
   if (!isLoaded) {
     return (
@@ -375,87 +464,62 @@ export default function SocialConnectMap() {
         )}
       </GoogleMap>
 
-      <div className="absolute top-4 left-4 right-20 z-10">
-        <form onSubmit={handleSearch} className="flex items-center">
-          <Input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search for social work organizations or categories..."
-            className="flex-grow rounded-l-full border-2 border-blue-500 bg-gray-800 text-white placeholder-gray-400 focus:border-blue-400 h-12"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Button
-            type="submit"
-            className="rounded-r-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 h-12 px-6 transition-all duration-300"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-        </form>
+
+
+      <div className="absolute top-20 left-5 right-5 z-10 flex justify-between items-center">
+        <div className="flex-grow flex justify-center space-x-4">
+          {organizationTypes.map((type) => (
+            <Button
+              key={type}
+              variant={selectedType === type ? "default" : "outline"}
+              size="sm"
+              className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
+                ? "bg-blue-600 text-white shadow-lg"
+                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                }`}
+              onClick={() => setSelectedType(selectedType === type ? null : type)}
+            >
+              {type}
+            </Button>
+          ))}
+        </div>
+
+        {/* Total Projects */}
+        {!isMobileDevice && (
+          <div className="flex items-center space-x-2 text-sm font-semibold text-blue-400 bg-gray-800 px-4 py-2 rounded-full transition-all duration-300">
+            <span>Total Projects: </span>
+            <span className="text-sm">{"3"}</span>
+          </div>
+        )}
       </div>
 
-      <div className="absolute top-20 left-5 z-10 flex space-x-3 items-center">
 
-        {quickNavLocations.map((location) => (
-          <TooltipProvider key={location.name}>
+
+
+      <div className="absolute bottom-8 left-4 z-10 space-x-2">
+        {!isMobileDevice && (
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="w-28 bg-gray-800 rounded-full text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                  onClick={() => handleQuickNav(location)}
+                  size="icon"
+                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={toggleSatelliteView}
                 >
-                  <MapPin className="h-4 w-4" />
-                  {location.name}
+                  <Layers className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Navigate to {location.name}</p>
+                <p>
+                  {showSatelliteView
+                    ? "Hide Satellite View"
+                    : "Show Satellite View"}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ))}
-
-        {organizationTypes.map((type) => (
-          <Button
-            key={type}
-            variant={selectedType === type ? "default" : "outline"}
-            size="sm"
-            className="w-40 rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-            onClick={() =>
-              setSelectedType(selectedType === type ? null : type)
-            }
-          >
-            {type}
-          </Button>
-        ))}
-
-      </div>
-
-
-      <div className="absolute bottom-8 left-4 z-10 space-x-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={toggleSatelliteView}
-              >
-                <Layers className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {showSatelliteView
-                  ? "Hide Satellite View"
-                  : "Show Satellite View"}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        )}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -490,23 +554,25 @@ export default function SocialConnectMap() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={handleResetView}
-              >
-                <Compass className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Reset View</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {!isMobileDevice && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={handleResetView}
+                >
+                  <Compass className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reset View</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
 
       <Button
@@ -517,16 +583,70 @@ export default function SocialConnectMap() {
         <Menu className="h-5 w-5" />
       </Button>
 
-      <Link href={"create-org"}>
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
+        <Link href="/create-org">
+          <Button
+            variant="default"
+            className="h-14 w-2/3 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+            onClick={handleCreateOrganization}
+          >
+            <Plus className="h-5 w-5 mr-1" />
+            Create Your Project
+          </Button>
+        </Link>
+
         <Button
           variant="default"
-          className="absolute bottom-8 right-20 z-20 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
-          onClick={handleCreateOrganization}
+          className="h-14 w-2/3 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300"
+          onClick={() => setIsSearchOpen(true)}
+
         >
-          <Plus className="h-5 w-5 mr-2" />
-          Create Organization
+          <Search className="h-5 w-5 mr-1" />
+          Search
         </Button>
-      </Link>
+
+        <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+          <DialogContent className="sm:max-w-[700px] h-[85vh]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center mb-4">Search Organizations</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-blue-100 transition-colors"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            <Command className="rounded-lg border shadow-md">
+              <CommandInput
+                placeholder="Type to search..."
+                value={searchQuery}
+                onValueChange={handleSearch}
+                className="h-14 text-lg"
+              />
+              <CommandList className="h-[calc(60vh-120px)] overflow-y-auto">
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup>
+                  {filteredSuggestions.map((suggestion) => (
+                    <CommandItem
+                      key={suggestion}
+                      onSelect={() => handleSelectSuggestion(suggestion)}
+                      className="flex cursor-pointer hover:bg-blue-100 py-2 flex-row"
+                    >
+                      <Search className="mr-2 mt-1 h-4 w-4" />
+                      <span>{suggestion}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -535,56 +655,38 @@ export default function SocialConnectMap() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute top-0 right-0 h-full w-80 bg-gray-800 shadow-lg z-30 overflow-y-auto overflow-x-auto"
+            className="absolute top-0 right-0 h-full w-80 bg-white shadow-lg z-30 overflow-y-auto overflow-x-auto"
           >
             <div className="p-4">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-blue-400">Menu</h2>
+                <h2 className="text-2xl font-bold text-black">Menu</h2>
                 <Button
-                  variant="ghost"
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-blue-400 hover:text-blue-300"
+                  className="text-black bg-transparent border-none hover:bg-transaparent focus:outline-none"
                 >
                   <X className="h-5 w-5" />
                 </Button>
               </div>
+
               <nav className="space-y-2">
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
-                >
-                  <a href="/aboutpage">About</a>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
-                >
-                  <a href="/contact">Contact</a>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200  hover:bg-blue-700 transition-all duration-300"
-                >
-                  <a href="/login">Login</a>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
-                >
-                  <a href="/signup">Sign Up</a>
-                </Button>
+                {['About', 'Contact', 'Login', 'Sign Up'].map((item) => (
+                  <Button
+                    key={item}
+                    asChild
+                    variant="ghost"
+                    className="w-full justify-start text-black hover:text-white hover:bg-black transition-all duration-300"
+                  >
+                    <a href={`/${item.toLowerCase().replace(' ', '')}`}>{item}</a>
+                  </Button>
+                ))}
               </nav>
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-blue-400 mb-2">
+                <h3 className="text-lg font-semibold text-black mb-2">
                   Map Settings
                 </h3>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-blue-300 hover:text-blue-200 hover:bg-blue-700 transition-all duration-300"
+                  className="w-full justify-start text-black hover:text-white hover:bg-black border-black transition-all duration-300"
                   onClick={toggleSatelliteView}
                 >
                   <Layers className="h-5 w-5 mr-2" />
@@ -594,7 +696,7 @@ export default function SocialConnectMap() {
                 </Button>
               </div>
               <div className="mt-6">
-                <Button className="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white transition-all duration-300">
+                <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-300">
                   <Heart className="h-5 w-5 mr-2" />
                   Support Our Cause
                 </Button>
@@ -603,6 +705,6 @@ export default function SocialConnectMap() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }
