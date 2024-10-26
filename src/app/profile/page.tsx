@@ -84,47 +84,47 @@ function CommentSection() {
   }
 
   return (
-    <div className="mt-8">
-      <h3 className="text-xl font-semibold text-blue-600 mb-4">Comments</h3>
-      <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4 mb-6">
-        <Avatar className="w-12 h-12">
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold text-blue-600 mb-2">Comments</h3>
+      <div className="flex items-start space-x- mb-2">
+        <Avatar className="w-8 h-8">
           <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Current user" />
           <AvatarFallback>CU</AvatarFallback>
         </Avatar>
-        <div className="flex-grow w-full md:w-auto">
+        <div className="flex-grow">
           <Textarea
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="w-full mb-2"
+            className="w-full mb-1 text-sm"
+            rows={2}
           />
-          <Button onClick={handleAddComment} className="w-full md:w-auto">
-            <Send className="mr-2 h-4 w-4" /> Post Comment
+          <Button onClick={handleAddComment} size="sm" className="w-full">
+            <Send className="mr-2 h-3 w-3" /> Post Comment
           </Button>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2 max-h-40 overflow-y-auto">
         {comments.map((comment) => (
-          <Card key={comment.id} className="p-4">
-            <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4">
-              <Avatar className="w-12 h-12">
+          <Card key={comment.id} className="p-2">
+            <div className="flex items-start space-x-2">
+              <Avatar className="w-6 h-6">
                 <AvatarImage src={comment.avatar} alt={comment.user} />
                 <AvatarFallback>{comment.user.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-grow">
-                <div className="flex flex-col md:flex-row md:items-center justify-between">
-                  <h4 className="font-semibold">{comment.user}</h4>
-                  <span className="text-sm text-gray-500">{format(comment.timestamp, "PPp")}</span>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold">{comment.user}</h4>
+                  <span className="text-xs text-gray-500">{format(comment.timestamp, "PP")}</span>
                 </div>
-                <p className="mt-1 text-gray-700">{comment.content}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <Button variant="ghost" size="sm">
-                    <ThumbsUp className="mr-1 h-4 w-4" /> {comment.likes}
+                <p className="text-sm text-gray-700">{comment.content}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Button variant="ghost" size="sm" className="h-6 px-1">
+                    <ThumbsUp className="h-3 w-3 mr-1" /> {comment.likes}
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <ThumbsDown className="mr-1 h-4 w-4" /> {comment.dislikes}
+                  <Button variant="ghost" size="sm" className="h-6 px-1">
+                    <ThumbsDown className="h-3 w-3 mr-1" /> {comment.dislikes}
                   </Button>
-                  <Button variant="ghost" size="sm">Reply</Button>
                 </div>
               </div>
             </div>
@@ -171,122 +171,113 @@ export default function ProjectDetails({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-900">
-      <div className="max-w-4xl mx-auto p-4 md:p-6" ref={projectDetailsRef}>
-        <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
-          <CardContent className="p-4 md:p-8">
-            <div className="mb-8 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">{creator}</h2>
-              <p className="text-gray-600">Project Creator</p>
-            </div>
-
-            <Separator className="my-8" />
-
-            <div className="mb-8">
-              <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-md">
-                <Image
-                  src={preview}
-                  alt={`${title} Preview`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform duration-300 hover:scale-105"
-                />
+    <div className="h-screen w-screen bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
+      <div className="h-full w-full p-4" ref={projectDetailsRef}>
+        <Card className="h-full border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
+          <CardContent className="h-full p-4 grid grid-cols-2 gap-12">
+            <div className="space-y-4">
+              <div className="text-left">
+                <h2 className="text-2xl font-bold mb-1">{creator}</h2>
+                <p className="text-sm text-gray-600">Project Creator</p>
               </div>
-              <p className="text-sm text-gray-500 mt-2 text-center">{photoCaption}</p>
-            </div>
 
-            <div className="flex flex-wrap gap-4 mb-8 justify-center">
-              <Badge variant="secondary" className="text-lg py-1 px-3">
-                <TagIcon size={18} className="mr-2 inline-block" />
-                {category}
-              </Badge>
-            </div>
 
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Duration</h3>
-              <div className="flex flex-col md:flex-row gap-4 justify-between">
-                <div className="w-full md:w-auto">
-                  <p className="font-semibold">Start Date:</p>
-                  <p>{format(startDate, "PPP")}</p>
-                </div>
-                <div className="w-full md:w-auto">
-                  <p className="font-semibold">End Date:</p>
-                  <p>{format(endDate, "PPP")}</p>
+
+              <Separator />
+
+
+
+              <div>
+                <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Duration</h3>
+                <div className="flex justify-between text-sm">
+                  <div>
+                    <p className="font-semibold">Start:</p>
+                    <p>{format(startDate, "PP")}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">End:</p>
+                    <p>{format(endDate, "PP")}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
-              <p className="text-gray-700 leading-relaxed">{details}</p>
-            </div>
-
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Location</h3>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-gray-500" />
-                <p>{location}</p>
+              <div>
+                <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Details</h3>
+                <p className="text-sm text-gray-700 leading-tight">{details}</p>
               </div>
-            </div>
 
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Deadline</h3>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5 text-gray-500" />
-                <p>{format(deadline, "PPP")}</p>
+              <div>
+                <h3 className="text-lg font-semibold text-blue-600 mb-2">Location</h3>
+                <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+                  <MapPin className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">{location}</span>
+                </div>
+
               </div>
-            </div>
-
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {supportNeeded.map((item) => (
-                  <Card key={item.id} className="p-4">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Quantity: {item.quantity} {item.units}
-                    </p>
-                    <Badge variant="outline" className="mt-2">
-                      {item.type}
-                    </Badge>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-black mb-4">Asmi wants to support Organization Name by giving</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {supportNeeded.map((item) => (
-                  <Card key={item.id} className="p-4">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Quantity: {item.quantity} {item.units}
-                    </p>
-                    <Badge variant="outline" className="mt-2">
-                      {item.type}
-                    </Badge>
-                  </Card>
-                ))}
+              <h3 className="text-lg font-semibold text-blue-600 mb-2">Deadline</h3>
+              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+                <div className="flex items-center justify-center p-2 bg-white rounded-full shadow-sm">
+                  <Calendar className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-blue-600 uppercase tracking-wider">
+                    {"label"}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-700">
+                    {format("99", "PPPP")}
+                  </span>
+                </div>
               </div>
 
             </div>
 
 
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Additional Information</h3>
-              <p className="text-gray-700 leading-relaxed">{others}</p>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-600 mb-2">Support Needed</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {supportNeeded.map((item) => (
+                    <Card key={item.id} className="p-2">
+                      <p className="font-medium text-sm">{item.name}</p>
+                      <p className="text-xs text-gray-500">
+                        Quantity: {item.quantity} {item.units}
+                      </p>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {item.type}
+                      </Badge>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-2">Asmi wants to support {creator} by giving</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {supportNeeded.map((item) => (
+                    <Card key={item.id} className="p-2">
+                      <p className="font-medium text-sm">{item.name}</p>
+                      <p className="text-xs text-gray-500">
+                        Quantity: {item.quantity} {item.units}
+                      </p>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {item.type}
+                      </Badge>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-blue-600 mb-2">Additional Information</h3>
+                <p className="text-sm text-gray-700 leading-tight">{others}</p>
+              </div>
+
+
+
             </div>
           </CardContent>
         </Card>
-
-        <div className="mt-8 flex justify-end">
-          <Button onClick={handleDownloadScreenshot} className="bg-green-600 hover:bg-green-700">
-            <Download className="mr-2 h-4 w-4" /> Download Screenshot
-          </Button>
-        </div>
-
-        <CommentSection />
       </div>
     </div>
   )

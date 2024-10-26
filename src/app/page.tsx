@@ -496,30 +496,8 @@ export default function SocialConnectMap() {
 
 
 
-      <div className="absolute bottom-8 left-4 z-10 space-x-2">
-        {!isMobileDevice && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                  onClick={toggleSatelliteView}
-                >
-                  <Layers className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  {showSatelliteView
-                    ? "Hide Satellite View"
-                    : "Show Satellite View"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+      <div className="absolute bottom-8 left-6 z-10 space-x-3">
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
