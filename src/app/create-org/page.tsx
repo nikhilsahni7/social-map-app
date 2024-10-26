@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import React, { useState, useRef } from "react"
-import Image from "next/image"
+import React, { useState, useRef } from "react";
+import Image from "next/image";
 import {
   Calendar,
   User,
@@ -10,31 +10,31 @@ import {
   Plus,
   Check,
   Upload,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { DatePicker } from "@/components/ui/date-picker"
-import { format } from "date-fns"
-import html2canvas from "html2canvas"
+} from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
+import { format } from "date-fns";
+import html2canvas from "html2canvas";
 
 interface SupportItem {
-  id: string
-  name: string
-  quantity: number
-  units: string
-  type: string
+  id: string;
+  name: string;
+  quantity: number;
+  units: string;
+  type: string;
 }
 
 const supportTypes = [
@@ -43,7 +43,7 @@ const supportTypes = [
   "Financial Support",
   "Volunteers",
   "Other",
-]
+];
 
 export default function CreateProjectDetails() {
   const [formData, setFormData] = useState({
@@ -54,20 +54,22 @@ export default function CreateProjectDetails() {
     category: "",
     photoCaption: "",
     others: "",
-  })
-  const [supportItems, setSupportItems] = useState<SupportItem[]>([])
-  const [newItemName, setNewItemName] = useState("")
-  const [newItemQuantity, setNewItemQuantity] = useState(1)
-  const [newItemType, setNewItemType] = useState(supportTypes[0])
-  const [newItemUnits, setNewItemUnits] = useState("")
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
-  const projectDetailsRef = useRef<HTMLDivElement>(null)
+  });
+  const [supportItems, setSupportItems] = useState<SupportItem[]>([]);
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemQuantity, setNewItemQuantity] = useState(1);
+  const [newItemType, setNewItemType] = useState(supportTypes[0]);
+  const [newItemUnits, setNewItemUnits] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  const projectDetailsRef = useRef<HTMLDivElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleAddSupportItem = () => {
     if (newItemName && newItemQuantity > 0) {
@@ -80,13 +82,13 @@ export default function CreateProjectDetails() {
           units: newItemUnits,
           type: newItemType,
         },
-      ])
-      setNewItemName("")
-      setNewItemQuantity(1)
-      setNewItemUnits("")
-      setNewItemType(supportTypes[0])
+      ]);
+      setNewItemName("");
+      setNewItemQuantity(1);
+      setNewItemUnits("");
+      setNewItemType(supportTypes[0]);
     }
-  }
+  };
 
   const handleDownloadPDF = async () => {
     if (projectDetailsRef.current) {
@@ -95,17 +97,20 @@ export default function CreateProjectDetails() {
           scale: 2,
           logging: false,
           useCORS: true,
-        })
-        const image = canvas.toDataURL("image/png")
-        const link = document.createElement("a")
-        link.href = image
-        link.download = `${formData.title.replace(/\s+/g, "_")}_project_details.png`
-        link.click()
+        });
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = `${formData.title.replace(
+          /\s+/g,
+          "_"
+        )}_project_details.png`;
+        link.click();
       } catch (error) {
-        console.error("Error generating screenshot:", error)
+        console.error("Error generating screenshot:", error);
       }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-900">
@@ -149,13 +154,16 @@ export default function CreateProjectDetails() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => {
-                    const file = e.target.files?.[0]
+                    const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader()
+                      const reader = new FileReader();
                       reader.onloadend = () => {
-                        setFormData(prev => ({ ...prev, preview: reader.result as string }))
-                      }
-                      reader.readAsDataURL(file)
+                        setFormData((prev) => ({
+                          ...prev,
+                          preview: reader.result as string,
+                        }));
+                      };
+                      reader.readAsDataURL(file);
                     }
                   }}
                 />
@@ -173,39 +181,35 @@ export default function CreateProjectDetails() {
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Duration</h3>
-              <div className="flex flex-wrap gap-4 justify-between">
-                <div className="w-full md:w-auto">
-                  <Label htmlFor="start-date" className="mb-2 block">Start Date</Label>
-                  <DatePicker
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : "Pick a start date"}
-                      </Button>
-                    }
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Project Duration
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* // date but without date picker */}
+                <div>
+                  <Label htmlFor="start-date">Start Date</Label>
+                  <Input
+                    id="start-date"
+                    type="date"
+                    value={format(startDate as Date, "yyyy-MM-dd")}
+                    onChange={(e) => setStartDate(new Date(e.target.value))}
                   />
-                </div>
-                <div className="w-full md:w-auto mt-4 md:mt-0">
-                  <Label htmlFor="end-date" className="mb-2 block">End Date</Label>
-                  <DatePicker
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    customInput={
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : "Pick an end date"}
-                      </Button>
-                    }
+
+                  <Label htmlFor="end-date">End Date</Label>
+                  <Input
+                    id="end-date"
+                    type="date"
+                    value={format(endDate as Date, "yyyy-MM-dd")}
+                    onChange={(e) => setEndDate(new Date(e.target.value))}
                   />
                 </div>
               </div>
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Project Details</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Project Details
+              </h3>
               <Textarea
                 name="details"
                 placeholder="Enter project details"
@@ -216,7 +220,9 @@ export default function CreateProjectDetails() {
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Support Needed</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Support Needed
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 {supportItems.map((item) => (
                   <Card key={item.id} className="p-4">
@@ -231,7 +237,9 @@ export default function CreateProjectDetails() {
                 ))}
               </div>
               <Card className="p-4">
-                <h4 className="font-semibold text-2xl mb-2">Add New Support Item</h4>
+                <h4 className="font-semibold text-2xl mb-2">
+                  Add New Support Item
+                </h4>
                 <div className="space-y-2">
                   <Select value={newItemType} onValueChange={setNewItemType}>
                     <SelectTrigger>
@@ -255,7 +263,9 @@ export default function CreateProjectDetails() {
                       type="number"
                       placeholder="Quantity"
                       value={newItemQuantity}
-                      onChange={(e) => setNewItemQuantity(parseInt(e.target.value))}
+                      onChange={(e) =>
+                        setNewItemQuantity(parseInt(e.target.value))
+                      }
                       min={1}
                       className="w-1/2"
                     />
@@ -274,7 +284,9 @@ export default function CreateProjectDetails() {
             </div>
 
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">Additional Information</h3>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Additional Information
+              </h3>
               <Textarea
                 name="others"
                 placeholder="Enter additional information"
@@ -285,9 +297,7 @@ export default function CreateProjectDetails() {
             </div>
           </CardContent>
         </Card>
-
-
       </div>
     </div>
-  )
+  );
 }
