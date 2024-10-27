@@ -45,9 +45,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 const searchSuggestions = [
   "Community Support Center",
@@ -59,9 +70,8 @@ const searchSuggestions = [
   "Education for All Initiative",
   "Mental Health Awareness Project",
   "Homeless Shelter Network",
-  "Disaster Relief Organization"
-]
-
+  "Disaster Relief Organization",
+];
 
 interface Organization {
   id: number;
@@ -182,29 +192,24 @@ const quickNavLocations = [
   { name: "Chennai", lat: 13.0827, lng: 80.2707 },
 ];
 
-const organizationTypes = [
-  "Humans",
-  "Animals",
-  "Plants"
-];
+const organizationTypes = ["Humans", "Animals", "Plants"];
 
 const tags = [
-  "Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai",
-  "NGO", "Environment", "Women Empowerment", "Animal Welfare"
-]
-
-
+  "Mumbai",
+  "Delhi",
+  "Bangalore",
+  "Kolkata",
+  "Chennai",
+  "NGO",
+  "Environment",
+  "Women Empowerment",
+  "Animal Welfare",
+];
 
 const handleCreateOrganization = () => {
   // Implement the logic to create a new organization
-  console.log("Create new organization")
-}
-
-
-
-
-
-
+  console.log("Create new organization");
+};
 
 export default function SocialConnectMap() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
@@ -218,27 +223,24 @@ export default function SocialConnectMap() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
-
-  const [filteredSuggestions, setFilteredSuggestions] = useState(searchSuggestions)
+  const [filteredSuggestions, setFilteredSuggestions] =
+    useState(searchSuggestions);
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    const filtered = searchSuggestions.filter(suggestion =>
+    setSearchQuery(value);
+    const filtered = searchSuggestions.filter((suggestion) =>
       suggestion.toLowerCase().includes(value.toLowerCase())
-    )
-    setFilteredSuggestions(filtered)
-  }
-
+    );
+    setFilteredSuggestions(filtered);
+  };
 
   const handleSelectSuggestion = (value: string) => {
-    setSearchQuery(value)
+    setSearchQuery(value);
     // Implement your search logic here
-    console.log("Searching for:", value)
-  }
-
-
+    console.log("Searching for:", value);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -249,11 +251,11 @@ export default function SocialConnectMap() {
     handleResize();
 
     // Listen for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Clean up event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -289,8 +291,6 @@ export default function SocialConnectMap() {
     );
     setFilteredOrgs(filtered);
   }, [searchQuery]);
-
-
 
   const handleMarkerClick = (org: Organization) => {
     setSelectedOrg(org);
@@ -344,8 +344,7 @@ export default function SocialConnectMap() {
     }
   };
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   if (!isLoaded) {
     return (
@@ -481,8 +480,6 @@ export default function SocialConnectMap() {
         )}
       </GoogleMap>
 
-
-
       <div className="absolute top-20 left-5 right-5 z-10 flex justify-between items-center">
         <div className="flex-grow flex justify-center space-x-4">
           {organizationTypes.map((type) => (
@@ -491,10 +488,12 @@ export default function SocialConnectMap() {
               variant={selectedType === type ? "default" : "outline"}
               size="sm"
               className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
-                ? "bg-blue-600 text-white shadow-lg"
-                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-blue-100 text-blue-600 hover:bg-blue-200"
                 }`}
-              onClick={() => setSelectedType(selectedType === type ? null : type)}
+              onClick={() =>
+                setSelectedType(selectedType === type ? null : type)
+              }
             >
               {type}
             </Button>
@@ -596,7 +595,6 @@ export default function SocialConnectMap() {
           variant="default"
           className="h-14 w-2/3 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300"
           onClick={() => setIsSearchOpen(true)}
-
         >
           <Search className="h-5 w-5 mr-1" />
           Search
@@ -605,7 +603,9 @@ export default function SocialConnectMap() {
         <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <DialogContent className="sm:max-w-[700px] h-[85vh]">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center mb-4">Search Organizations</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center mb-4">
+                Search Organizations
+              </DialogTitle>
             </DialogHeader>
             <div className="flex flex-wrap gap-2 mb-4">
               {tags.map((tag) => (
@@ -666,14 +666,16 @@ export default function SocialConnectMap() {
               </div>
 
               <nav className="space-y-2">
-                {['About', 'Contact', 'Login', 'Sign Up'].map((item) => (
+                {["About", "Contact", "Login", "Sign Up"].map((item) => (
                   <Button
                     key={item}
                     asChild
                     variant="ghost"
                     className="w-full justify-start text-black hover:text-white hover:bg-black transition-all duration-300"
                   >
-                    <a href={`/${item.toLowerCase().replace(' ', '')}`}>{item}</a>
+                    <a href={`/${item.toLowerCase().replace(" ", "")}`}>
+                      {item}
+                    </a>
                   </Button>
                 ))}
               </nav>
@@ -702,6 +704,6 @@ export default function SocialConnectMap() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div >
+    </div>
   );
 }
