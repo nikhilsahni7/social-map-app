@@ -9,6 +9,7 @@ import {
   OverlayView,
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaThumbsUp } from 'react-icons/fa';
 import {
   Search,
   X,
@@ -127,65 +128,62 @@ const organizations: Organization[] = [
 const mapStyles = [
   {
     featureType: "all",
-    elementType: "geometry.fill",
-    stylers: [{ color: "#f1f1f1" }],
+    elementType: "labels",
+    stylers: [{ visibility: "on" }]
   },
   {
-    featureType: "water",
+    featureType: "administrative",
     elementType: "geometry",
-    stylers: [{ color: "#e9e9e9" }],
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "poi",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "road",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }]
   },
   {
     featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9e9e9e" }],
+    elementType: "labels",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "all",
+    elementType: "geometry.fill",
+    stylers: [{ color: "#f7f7f7" }]
   },
   {
     featureType: "road",
     elementType: "geometry",
-    stylers: [{ color: "#ffffff" }],
-  },
-  {
-    featureType: "road.arterial",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#757575" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#dadada" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [{ color: "#eeeeee" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#757575" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "geometry",
-    stylers: [{ color: "#e5e5e5" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9e9e9e" }],
+    stylers: [{ color: "#e0e0e0" }]
   },
   {
     featureType: "transit.line",
     elementType: "geometry",
-    stylers: [{ color: "#e5e5e5" }],
+    stylers: [{ color: "#cccccc" }]
   },
   {
     featureType: "transit.station",
     elementType: "geometry",
-    stylers: [{ color: "#eeeeee" }],
+    stylers: [{ color: "#dddddd" }]
   },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#d4e4f4" }]
+  }
 ];
+
+
+
 
 const quickNavLocations = [
   { name: "New Delhi", lat: 28.6139, lng: 77.209 },
@@ -263,7 +261,7 @@ export default function SocialConnectMap() {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: "AIzaSyBqhfgZcU66YtFCbNYFaHgiLKaR6CVve3U",
   });
 
   useEffect(() => {
@@ -367,6 +365,11 @@ export default function SocialConnectMap() {
         options={{
           styles: mapStyles,
           mapTypeId: mapType || undefined,
+          disableDefaultUI: true,
+          zoomControl: false,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false,
         }}
       >
         {filteredOrgs.map((org) => (
@@ -385,19 +388,20 @@ export default function SocialConnectMap() {
                 position={{ lat: org.lat, lng: org.lng }}
                 mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
               >
-                <Card className="w-64 bg-gray-800 border-blue-500 shadow-lg">
+                <Card className="w-64 bg-white shadow-lg">
                   <CardHeader className="p-4">
-                    <CardTitle className="text-lg text-white">
+                    <CardTitle className="text-lg text-black">
                       {org.name}
                     </CardTitle>
-                    <CardDescription className="text-gray-300">
+                    <CardDescription className="text-blue-600">
                       {org.category}
                     </CardDescription>
-                    <CardDescription className="text-gray-300">
+                    <CardDescription className="text-gray-700">
                       {org.description}
                     </CardDescription>
                   </CardHeader>
                 </Card>
+
               </OverlayView>
             )}
           </React.Fragment>
@@ -407,57 +411,71 @@ export default function SocialConnectMap() {
             position={{ lat: selectedOrg.lat, lng: selectedOrg.lng }}
             onCloseClick={() => setSelectedOrg(null)}
           >
-            <Card className="w-80 bg-gray-800 border-blue-500 shadow-lg">
-              <CardHeader className="p-4 bg-gradient-to-r from-blue-600 to-blue-800">
+            <Card className="w-full max-w-xs bg-white border border-blue-500 shadow-lg overflow-hidden">
+              <CardHeader className="p-4 bg-gradient-to-r from-blue-500 to-blue-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl text-white">
-                      {selectedOrg.name}
-                    </CardTitle>
-                    <Badge
-                      variant="secondary"
-                      className="mt-1 bg-blue-500 text-white"
-                    >
+                    <h2 className="text-xl font-semibold text-white">Asmi is seeking support for {selectedOrg.name}</h2>
+                    <Badge variant="secondary" className="mt-1 bg-blue-400 text-white">
                       {selectedOrg.category}
                     </Badge>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:text-blue-200 -mt-2 -mr-2"
-                    onClick={() => setSelectedOrg(null)}
-                  >
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close</span>
-                  </Button>
+
                 </div>
               </CardHeader>
-              <CardContent className="p-4 space-y-4">
-                <p className="text-sm text-gray-300">
-                  {selectedOrg.description}
-                </p>
+
+              <CardContent className="p-4 space-y-2 text-gray-800 font-normal">
+                <p className="text-sm">{selectedOrg.description}</p>
+
                 <div className="space-y-2">
-                  <div className="flex items-center text-gray-300">
-                    <Phone className="h-4 w-4 mr-2 text-blue-400" />
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2 text-blue-500" />
                     <span className="text-sm">{selectedOrg.phone}</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <Mail className="h-4 w-4 mr-2 text-blue-400" />
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2 text-blue-500" />
                     <span className="text-sm">{selectedOrg.email}</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <DollarSign className="h-4 w-4 mr-2 text-green-400" />
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 mr-2 text-blue-500" />
                     <span className="text-sm">{selectedOrg.donationInfo}</span>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="p-4">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300">
-                  View Full Profile
-                  <ChevronRight className="ml-2 h-4 w-4" />
+
+              <CardFooter className="p-4 -mt-4">
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95">
+                  Support
                 </Button>
               </CardFooter>
+
+              <div className="flex justify-between p-4 -mt-5">
+                <div className="flex space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
+                    onClick={() => console.log('Liked')}
+                  >
+                    <Heart className="h-6 w-6 transition-transform duration-300" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
+                    onClick={() => console.log('Loved')}
+                  >
+                    <FaThumbsUp className="h-6 w-6 transition-transform duration-300" />
+                    <span className="sr-only">Love</span>
+                  </Button>
+                </div>
+              </div>
             </Card>
+
+
+
           </InfoWindow>
         )}
       </GoogleMap>
@@ -469,11 +487,10 @@ export default function SocialConnectMap() {
               key={type}
               variant={selectedType === type ? "default" : "outline"}
               size="sm"
-              className={`w-28 rounded-full transition-all duration-300 ${
-                selectedType === type
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-              }`}
+              className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
+                ? "bg-blue-600 text-white shadow-lg"
+                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                }`}
               onClick={() =>
                 setSelectedType(selectedType === type ? null : type)
               }
@@ -492,30 +509,10 @@ export default function SocialConnectMap() {
         )}
       </div>
 
-      <div className="absolute bottom-8 left-4 z-10 space-x-2">
-        {!isMobileDevice && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                  onClick={toggleSatelliteView}
-                >
-                  <Layers className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  {showSatelliteView
-                    ? "Hide Satellite View"
-                    : "Show Satellite View"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+
+
+
+      <div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -533,6 +530,7 @@ export default function SocialConnectMap() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -550,6 +548,7 @@ export default function SocialConnectMap() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
         {!isMobileDevice && (
           <TooltipProvider>
             <Tooltip>
@@ -570,6 +569,7 @@ export default function SocialConnectMap() {
           </TooltipProvider>
         )}
       </div>
+
 
       <Button
         variant="outline"
