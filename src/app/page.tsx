@@ -488,8 +488,8 @@ export default function SocialConnectMap() {
               variant={selectedType === type ? "default" : "outline"}
               size="sm"
               className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                ? "bg-blue-600 text-white shadow-lg"
+                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
                 }`}
               onClick={() =>
                 setSelectedType(selectedType === type ? null : type)
