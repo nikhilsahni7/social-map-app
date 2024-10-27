@@ -389,19 +389,20 @@ export default function SocialConnectMap() {
                 position={{ lat: org.lat, lng: org.lng }}
                 mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
               >
-                <Card className="w-64 bg-gray-800 border-blue-500 shadow-lg">
+                <Card className="w-64 bg-white shadow-lg">
                   <CardHeader className="p-4">
-                    <CardTitle className="text-lg text-white">
+                    <CardTitle className="text-lg text-black">
                       {org.name}
                     </CardTitle>
-                    <CardDescription className="text-gray-300">
+                    <CardDescription className="text-blue-600">
                       {org.category}
                     </CardDescription>
-                    <CardDescription className="text-gray-300">
+                    <CardDescription className="text-gray-700">
                       {org.description}
                     </CardDescription>
                   </CardHeader>
                 </Card>
+
               </OverlayView>
             )}
           </React.Fragment>
