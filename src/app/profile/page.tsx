@@ -1,29 +1,11 @@
 "use client"
 
-import React, { useState, useRef } from "react"
-import Image from "next/image"
-import {
-  Calendar,
-  User,
-  Tag as TagIcon,
-  Download,
-  ThumbsUp,
-  ThumbsDown,
-  Send,
-  MapPin,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import React, { useRef } from "react"
+import { MapPin } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { format } from "date-fns"
 import html2canvas from "html2canvas"
-import { ScrollArea } from '@/components/ui/scroll-area';
-
-
-
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const ProjectDetails: React.FC = () => {
   const projectDetailsRef = useRef<HTMLDivElement>(null)
@@ -49,12 +31,7 @@ const ProjectDetails: React.FC = () => {
 
   // Hard-coded data
   const creator = "John Doe"
-  const title = "Innovative Map Project"
-  const preview = "/placeholder.svg?height=400&width=800"
   const details = "This project is focused on creating an interactive map platform that helps users navigate and explore different regions. Our goal is to provide a user-friendly interface that combines detailed geographical data with real-time information, making it easier for people to discover and learn about various locations around the world."
-  const category = "HDA, Duralin"
-  const photoCaption = "Preview of the interactive map project interface"
-  const others = "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform."
   const supportNeeded = [
     { id: "1", name: "Volunteers", quantity: 5, units: "", type: "Volunteers" },
     { id: "2", name: "Laptops", quantity: 3, units: "", type: "Items" },
@@ -62,44 +39,56 @@ const ProjectDetails: React.FC = () => {
     { id: "4", name: "Funding", quantity: 10000, units: "USD", type: "Financial" },
   ]
   const location = "San Francisco, CA"
-  const deadline = new Date(2023, 11, 31)
-  const startDate = new Date(2023, 6, 1)
-  const endDate = new Date(2023, 11, 31)
+  const others = "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform."
 
   return (
     <div className="h-screen w-screen bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
       <div className="h-full w-full p-4" ref={projectDetailsRef}>
         <Card className="h-full border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
-          <CardContent className="h-full p-4 grid grid-cols-2 gap-12">
+          <CardContent className="h-full p-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left Section: Project Details and Asmi's Support */}
             <div className="space-y-4">
-              <div className="text-left">
-                <h2 className="text-2xl font-bold mb-1">{creator}</h2>
-                <p className="text-sm text-gray-600">Project Creator</p>
+              {/* Project Creator Name */}
+              <div className="text-left flex flex-row items-center space-x-2">
+                <label className="text-md font-semibold text-blue-600">Project Creator Name:</label>
+                <h2 className="text-xl font-semibold">{creator}</h2>
               </div>
 
-              <Separator />
-
-              <div>
-                <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Duration</h3>
-                <div className="flex justify-between text-sm">
-                  <div>
-                    <p className="font-semibold">Start:</p>
-                    <p>{format(startDate, "PP")}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">End:</p>
-                    <p>{format(endDate, "PP")}</p>
-                  </div>
-                </div>
+              {/* Project Tag Preview */}
+              <div className="flex flex-row items-center space-x-2">
+                <label className="text-md font-semibold text-blue-600">Project Tag Preview:</label>
+                <h1 className="text-sm font-normal">Mr. XXX wants to support Organization Name</h1>
               </div>
 
+              {/* Project Details */}
               <div>
-                <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Details</h3>
-                <ScrollArea>
+                <h3 className="text-md font-semibold text-blue-600 mb-2">Project Details</h3>
+                <ScrollArea className="h-[100px]">
                   <p className="text-sm text-gray-700 leading-tight">{details}</p>
                 </ScrollArea>
               </div>
 
+              {/* Asmi Support Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-black mb-2">Asmi wants to support {creator} by giving:</h3>
+                <ScrollArea className="h-[170px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {supportNeeded.map((item) => (
+                      <Card key={item.id} className="p-2">
+                        <p className="font-medium text-sm">{item.name}</p>
+                        <p className="text-xs text-gray-500">
+                          Quantity: {item.quantity} {item.units}
+                        </p>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {item.type}
+                        </Badge>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+
+              {/* Location */}
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Location</h3>
                 <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
@@ -107,76 +96,21 @@ const ProjectDetails: React.FC = () => {
                   <span className="text-sm font-medium text-gray-700">{location}</span>
                 </div>
               </div>
-
-              <h3 className="text-lg font-semibold text-blue-600 mb-2">Deadline</h3>
-              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-                <div className="flex items-center justify-center p-2 bg-white rounded-full shadow-sm">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-blue-600 uppercase tracking-wider">
-                    Deadline
-                  </span>
-                  <span className="text-sm font-semibold text-gray-700">
-                    {format(deadline, "PPPP")}
-                  </span>
-                </div>
-              </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold text-blue-600 mb-2">Support Needed</h3>
-                <ScrollArea>
-                  <div className="grid grid-cols-2 gap-2">
-                    {supportNeeded.map((item) => (
-                      <Card key={item.id} className="p-2">
-                        <p className="font-medium text-sm">{item.name}</p>
-                        <p className="text-xs text-gray-500">
-                          Quantity: {item.quantity} {item.units}
-                        </p>
-                        <Badge variant="outline" className="mt-1 text-xs">
-                          {item.type}
-                        </Badge>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-black mb-2">Asmi wants to support {creator} by giving</h3>
-                <ScrollArea>
-                  <div className="grid grid-cols-2 gap-2">
-                    {supportNeeded.map((item) => (
-                      <Card key={item.id} className="p-2">
-                        <p className="font-medium text-sm">{item.name}</p>
-                        <p className="text-xs text-gray-500">
-                          Quantity: {item.quantity} {item.units}
-                        </p>
-                        <Badge variant="outline" className="mt-1 text-xs">
-                          {item.type}
-                        </Badge>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-
-              </div>
-
+            {/* Right Section: Additional Information */}
+            <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Additional Information</h3>
-                <ScrollArea>
+                <ScrollArea className="h-[100px]">
                   <p className="text-sm text-gray-700 leading-tight">{others}</p>
                 </ScrollArea>
               </div>
-
-
             </div>
           </CardContent>
-        </Card >
-      </div >
-    </div >
+        </Card>
+      </div>
+    </div>
   )
 }
 
