@@ -15,6 +15,7 @@ import {
   Linkedin,
   Twitter,
 } from "lucide-react";
+import Link from "next/link";
 
 const AboutPage = () => {
   const stats = [
@@ -57,10 +58,12 @@ const AboutPage = () => {
             <p className="text-xl md:text-2xl mb-8 text-blue-100">
               Connecting organizations and communities for a better tomorrow
             </p>
-            <Button variant="secondary" size="lg" className="group">
-              Join Our Mission
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href="/">
+              <Button variant="secondary" size="lg" className="group">
+                Join Our Mission
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -104,37 +107,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {teamMembers.map((member) => (
-              <Card
-                key={member.name}
-                className="overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                />
-                <CardContent className="p-4">
-                  <h3 className="text-xl font-semibold text-center mb-1">
-                    {member.name}
-                  </h3>
-                  <p className="text-blue-600 text-center mb-3">
-                    {member.role}
-                  </p>
-                  <p className="text-gray-600 text-center">{member.bio}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Contact Section */}
       <section className="py-16 bg-white">

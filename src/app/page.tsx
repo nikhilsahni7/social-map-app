@@ -179,7 +179,9 @@ const mapStyles = [
     featureType: "water",
     elementType: "geometry",
     stylers: [{ color: "#d4e4f4" }]
-  }
+  },
+
+
 ];
 
 

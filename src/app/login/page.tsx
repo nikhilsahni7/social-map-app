@@ -1,118 +1,126 @@
-"use client";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  ChakraProvider,
-  extendTheme,
-  Box,
-  Button,
-  Input,
-  Heading,
-  Text,
-  VStack,
-  Flex,
-} from "@chakra-ui/react";
+"use client"
 
-// Define custom colors
-const colors = {
-  brand: {
-    purple: "#764ede",
-    green: "#6cd30b",
-  },
-};
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
+import { Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/components/ui/use-toast"
 
-// Extend the theme
-const theme = extendTheme({ colors });
+export default function LoginPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
-interface FormState {
-  email: string;
-  password: string;
-}
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
 
-const LoginPage = () => {
-  const [form, setForm] = useState<FormState>({ email: "", password: "" });
+    // Simulating an API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle login logic here
-  };
+    if (email === "user@example.com" && password === "password") {
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+        duration: 3000,
+      })
+      router.push("/dashboard")
+    } else {
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      })
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <ChakraProvider theme={theme}>
-      <Flex
-        minHeight="100vh"
-        width="full"
-        align="center"
-        justifyContent="center"
-        backgroundColor="gray.50"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Box
-            as="form"
-            onSubmit={handleSubmit}
-            width="500px"
-            maxWidth="400px"
-            padding="2rem"
-            boxShadow="lg"
-            borderRadius="md"
-            backgroundColor="white"
-          >
-            <Heading
-              p={1}
-              mb={6}
-              textAlign="center"
-              bgGradient="linear(to-r, brand.purple, brand.green)"
-              bgClip="text"
-            >
-              Login
-            </Heading>
-            <VStack spacing={4}>
-              <Input
-                placeholder="Email"
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                focusBorderColor="brand.green"
-              />
-              <Input
-                placeholder="Password"
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                focusBorderColor="brand.green"
-              />
-              <Button
-                type="submit"
-                width="100%"
-                colorScheme="green"
-                boxShadow="md"
-                _hover={{ transform: "scale(1.05)" }}
-              >
-                Login
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center text-blue-700">Welcome Back</CardTitle>
+            <CardDescription className="text-center text-gray-600">
+              Please sign in to your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remember" />
+                  <Label htmlFor="remember" className="text-sm text-gray-600">Remember me</Label>
+                </div>
+                <a href="#" className="text-sm text-blue-600 hover:underline">
+                  Forgot password?
+                </a>
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
-              <Text>
-                Don&apos;t have an account?{" "}
-                <Box as="a" href="/signup" color="brand.purple">
-                  Sign Up
-                </Box>
-              </Text>
-            </VStack>
-          </Box>
-        </motion.div>
-      </Flex>
-    </ChakraProvider>
-  );
-};
-
-export default LoginPage;
+            </form>
+          </CardContent>
+          <Separator className="my-4" />
+          <CardFooter className="flex flex-col space-y-4">
+            <Button variant="outline" className="w-full">
+              <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
+              Continue with Google
+            </Button>
+            <p className="text-center text-sm text-gray-600">
+              Don&apos;t have an account?{" "}
+              <a href="/signup" className="font-medium text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </p>
+          </CardFooter>
+        </Card>
+      </motion.div>
+    </div>
+  )
+}
