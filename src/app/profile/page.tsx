@@ -20,6 +20,8 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
 import html2canvas from "html2canvas"
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 
 
@@ -93,7 +95,9 @@ const ProjectDetails: React.FC = () => {
 
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Details</h3>
-                <p className="text-sm text-gray-700 leading-tight">{details}</p>
+                <ScrollArea>
+                  <p className="text-sm text-gray-700 leading-tight">{details}</p>
+                </ScrollArea>
               </div>
 
               <div>
@@ -123,49 +127,56 @@ const ProjectDetails: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Support Needed</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {supportNeeded.map((item) => (
-                    <Card key={item.id} className="p-2">
-                      <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Quantity: {item.quantity} {item.units}
-                      </p>
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        {item.type}
-                      </Badge>
-                    </Card>
-                  ))}
-                </div>
+                <ScrollArea>
+                  <div className="grid grid-cols-2 gap-2">
+                    {supportNeeded.map((item) => (
+                      <Card key={item.id} className="p-2">
+                        <p className="font-medium text-sm">{item.name}</p>
+                        <p className="text-xs text-gray-500">
+                          Quantity: {item.quantity} {item.units}
+                        </p>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {item.type}
+                        </Badge>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold text-black mb-2">Asmi wants to support {creator} by giving</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {supportNeeded.map((item) => (
-                    <Card key={item.id} className="p-2">
-                      <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Quantity: {item.quantity} {item.units}
-                      </p>
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        {item.type}
-                      </Badge>
-                    </Card>
-                  ))}
-                </div>
+                <ScrollArea>
+                  <div className="grid grid-cols-2 gap-2">
+                    {supportNeeded.map((item) => (
+                      <Card key={item.id} className="p-2">
+                        <p className="font-medium text-sm">{item.name}</p>
+                        <p className="text-xs text-gray-500">
+                          Quantity: {item.quantity} {item.units}
+                        </p>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {item.type}
+                        </Badge>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Additional Information</h3>
-                <p className="text-sm text-gray-700 leading-tight">{others}</p>
+                <ScrollArea>
+                  <p className="text-sm text-gray-700 leading-tight">{others}</p>
+                </ScrollArea>
               </div>
 
 
             </div>
           </CardContent>
-        </Card>
-      </div>
-    </div>
+        </Card >
+      </div >
+    </div >
   )
 }
 

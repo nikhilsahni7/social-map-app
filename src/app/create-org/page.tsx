@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { Calendar, MapPin, PlusCircle } from 'lucide-react'
+import { Calendar, MapPin, PlusCircle, Scroll } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -45,13 +45,21 @@ export default function ProjectDetailsForm() {
                 </div>
               </div>
 
+
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Project Details</h3>
-                <Textarea
-                  placeholder="Enter project details..."
-                  className="w-full h-16"
-                />
+                <ScrollArea className="h-[65px]">
+                  <div className="w-full border border-gray-300 rounded-md">
+                    <Textarea
+                      placeholder="Enter project details..."
+                      className="w-full h-8 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                </ScrollArea>
               </div>
+
+
+
 
               <div>
                 <h3 className="text-lg font-semibold text-blue-600 mb-2">Location</h3>
