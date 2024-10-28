@@ -482,14 +482,14 @@ export default function SocialConnectMap() {
         )}
       </GoogleMap>
 
-      <div className="absolute top-20 left-5 right-5 z-10 flex justify-between items-center">
-        <div className="flex-grow flex justify-center space-x-4">
+      <div className="absolute top-20 left-0 right-0 z-10 flex flex-col items-center">
+        <div className="flex flex-wrap justify-center space-x-4">
           {organizationTypes.map((type) => (
             <Button
               key={type}
               variant={selectedType === type ? "default" : "outline"}
               size="sm"
-              className={`w-28 rounded-full transition-all duration-300 ${selectedType === type
+              className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${selectedType === type
                 ? "bg-blue-600 text-white shadow-lg"
                 : "bg-blue-100 text-blue-600 hover:bg-blue-200"
                 }`}
@@ -502,9 +502,9 @@ export default function SocialConnectMap() {
           ))}
         </div>
 
-        {/* Total Projects */}
+        {/* Total Projects only shown on desktop */}
         {!isMobileDevice && (
-          <div className="flex items-center space-x-2 text-sm font-semibold text-blue-400 bg-gray-800 px-4 py-2 rounded-full transition-all duration-300">
+          <div className="absolute right-0 mt-4 mr-5 flex items-center space-x-2 text-sm font-semibold text-blue-400 bg-gray-800 px-4 py-2 rounded-full transition-all duration-300">
             <span>Total Projects: </span>
             <span className="text-sm">{"3"}</span>
           </div>
@@ -514,7 +514,9 @@ export default function SocialConnectMap() {
 
 
 
-      <div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
+
+
+      {!isMobileDevice && (<div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -570,7 +572,7 @@ export default function SocialConnectMap() {
             </Tooltip>
           </TooltipProvider>
         )}
-      </div>
+      </div>)}
 
 
       <Button
@@ -581,7 +583,7 @@ export default function SocialConnectMap() {
         <Menu className="h-5 w-5" />
       </Button>
 
-      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
+      {!isMobileDevice && (<div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
         <Link href="/create-org">
           <Button
             variant="default"
@@ -645,7 +647,77 @@ export default function SocialConnectMap() {
             </Command>
           </DialogContent>
         </Dialog>
-      </div>
+      </div>)}
+
+      {isMobileDevice && (
+        <div className="fixed left-0 right-0 z-20 flex flex-col items-center bottom-6 space-y-2">
+
+          <Link href="/create-org">
+            <Button
+              variant="default"
+              className="h-10 w-[220px] rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+              onClick={handleCreateOrganization}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Create Your Project
+            </Button>
+          </Link>
+
+          <Button
+            variant="default"
+            className="h-10 w-[220px] rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300"
+            onClick={() => setIsSearchOpen(true)}
+          >
+            <Search className="h-4 w-4 mr-1" />
+            Search
+          </Button>
+
+          <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+            <DialogContent className="sm:max-w-[700px] h-[85vh]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-center mb-4">
+                  Search Organizations
+                </DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    className="cursor-pointer hover:bg-blue-100 transition-colors"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              <Command className="rounded-lg border shadow-md">
+                <CommandInput
+                  placeholder="Type to search..."
+                  value={searchQuery}
+                  onValueChange={handleSearch}
+                  className="h-10 text-lg"
+                />
+                <CommandList className="h-[calc(60vh-120px)] overflow-y-auto">
+                  <CommandEmpty>No results found.</CommandEmpty>
+                  <CommandGroup>
+                    {filteredSuggestions.map((suggestion) => (
+                      <CommandItem
+                        key={suggestion}
+                        onSelect={() => handleSelectSuggestion(suggestion)}
+                        className="flex cursor-pointer hover:bg-blue-100 py-2 flex-row"
+                      >
+                        <Search className="mr-2 mt-1 h-4 w-4" />
+                        <span>{suggestion}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+
 
       <AnimatePresence>
         {isMenuOpen && (
