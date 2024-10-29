@@ -25,7 +25,9 @@ import {
   Facebook,
   Check,
   AlertCircle,
+  ArrowLeft
 } from "lucide-react";
+import Link from "next/link";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -73,8 +75,16 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+
+
       {/* Hero Section */}
       <section className="bg-blue-600 text-white py-16">
+        <Link href="/">
+          <Button variant="secondary" className="absolute top-4 left-4 flex items-center space-x-2">
+            <ArrowLeft className="h-4 w-4" />
+
+          </Button>
+        </Link>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
           <p className="text-xl text-blue-100">
