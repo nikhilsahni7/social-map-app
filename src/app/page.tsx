@@ -382,7 +382,7 @@ export default function SocialConnectMap() {
               onMouseOver={() => setHoveredOrg(org)}
               onMouseOut={() => setHoveredOrg(null)}
               icon={{
-                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
               }}
             />
             {hoveredOrg === org && (
@@ -403,10 +403,10 @@ export default function SocialConnectMap() {
                     </CardDescription>
                   </CardHeader>
                 </Card>
-
               </OverlayView>
             )}
           </React.Fragment>
+
         ))}
         {selectedOrg && (
           <InfoWindow

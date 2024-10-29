@@ -26,32 +26,39 @@ interface SupportItem {
 }
 
 export default function ProjectDetailsForm() {
-  const [supportItems, setSupportItems] = useState<SupportItem[]>([
-    { name: "", quantity: 0, units: "", type: "", customType: "" },
-    { name: "", quantity: 0, units: "", type: "", customType: "" },
-  ])
+  const [supportItems, setSupportItems] = useState<{ [key: string]: boolean }[]>([
+    { item: false, other: false, by: false, prop: false }, // First row
+    { item: false, other: false, by: false, prop: false }, // Second row
+  ]);
 
-  const handleItemChange = (index: number, field: keyof SupportItem, value: string | number) => {
-    const updatedItems = [...supportItems]
-    updatedItems[index] = { ...updatedItems[index], [field]: value }
-    setSupportItems(updatedItems)
-  }
+  // State for handling "Other" input
+  const [otherInput, setOtherInput] = useState<string>("");
 
-  const handleAddMore = () => {
-    setSupportItems([...supportItems, { name: "", quantity: 0, units: "", type: "", customType: "" }])
-  }
+  // Function to handle checkbox change
+  const handleCheckboxChange = (rowIndex: number, checkbox: keyof typeof supportItems[0]) => {
+    setSupportItems((prev) => {
+      const newItems = [...prev];
+      newItems[rowIndex][checkbox] = !newItems[rowIndex][checkbox]; // Toggle checkbox state
+      return newItems;
+    });
+  };
+
+  // Function to add a new row
+  const handleAddRow = () => {
+    setSupportItems((prev) => [...prev, { item: false, other: false, by: false, prop: false }]);
+  };
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
-      <div className="h-full w-full p-4">
-        <Card className="h-full border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
+      <div className="w-full max-w-2xl p-4">
+        <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
           <ScrollArea className="h-full">
-            <CardContent className="h-full p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="p-4 grid grid-cols-1 gap-6">
               <div className="space-y-4">
                 <div className="text-left">
-                  <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                  <div className="flex flex-col items-start space-y-2">
                     <label className="text-md font-semibold text-blue-600">Project Creator Name:</label>
-                    <Input placeholder="Enter your name" className="w-full md:w-2/3" />
+                    <Input placeholder="Enter your name" className="w-full" />
                   </div>
                 </div>
 
@@ -67,10 +74,12 @@ export default function ProjectDetailsForm() {
                   </ScrollArea>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                <div className="flex flex-col items-start space-y-2">
                   <label className="text-md font-semibold text-blue-600">Project Tag Preview:</label>
-                  <h1 className="text-sm font-normal">Mr. XXX wants to</h1>
-                  <Input placeholder="" className="w-full md:w-1/3" />
+                  <div className="flex space-x-4 items-center">
+                    <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
+                    <Input placeholder="" className="w-44" />
+                  </div>
                 </div>
 
                 <div>
@@ -85,119 +94,180 @@ export default function ProjectDetailsForm() {
                   </ScrollArea>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="text-md font-semibold text-blue-600">
-                    Category
-                  </Label>
-                  <Select>
-                    <SelectTrigger id="category" className="w-full">
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HIDA">HIDA</SelectItem>
-                      <SelectItem value="NGO">NGO</SelectItem>
-                      <SelectItem value="Corporate">Corporate</SelectItem>
-                      <SelectItem value="Educational">Educational Institution</SelectItem>
-                      <SelectItem value="Startup">Startup</SelectItem>
-                      <SelectItem value="Government">Government</SelectItem>
-                      <SelectItem value="Others">Others</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <div className="flex flex-col space-y-4">
+                  {/* Category, Duration, and Photo on the same line for larger screens, column-wise for mobile */}
+                  <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-10 items-center">
+                    {/* Category Section */}
+                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
+                      <Label htmlFor="category" className="text-md font-semibold text-blue-600">
+                        Category
+                      </Label>
+                      <Select>
+                        <SelectTrigger id="category" className="w-full md:w-40">
+                          <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="HIDA">HIDA</SelectItem>
+                          <SelectItem value="NGO">NGO</SelectItem>
+                          <SelectItem value="Corporate">Corporate</SelectItem>
+                          <SelectItem value="Educational">Educational Institution</SelectItem>
+                          <SelectItem value="Startup">Startup</SelectItem>
+                          <SelectItem value="Government">Government</SelectItem>
+                          <SelectItem value="Others">Others</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div>
-                  <h3 className="text-md font-semibold text-blue-600 mb-2">Location</h3>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 w-full">
-                    <MapPin className="h-4 w-4 text-gray-600" />
-                    <Input
-                      placeholder="Enter location"
-                      className="border-none bg-transparent p-0 focus-visible:ring-0 w-full"
-                    />
+                    {/* Duration Section */}
+                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
+                      <Label htmlFor="duration" className="text-md font-semibold text-blue-600">
+                        Duration
+                      </Label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="date"
+                          id="fromDate"
+                          name="fromDate"
+                          className="w-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
+                        />
+                        <span className="text-md font-semibold text-black">to</span>
+                        <input
+                          type="date"
+                          id="toDate"
+                          name="toDate"
+                          className="w-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Photo Section */}
+                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
+                      <Label htmlFor="photo" className="text-md font-semibold text-blue-600">
+                        Photo
+                      </Label>
+                      <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept="image/*"
+                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-4">
+
+
                 <div>
-                  <h3 className="text-md font-semibold text-blue-600 mb-2">Support Needed</h3>
-                  <ScrollArea className="h-[180px] pr-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {supportItems.map((item, index) => (
-                        <Card key={index} className="p-2">
-                          <Input
-                            placeholder="Item name"
-                            className="font-medium text-sm mb-1"
-                            value={item.name}
-                            onChange={(e) => handleItemChange(index, "name", e.target.value)}
-                          />
-                          <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                            <Input
-                              type="number"
-                              placeholder="Quantity"
-                              className="text-xs w-20"
-                              value={item.quantity || ""}
-                              onChange={(e) => handleItemChange(index, "quantity", parseInt(e.target.value) || 0)}
-                            />
-                            <Input
-                              placeholder="Units"
-                              className="text-xs flex-1"
-                              value={item.units}
-                              onChange={(e) => handleItemChange(index, "units", e.target.value)}
-                            />
-                          </div>
-                          <Select
-                            value={item.type}
-                            onValueChange={(value) => {
-                              handleItemChange(index, "type", value)
-                            }}
-                          >
-                            <SelectTrigger className="mt-1 text-xs">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Volunteers">Volunteers</SelectItem>
-                              <SelectItem value="Items">Items</SelectItem>
-                              <SelectItem value="Funds">Funds</SelectItem>
-                              <SelectItem value="Services">Services</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {item.type && (
-                            <Input
-                              placeholder={`Specify ${item.type.toLowerCase()}`}
-                              className="mt-1 text-xs"
-                              value={item.customType || ""}
-                              onChange={(e) => handleItemChange(index, "customType", e.target.value)}
-                            />
-                          )}
-                        </Card>
-                      ))}
+                  {/* Title */}
+                  <h3 className="text-md font-semibold text-blue-600 mb-4">Support Needed</h3>
+
+                  {/* Support Item Rows */}
+                  {supportItems.map((support, index) => (
+                    <div key={index} className="flex items-center space-x-4 mb-2 p-2 border rounded-md">
+                      {/* Checkbox for Item */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`supportItem-${index}`}
+                          checked={support.item}
+                          onChange={() => handleCheckboxChange(index, "item")}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor={`supportItem-${index}`} className="text-sm font-medium text-gray-700">
+                          Item
+                        </label>
+                      </div>
+
+                      {/* Checkbox for Other */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`supportOther-${index}`}
+                          checked={support.other}
+                          onChange={() => handleCheckboxChange(index, "other")}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor={`supportOther-${index}`} className="text-sm font-medium text-gray-700">
+                          Other
+                        </label>
+                      </div>
+
+                      {/* Checkbox for By */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`supportBy-${index}`}
+                          checked={support.by}
+                          onChange={() => handleCheckboxChange(index, "by")}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor={`supportBy-${index}`} className="text-sm font-medium text-gray-700">
+                          By
+                        </label>
+                      </div>
+
+                      {/* Checkbox for Prop */}
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`supportProp-${index}`}
+                          checked={support.prop}
+                          onChange={() => handleCheckboxChange(index, "prop")}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor={`supportProp-${index}`} className="text-sm font-medium text-gray-700">
+                          Prop
+                        </label>
+                      </div>
                     </div>
-                  </ScrollArea>
-                  <Button
-                    onClick={handleAddMore}
-                    variant="outline"
-                    className="mt-2 w-full flex items-center justify-center gap-2"
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                    Add More Support Items
+                  ))}
+
+                  {/* Add More Button */}
+                  <Button onClick={handleAddRow} className="mt-4 flex items-center space-x-2">
+                    <PlusCircle size={18} />
+                    <span>Add More</span>
                   </Button>
-                </div>
+                  <div className="mt-2 p-2 rounded-md">
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                      {/* Other Input */}
+                      <div className="flex items-center space-x-2">
+                        <label htmlFor="otherInput" className="text-sm font-medium text-gray-700">
+                          Other:
+                        </label>
+                        <input
+                          type="text"
+                          id="otherInput"
+                          value={otherInput}
+                          onChange={(e) => setOtherInput(e.target.value)}
+                          placeholder="Specify other support"
+                          className="p-2 border h-8 w-44 border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
 
-                <div>
-                  <h3 className="text-md font-semibold text-blue-600 mb-2">Additional Information</h3>
-                  <Textarea
-                    placeholder="Enter any additional information..."
-                    className="w-full h-32"
-                  />
-                </div>
+                      {/* Completed by creator */}
+                      <div className="text-sm font-medium text-black">
+                        Completed by creator
+                      </div>
+                    </div>
+                  </div>
 
-                <Button className="w-full">Submit</Button>
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 text-white font-semibold p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      Submit
+                    </button>
+                  </div>
+
+
+                </div>
               </div>
             </CardContent>
           </ScrollArea>
         </Card>
       </div>
     </div>
-  )
+  );
 }
