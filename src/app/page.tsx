@@ -673,41 +673,45 @@ export default function SocialConnectMap() {
           </Button>
 
           <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-            <DialogContent className="sm:max-w-[700px] h-[85vh]">
+            <DialogContent className="sm:max-w-[500px] h-[65vh] sm:h-[65vh] w-[90%] sm:w-auto mx-auto">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-center mb-4">
+                <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-3 sm:mb-5">
                   Search Organizations
                 </DialogTitle>
               </DialogHeader>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map((tag) => (
+
+
+              <div className="flex flex-wrap gap-2 justify-center">
+                {tags.slice(0, 6).map((tag) => (
                   <Badge
                     key={tag}
                     variant="outline"
-                    className="cursor-pointer hover:bg-blue-100 transition-colors"
+                    className="cursor-pointer hover:bg-blue-100 h-7 transition-colors text-sm sm:text-base px-2"
                   >
                     {tag}
                   </Badge>
                 ))}
               </div>
+
               <Command className="rounded-lg border shadow-md">
                 <CommandInput
                   placeholder="Type to search..."
                   value={searchQuery}
                   onValueChange={handleSearch}
-                  className="h-10 text-lg"
+                  className="h-8 sm:h-10 text-sm sm:text-base"
                 />
-                <CommandList className="h-[calc(60vh-120px)] overflow-y-auto">
+
+                <CommandList className="h-[calc(60vh-100px)] sm:h-[calc(60vh-120px)] overflow-y-auto">
                   <CommandEmpty>No results found.</CommandEmpty>
                   <CommandGroup>
                     {filteredSuggestions.map((suggestion) => (
                       <CommandItem
                         key={suggestion}
                         onSelect={() => handleSelectSuggestion(suggestion)}
-                        className="flex cursor-pointer hover:bg-blue-100 py-2 flex-row"
+                        className="flex cursor-pointer hover:bg-blue-100 py-1 sm:py-2 flex-row"
                       >
-                        <Search className="mr-2 mt-1 h-4 w-4" />
-                        <span>{suggestion}</span>
+                        <Search className="mr-1 sm:mr-2 mt-1 h-4 w-4" />
+                        <span className="text-sm sm:text-base">{suggestion}</span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -715,6 +719,9 @@ export default function SocialConnectMap() {
               </Command>
             </DialogContent>
           </Dialog>
+
+
+
         </div>
       )}
 
@@ -753,26 +760,14 @@ export default function SocialConnectMap() {
                   </Button>
                 ))}
               </nav>
+
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-black mb-2">
-                  Map Settings
-                </h3>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-black hover:text-white hover:bg-black border-black transition-all duration-300"
-                  onClick={toggleSatelliteView}
-                >
-                  <Layers className="h-5 w-5 mr-2" />
-                  {showSatelliteView
-                    ? "Hide Satellite View"
-                    : "Show Satellite View"}
-                </Button>
-              </div>
-              <div className="mt-6">
-                <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-300">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Support Our Cause
-                </Button>
+                <Link href={"/about"}>
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-300">
+                    <Heart className="h-5 w-5 mr-2" />
+                    Support Our Cause
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
