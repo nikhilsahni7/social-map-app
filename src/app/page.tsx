@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ChangeEvent } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -59,6 +59,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Search as SearchIcon } from 'react-feather';
 
 const searchSuggestions = [
   "Community Support Center",
@@ -201,16 +202,90 @@ const tags = [
   "Delhi",
   "Bangalore",
   "Kolkata",
-  "Chennai",
-  "NGO",
-  "Environment",
-  "Women Empowerment",
-  "Animal Welfare",
+
 ];
 
 const handleCreateOrganization = () => {
   // Implement the logic to create a new organization
   console.log("Create new organization");
+};
+
+interface CustomDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tags: string[];
+  searchQuery: string;
+  handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+  filteredSuggestions: string[];
+  handleSelectSuggestion: (suggestion: string) => void;
+}
+
+interface SearchBarProps {
+  searchQuery: string;
+  handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+  filteredSuggestions: string[];
+  handleSelectSuggestion: (suggestion: string) => void;
+  onClose: () => void;
+}
+
+const CustomDialog: React.FC<CustomDialogProps> = ({
+  isOpen,
+  onClose,
+  tags,
+  searchQuery,
+  handleSearch,
+  filteredSuggestions,
+  handleSelectSuggestion,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed top-[57px] left-[240px] z-50 w-[500px] h-[45vh] bg-white border border-gray-300 shadow-lg rounded-xl">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+      >
+        &times;
+      </button>
+
+      {/* Search Input and Button */}
+      <div className="p-4">
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            placeholder="Search Organizations..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full h-10 text-md border rounded-full px-4"
+          />
+
+        </div>
+      </div>
+
+      {/* Scrollable Suggestions List */}
+      <div className="h-[calc(50vh-125px)] overflow-y-auto px-4">
+        {filteredSuggestions.length === 0 ? (
+          <p>No results found.</p>
+        ) : (
+          <ul>
+            {filteredSuggestions.map((suggestion) => (
+              <li
+                key={suggestion}
+                onClick={() => handleSelectSuggestion(suggestion)}
+                className="flex items-center cursor-pointer hover:bg-blue-100 py-2" // Added items-center to align items vertically
+              >
+                <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
+                <span className="flex-1">{suggestion}</span> {/* Added flex-1 to allow span to take available space */}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+    </div>
+
+  );
 };
 
 export default function SocialConnectMap() {
@@ -227,15 +302,13 @@ export default function SocialConnectMap() {
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+
+
   const [filteredSuggestions, setFilteredSuggestions] =
     useState(searchSuggestions);
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    const filtered = searchSuggestions.filter((suggestion) =>
-      suggestion.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredSuggestions(filtered);
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
   };
 
   const handleSelectSuggestion = (value: string) => {
@@ -604,49 +677,18 @@ export default function SocialConnectMap() {
           Search
         </Button>
 
-        <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-          <DialogContent className="sm:max-w-[700px] h-[85vh]">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center mb-4">
-                Search Organizations
-              </DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="cursor-pointer hover:bg-blue-100 transition-colors"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-            <Command className="rounded-lg border shadow-md">
-              <CommandInput
-                placeholder="Type to search..."
-                value={searchQuery}
-                onValueChange={handleSearch}
-                className="h-14 text-lg"
-              />
-              <CommandList className="h-[calc(60vh-120px)] overflow-y-auto">
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {filteredSuggestions.map((suggestion) => (
-                    <CommandItem
-                      key={suggestion}
-                      onSelect={() => handleSelectSuggestion(suggestion)}
-                      className="flex cursor-pointer hover:bg-blue-100 py-2 flex-row"
-                    >
-                      <Search className="mr-2 mt-1 h-4 w-4" />
-                      <span>{suggestion}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </DialogContent>
-        </Dialog>
+        {/* Custom Dialog without Background Dimming */}
+        <CustomDialog
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          tags={tags}
+          searchQuery={searchQuery}
+          handleSearch={handleSearch}
+          filteredSuggestions={filteredSuggestions}
+          handleSelectSuggestion={handleSelectSuggestion}
+        />
+
+
       </div>)}
 
       {isMobileDevice && (
@@ -697,7 +739,7 @@ export default function SocialConnectMap() {
                 <CommandInput
                   placeholder="Type to search..."
                   value={searchQuery}
-                  onValueChange={handleSearch}
+                  onValueChange={handleSelectSuggestion}
                   className="h-8 sm:h-10 text-sm sm:text-base"
                 />
 
