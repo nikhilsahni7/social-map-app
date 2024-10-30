@@ -1,273 +1,290 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
-import { Calendar, MapPin, PlusCircle, Scroll } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import React, { useState } from "react";
+import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-
-interface SupportItem {
-  name: string
-  quantity: number
-  units: string
-  type: string
-  customType: string
-}
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function ProjectDetailsForm() {
-  const [supportItems, setSupportItems] = useState<{ [key: string]: boolean }[]>([
-    { item: false, other: false, by: false, prop: false }, // First row
-    { item: false, other: false, by: false, prop: false }, // Second row
+  const [supportItems, setSupportItems] = useState<{
+    item: string;
+    quantity: string;
+    byWhen: string;
+    dropLocation: string;
+  }[]>([
+    { item: "", quantity: "", byWhen: "", dropLocation: "" },
+    { item: "", quantity: "", byWhen: "", dropLocation: "" },
   ]);
 
-  // State for handling "Other" input
-  const [otherInput, setOtherInput] = useState<string>("");
+  const [specifySupport, setSpecifySupport] = useState('');
 
-  // Function to handle checkbox change
-  const handleCheckboxChange = (rowIndex: number, checkbox: keyof typeof supportItems[0]) => {
+  const handleInputChange = (
+    rowIndex: number,
+    field: keyof typeof supportItems[0],
+    value: string
+  ) => {
     setSupportItems((prev) => {
       const newItems = [...prev];
-      newItems[rowIndex][checkbox] = !newItems[rowIndex][checkbox]; // Toggle checkbox state
+      newItems[rowIndex][field] = value;
       return newItems;
     });
   };
 
-  // Function to add a new row
   const handleAddRow = () => {
-    setSupportItems((prev) => [...prev, { item: false, other: false, by: false, prop: false }]);
+    setSupportItems((prev) => [
+      ...prev,
+      { item: "", quantity: "", byWhen: "", dropLocation: "" },
+    ]);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted", supportItems);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
-      <div className="w-full max-w-2xl p-4">
-        <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
+
+    <div className="w-full max-w-full p-2">
+      <form onSubmit={handleSubmit} className="w-full">
+        <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full">
           <ScrollArea className="h-full">
-            <CardContent className="p-4 grid grid-cols-1 gap-6">
-              <div className="space-y-4">
-                <div className="text-left">
-                  <div className="flex flex-col items-start space-y-2">
-                    <label className="text-md font-semibold text-blue-600">Project Creator Name:</label>
-                    <Input placeholder="Enter your name" className="w-full" />
-                  </div>
+            <CardContent className="p-4 grid grid-cols-1 gap-4">
+              <div className="space-y-2">
+                {/* Project Creator Name */}
+                <div className="flex flex-row items-center space-x-2">
+                  <label className="text-sm font-semibold text-blue-600">
+                    Project Creator Name:
+                  </label>
+                  <Input placeholder="Enter your name" className="w-10/12 text-sm" />
                 </div>
 
-                <div>
-                  <h3 className="text-md font-semibold text-blue-600 mb-2">Project Title/Objective</h3>
-                  <ScrollArea className="h-[65px]">
-                    <div className="w-full border border-gray-300 rounded-md">
-                      <Textarea
-                        placeholder="Enter project details..."
-                        className="w-full h-8 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </ScrollArea>
+                {/* Project Title/Objective */}
+                <div className="flex flex-row items-center space-x-2">
+                  <h3 className="text-sm font-semibold text-blue-600">
+                    Project Title/Objective:
+                  </h3>
+                  <Textarea
+                    placeholder="Enter project details..."
+                    className="w-10/12 h-10 border border-gray-300 rounded-md text-sm"
+                  />
                 </div>
 
-                <div className="flex flex-col items-start space-y-2">
-                  <label className="text-md font-semibold text-blue-600">Project Tag Preview:</label>
-                  <div className="flex space-x-4 items-center">
+                {/* Project Tag Preview */}
+                <div className="flex flex-row items-center space-x-2">
+                  <label className="text-sm font-semibold text-blue-600">
+                    Project Tag Preview:
+                  </label>
+                  <div className="flex space-x-2 items-center w-9/12">
                     <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
-                    <Input placeholder="" className="w-44" />
+                    <Input placeholder="" className="w-60 text-sm" />
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-md font-semibold text-blue-600 mb-2">Project Details</h3>
-                  <ScrollArea className="h-[65px]">
-                    <div className="w-full border border-gray-300 rounded-md">
-                      <Textarea
-                        placeholder="Enter project details..."
-                        className="w-full h-8 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </ScrollArea>
+                {/* Project Details */}
+                <div className="flex flex-row items-center space-x-2">
+                  <h3 className="text-sm font-semibold text-blue-600">
+                    Project Details:
+                  </h3>
+                  <Textarea
+                    placeholder="Enter project details..."
+                    className="w-10/12 h-10 border border-gray-300 rounded-md text-sm"
+                  />
                 </div>
 
-                <div className="flex flex-col space-y-4">
-                  {/* Category, Duration, and Photo on the same line for larger screens, column-wise for mobile */}
-                  <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-10 items-center">
-                    {/* Category Section */}
-                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
-                      <Label htmlFor="category" className="text-md font-semibold text-blue-600">
-                        Category
-                      </Label>
-                      <Select>
-                        <SelectTrigger id="category" className="w-full md:w-40">
-                          <SelectValue placeholder="Select Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="HIDA">HIDA</SelectItem>
-                          <SelectItem value="NGO">NGO</SelectItem>
-                          <SelectItem value="Corporate">Corporate</SelectItem>
-                          <SelectItem value="Educational">Educational Institution</SelectItem>
-                          <SelectItem value="Startup">Startup</SelectItem>
-                          <SelectItem value="Government">Government</SelectItem>
-                          <SelectItem value="Others">Others</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
 
-                    {/* Duration Section */}
-                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
-                      <Label htmlFor="duration" className="text-md font-semibold text-blue-600">
-                        Duration
-                      </Label>
-                      <div className="flex space-x-2">
-                        <input
-                          type="date"
-                          id="fromDate"
-                          name="fromDate"
-                          className="w-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
-                        />
-                        <span className="text-md font-semibold text-black">to</span>
-                        <input
-                          type="date"
-                          id="toDate"
-                          name="toDate"
-                          className="w-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
-                        />
-                      </div>
-                    </div>
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-center w-full">
+                  {/* Category Section */}
+                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                    <Label htmlFor="category" className="text-sm font-semibold text-blue-600">
+                      Category:
+                    </Label>
+                    <Select>
+                      <SelectTrigger id="category" className="w-8/12 text-sm">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Humans">Humans</SelectItem>
+                        <SelectItem value="Animal">Animal</SelectItem>
+                        <SelectItem value="Plants">Plants</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    {/* Photo Section */}
-                    <div className="flex flex-col space-y-2 w-full md:w-1/4">
-                      <Label htmlFor="photo" className="text-md font-semibold text-blue-600">
-                        Photo
-                      </Label>
+                  {/* Duration Section */}
+                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                    <Label htmlFor="duration" className="text-sm font-semibold text-blue-600">
+                      Duration:
+                    </Label>
+                    <div className="flex space-x-2 w-full">
                       <input
-                        type="file"
-                        id="photo"
-                        name="photo"
-                        accept="image/*"
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        type="date"
+                        id="fromDate"
+                        name="fromDate"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
+                      />
+                      <span className="text-sm font-semibold text-black">to</span>
+                      <input
+                        type="date"
+                        id="toDate"
+                        name="toDate"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
                       />
                     </div>
                   </div>
+
+                  {/* Photo Section */}
+                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                    <Label htmlFor="photo" className="text-sm font-semibold text-blue-600">
+                      Image:
+                    </Label>
+                    <input
+                      type="file"
+                      id="photo"
+                      name="photo"
+                      accept="image/*"
+                      className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    />
+                  </div>
                 </div>
 
-
-
+                {/* Support Needed */}
                 <div>
-                  {/* Title */}
-                  <h3 className="text-md font-semibold text-blue-600 mb-4">Support Needed</h3>
+                  <h3 className="text-sm font-semibold text-blue-600 mb-2">
+                    Support Nedded
+                  </h3>
 
                   {/* Support Item Rows */}
                   {supportItems.map((support, index) => (
-                    <div key={index} className="flex items-center space-x-4 mb-2 p-2 border rounded-md">
-                      {/* Checkbox for Item */}
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`supportItem-${index}`}
-                          checked={support.item}
-                          onChange={() => handleCheckboxChange(index, "item")}
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <label htmlFor={`supportItem-${index}`} className="text-sm font-medium text-gray-700">
-                          Item
-                        </label>
+                    <div
+                      key={index}
+                      className="flex flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
+                    >
+                      {/* Input for Item */}
+                      <div className="flex flex-col w-6/12">
+                        <div className="flex flex-row items-center">
+                          <Label htmlFor={`supportItem-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                            Item
+                          </Label>
+                          <Input
+                            id={`supportItem-${index}`}
+                            value={support.item}
+                            onChange={(e) =>
+                              handleInputChange(index, "item", e.target.value)
+                            }
+                            placeholder="Enter item"
+                            className="w-9/12 text-sm"
+                          />
+                        </div>
                       </div>
 
-                      {/* Checkbox for Other */}
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`supportOther-${index}`}
-                          checked={support.other}
-                          onChange={() => handleCheckboxChange(index, "other")}
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <label htmlFor={`supportOther-${index}`} className="text-sm font-medium text-gray-700">
-                          Other
-                        </label>
+                      {/* Input for Quantity Needed */}
+                      <div className="flex flex-col w-8/12">
+                        <div className="flex flex-row items-center">
+                          <Label htmlFor={`supportQuantity-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                            Quantity Needed
+                          </Label>
+                          <Input
+                            id={`supportQuantity-${index}`}
+                            value={support.quantity}
+                            onChange={(e) =>
+                              handleInputChange(index, "quantity", e.target.value)
+                            }
+                            placeholder="Enter quantity"
+                            className="w-6/12 text-sm"
+                          />
+                        </div>
                       </div>
 
-                      {/* Checkbox for By */}
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`supportBy-${index}`}
-                          checked={support.by}
-                          onChange={() => handleCheckboxChange(index, "by")}
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <label htmlFor={`supportBy-${index}`} className="text-sm font-medium text-gray-700">
-                          By
-                        </label>
+                      {/* Input for By When */}
+                      <div className="flex flex-col w-8/12">
+                        <div className="flex flex-row items-center">
+                          <Label htmlFor={`supportByWhen-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                            By When
+                          </Label>
+                          <Input
+                            id={`supportByWhen-${index}`}
+                            value={support.byWhen}
+                            onChange={(e) =>
+                              handleInputChange(index, "byWhen", e.target.value)
+                            }
+                            placeholder="Enter deadline"
+                            className="w-8/12 text-sm"
+                          />
+                        </div>
                       </div>
 
-                      {/* Checkbox for Prop */}
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`supportProp-${index}`}
-                          checked={support.prop}
-                          onChange={() => handleCheckboxChange(index, "prop")}
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <label htmlFor={`supportProp-${index}`} className="text-sm font-medium text-gray-700">
-                          Prop
-                        </label>
+                      {/* Input for Drop Location */}
+                      <div className="flex flex-col w-8/12">
+                        <div className="flex flex-row items-center">
+                          <Label htmlFor={`supportDropLocation-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                            Drop Location
+                          </Label>
+                          <Input
+                            id={`supportDropLocation-${index}`}
+                            value={support.dropLocation}
+                            onChange={(e) =>
+                              handleInputChange(index, "dropLocation", e.target.value)
+                            }
+                            placeholder="Enter location"
+                            className="w-8/12 text-sm"
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
 
-                  {/* Add More Button */}
-                  <Button onClick={handleAddRow} className="mt-4 flex items-center space-x-2">
-                    <PlusCircle size={18} />
-                    <span>Add More</span>
-                  </Button>
-                  <div className="mt-2 p-2 rounded-md">
-                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
-                      {/* Other Input */}
-                      <div className="flex items-center space-x-2">
-                        <label htmlFor="otherInput" className="text-sm font-medium text-gray-700">
-                          Other:
-                        </label>
-                        <input
-                          type="text"
-                          id="otherInput"
-                          value={otherInput}
-                          onChange={(e) => setOtherInput(e.target.value)}
-                          placeholder="Specify other support"
-                          className="p-2 border h-8 w-44 border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-
-                      {/* Completed by creator */}
-                      <div className="text-sm font-medium text-black">
-                        Completed by creator
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <button
-                      type="submit"
-                      className="w-full bg-blue-600 text-white font-semibold p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {/* Add Support Row Button */}
+                  <div className="flex justify-end mr-2">
+                    <Button
+                      type="button"
+                      onClick={handleAddRow}
+                      className="w-14px text-black bg-white border border-gray-300 hover:bg-gray-100"
                     >
-                      Submit
-                    </button>
+                      <PlusCircle className="mr-2 h-5 w-5" /> Add More Support
+                    </Button>
                   </div>
-
 
                 </div>
+
+                <div className="flex flex-row w-full items-center space-x-4 py-2">
+                  <Label htmlFor={specifySupport} className="text-sm font-medium text-gray-700">
+                    Specify Support
+                  </Label>
+                  <Input
+                    id={specifySupport}
+                    value={specifySupport}
+                    onChange={(e) => setSpecifySupport(e.target.value)}
+                    placeholder="Enter additional support"
+                    className="w-6/12 py-1 text-sm"
+                  />
+                  <Label className="text-sm font-medium text-gray-700">
+                    Completed by Creator
+                  </Label>
+                </div>
+
+                <div className="flex justify-center">
+                  <Button type="submit" className="w-1/12 justify-center bg-blue-600 hover:bg-blue-700">
+                    Submit
+                  </Button>
+                </div>
+
               </div>
             </CardContent>
           </ScrollArea>
         </Card>
-      </div>
+      </form>
     </div>
+
   );
 }

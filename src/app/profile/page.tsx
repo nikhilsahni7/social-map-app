@@ -1,178 +1,170 @@
 "use client";
 
 import React, { useRef } from "react";
-import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import html2canvas from "html2canvas";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
 const ProjectDetails: React.FC = () => {
   const projectDetailsRef = useRef<HTMLDivElement>(null);
-
-  const handleDownloadScreenshot = async () => {
-    if (projectDetailsRef.current) {
-      try {
-        const canvas = await html2canvas(projectDetailsRef.current, {
-          scale: 2,
-          logging: false,
-          useCORS: true,
-        });
-        const image = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = image;
-        link.download = "Innovative_Map_Project_details.png";
-        link.click();
-      } catch (error) {
-        console.error("Error generating screenshot:", error);
-      }
-    }
-  };
-
-  // Hard-coded data
-  const creator = "John Doe";
-  const title = "Social Impact Advocate & Digital Community Builder";
-  const details =
-    "This project is focused on creating an interactive map platform that helps users navigate and explore different regions. Our goal is to provide a user-friendly interface that combines detailed geographical data with real-time information, making it easier for people to discover and learn about various locations around the world.";
-
-  const supportNeeded = [
-    { id: "1", name: "Volunteers", quantity: 5, units: "", type: "Volunteers" },
-    { id: "2", name: "Laptops", quantity: 3, units: "", type: "Items" },
-    { id: "3", name: "Office Space", quantity: 500, units: "sqft", type: "Other" },
-    { id: "4", name: "Funding", quantity: 10000, units: "USD", type: "Financial" },
+  const supportItems = [
+    { item: "Laptop", quantity: "1", byWhen: "2024-12-01", dropLocation: "Library" },
+    { item: "Stationery", quantity: "10", byWhen: "2024-11-15", dropLocation: "Classroom" },
+    { item: "Projector", quantity: "1", byWhen: "2024-11-25", dropLocation: "Main Hall" },
   ];
-
-  const location = "San Francisco, CA"; // You may want to display this somewhere.
-
-  const others =
-    "For more information about this project or to discuss potential collaborations, please don't hesitate to reach out to the project creator. We're always open to new ideas and partnerships that can help us improve and expand our platform.";
+  const specifySupport = "Additional funding for resources and materials to enhance project outcomes and ensure the availability of necessary tools.";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white text-gray-900 overflow-hidden">
-      <div className="w-full max-w-2xl p-4" ref={projectDetailsRef}>
-        <Card className="border-4 border-blue-200 rounded-lg shadow-lg overflow-hidden">
-          <CardContent className="p-4 flex flex-col gap-4">
-            {/* Project Creator Name */}
-            <div className="text-left flex flex-row items-center space-x-2">
-              <label className="text-md font-semibold text-blue-600">
-                Project Creator Name:
-              </label>
-              <h2 className="text-xl font-semibold">{creator}</h2>
-            </div>
 
-            <div className="text-left items-center space-x-2 space-y-2">
-              <label className="text-md font-semibold text-blue-600">
-                Project Title/Objective:
-              </label>
-              <h2 className="text-lg font-semibold">{title}</h2>
-            </div>
-
-            {/* Project Tag Preview */}
-            <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
-              <label className="text-md font-semibold text-blue-600">
-                Project Tag Preview:
-              </label>
-              <h1 className="text-sm font-semibold">Mr. XXX wants to support Organization Name</h1>
-            </div>
-
-
-            {/* Project Details */}
-            <div>
-              <h3 className="text-md font-semibold text-blue-600 mb-2">Project Details</h3>
-              <ScrollArea className="h-[100px] max-h-48 overflow-y-auto">
-                <p className="text-sm font-medium text-black leading-tight">{details}</p>
-              </ScrollArea>
-            </div>
-
-            {/* Category, Duration, and Photo Section */}
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8 items-center -mt-2">
-              {/* Category Section */}
-              <div className="flex flex-col space-y-2 w-full md:w-1/4">
-                <Label htmlFor="category" className="text-md font-semibold text-blue-600">
-                  Category
-                </Label>
-                <Label htmlFor="category" className="text-md ml-2 font-semibold text-black">
-                  NGO
-                </Label>
-
+    <div className="w-full max-w-full p-2" ref={projectDetailsRef}>
+      <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full h-full">
+        <ScrollArea className="h-full">
+          <CardContent className="p-4 grid grid-cols-1 gap-4">
+            <div className="space-y-4">
+              {/* Project Creator Name */}
+              <div className="flex flex-row items-center space-x-2">
+                <label className="text-sm font-semibold text-blue-600">
+                  Project Creator Name:
+                </label>
+                <span className="text-sm">John Doe</span>
               </div>
 
-              {/* Duration Section */}
-              <div className="flex flex-col space-y-2 w-full md:w-2/4">
-                <Label htmlFor="duration" className="text-md font-semibold text-blue-600">
-                  Duration
-                </Label>
-                <div className="flex space-x-2">
-                  <h1 className="text-md font-semibold">21-4-2020</h1>
-                  <span className="text-md font-semibold text-black">to</span>
-                  <h1 className="text-md font-semibold">12-6-2020</h1>
+              {/* Project Title/Objective */}
+              <div className="flex flex-row items-center space-x-2">
+                <h3 className="text-sm font-semibold text-blue-600">
+                  Project Title/Objective:
+                </h3>
+                <span className="text-sm">Innovative Mapping Project</span>
+              </div>
+
+              {/* Project Tag Preview */}
+              <div className="flex flex-row items-center space-x-2">
+                <label className="text-sm font-semibold text-blue-600">
+                  Project Tag Preview:
+                </label>
+                <div className="flex space-x-2 items-center w-9/12">
+                  <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
+                  <span className="text-sm">explore new areas.</span>
                 </div>
               </div>
 
-              {/* Photo Section */}
-              <div className="flex flex-col space-y-2 w-full md:w-1/4">
-                <Label htmlFor="photo" className="text-md font-semibold text-blue-600">
-                  Photo
-                </Label>
-                <div className="mt-2">
-                  <Image
-                    width={3}
-                    height={3}
-                    src=""
-                    alt="Selected"
-                    className="w-24 h-auto md:w-full rounded-md border border-gray-300"
-                  />
+              {/* Project Details */}
+              <div className="flex flex-col items-start space-y-2">
+                <h3 className="text-sm font-semibold text-blue-600 text-left">
+                  Project Details:
+                </h3>
+                <span className="text-sm">
+                  This project aims to utilize advanced mapping techniques to visualize unexplored territories and promote awareness among local communities. By engaging with local stakeholders, we will gather valuable insights that can inform decision-making processes and drive meaningful change.
+                </span>
+              </div>
+
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-center w-full">
+                {/* Category Section */}
+                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                  <Label htmlFor="category" className="text-sm font-semibold text-blue-600">
+                    Category:
+                  </Label>
+                  <span className="text-sm">Humans</span>
+                </div>
+
+                {/* Duration Section */}
+                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                  <Label htmlFor="duration" className="text-sm font-semibold text-blue-600">
+                    Duration:
+                  </Label>
+                  <div className="flex space-x-2 w-full">
+                    <span className="text-sm">From: 2024-01-01</span>
+                    <span className="text-sm">to 2024-12-31</span>
+                  </div>
+                </div>
+
+                {/* Photo Section */}
+                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                  <Label htmlFor="photo" className="text-sm font-semibold text-blue-600">
+                    Image:
+                  </Label>
+                  <span className="text-sm">project_image.png</span>
                 </div>
               </div>
 
-            </div>
-            <div className="text-left items-center space-x-2 space-y-2">
-              <label className="text-md font-semibold text-blue-600">
-                Support Provided
-              </label>
-              <ScrollArea className="h-[170px] max-h-44 overflow-y-auto">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                  {supportNeeded.map((item) => (
-                    <Card key={item.id} className="p-2">
-                      <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Quantity: {item.quantity} {item.units}
-                      </p>
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        {item.type}
-                      </Badge>
-                    </Card>
-                  ))}
+              {/* Support Needed */}
+              <div>
+                <h3 className="text-sm font-semibold text-blue-600 mb-2">
+                  Support Needed
+                </h3>
+
+                {/* Support Item Rows */}
+                {supportItems.map((support, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
+                  >
+                    {/* Static for Item */}
+                    <div className="flex flex-col w-6/12">
+                      <div className="flex flex-row items-center">
+                        <Label htmlFor={`supportItem-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                          Item
+                        </Label>
+                        <span className="text-sm">{support.item}</span>
+                      </div>
+                    </div>
+
+                    {/* Static for Quantity Needed */}
+                    <div className="flex flex-col w-8/12">
+                      <div className="flex flex-row items-center">
+                        <Label htmlFor={`supportQuantity-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                          Quantity Needed
+                        </Label>
+                        <span className="text-sm">{support.quantity}</span>
+                      </div>
+                    </div>
+
+                    {/* Static for By When */}
+                    <div className="flex flex-col w-8/12">
+                      <div className="flex flex-row items-center">
+                        <Label htmlFor={`supportByWhen-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                          By When
+                        </Label>
+                        <span className="text-sm">{support.byWhen}</span>
+                      </div>
+                    </div>
+
+                    {/* Static for Drop Location */}
+                    <div className="flex flex-col w-8/12">
+                      <div className="flex flex-row items-center">
+                        <Label htmlFor={`supportDropLocation-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                          Drop Location
+                        </Label>
+                        <span className="text-sm">{support.dropLocation}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Specify Support Section */}
+                <div className="flex flex-col mb-4">
+                  <Label htmlFor="specifySupport" className="text-sm font-semibold text-blue-600">
+                    Specify Support Needed:
+                  </Label>
+                  <span className="text-sm">{specifySupport}</span>
                 </div>
-              </ScrollArea>
+              </div>
 
-
-
+              {/* Additional Information */}
+              <div className="flex flex-col">
+                <h3 className="text-sm font-semibold text-blue-600 mb-2">
+                  Additional Information
+                </h3>
+                <span className="text-sm">
+                  This project aims to utilize advanced mapping techniques to visualize unexplored territories and promote awareness among local communities. This project not only focuses on mapping but also emphasizes the importance of community involvement and education. Through workshops and outreach programs, we aim to empower individuals to utilize mapping tools and technologies for their benefit. Our goal is to foster a culture of collaboration and innovation, ultimately contributing to sustainable development in the region.
+                </span>
+              </div>
             </div>
           </CardContent>
-
-
-
-
-
-
-
-
-
-        </Card>
-      </div>
+        </ScrollArea>
+      </Card>
     </div>
+
   );
 };
 
