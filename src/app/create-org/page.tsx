@@ -54,7 +54,6 @@ export default function ProjectDetailsForm() {
   };
 
   return (
-
     <div className="w-full max-w-full p-2">
       <form onSubmit={handleSubmit} className="w-full">
         <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full">
@@ -62,55 +61,60 @@ export default function ProjectDetailsForm() {
             <CardContent className="p-4 grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 {/* Project Creator Name */}
-                <div className="flex flex-row items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <label className="text-sm font-semibold text-blue-600">
                     Project Creator Name:
                   </label>
-                  <Input placeholder="Enter your name" className="w-10/12 text-sm" />
+                  <Input
+                    placeholder="Enter your name"
+                    className="w-full sm:w-10/12 text-sm"
+                  />
                 </div>
 
                 {/* Project Title/Objective */}
-                <div className="flex flex-row items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <h3 className="text-sm font-semibold text-blue-600">
                     Project Title/Objective:
                   </h3>
                   <Textarea
                     placeholder="Enter project details..."
-                    className="w-10/12 h-10 border border-gray-300 rounded-md text-sm"
+                    className="w-full sm:w-10/12 h-10 border border-gray-300 rounded-md text-sm"
                   />
                 </div>
 
                 {/* Project Tag Preview */}
-                <div className="flex flex-row items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <label className="text-sm font-semibold text-blue-600">
                     Project Tag Preview:
                   </label>
-                  <div className="flex space-x-2 items-center w-9/12">
+                  <div className="flex space-x-2 items-center w-full sm:w-9/12">
                     <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
-                    <Input placeholder="" className="w-60 text-sm" />
+                    <Input placeholder="" className="w-full sm:w-60 text-sm" />
                   </div>
                 </div>
 
                 {/* Project Details */}
-                <div className="flex flex-row items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <h3 className="text-sm font-semibold text-blue-600">
                     Project Details:
                   </h3>
                   <Textarea
                     placeholder="Enter project details..."
-                    className="w-10/12 h-10 border border-gray-300 rounded-md text-sm"
+                    className="w-full sm:w-10/12 h-10 border border-gray-300 rounded-md text-sm"
                   />
                 </div>
 
-
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-center w-full">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                   {/* Category Section */}
-                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
-                    <Label htmlFor="category" className="text-sm font-semibold text-blue-600">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full md:w-1/3">
+                    <Label
+                      htmlFor="category"
+                      className="text-sm font-semibold text-blue-600"
+                    >
                       Category:
                     </Label>
                     <Select>
-                      <SelectTrigger id="category" className="w-8/12 text-sm">
+                      <SelectTrigger id="category" className="w-full sm:w-8/12 text-sm">
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -122,8 +126,11 @@ export default function ProjectDetailsForm() {
                   </div>
 
                   {/* Duration Section */}
-                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
-                    <Label htmlFor="duration" className="text-sm font-semibold text-blue-600">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full md:w-1/3">
+                    <Label
+                      htmlFor="duration"
+                      className="text-sm font-semibold text-blue-600"
+                    >
                       Duration:
                     </Label>
                     <div className="flex space-x-2 w-full">
@@ -144,8 +151,11 @@ export default function ProjectDetailsForm() {
                   </div>
 
                   {/* Photo Section */}
-                  <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
-                    <Label htmlFor="photo" className="text-sm font-semibold text-blue-600">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full md:w-1/3">
+                    <Label
+                      htmlFor="photo"
+                      className="text-sm font-semibold text-blue-600"
+                    >
                       Image:
                     </Label>
                     <input
@@ -168,12 +178,15 @@ export default function ProjectDetailsForm() {
                   {supportItems.map((support, index) => (
                     <div
                       key={index}
-                      className="flex flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
+                      className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-2 p-2 border rounded-md w-full"
                     >
                       {/* Input for Item */}
-                      <div className="flex flex-col w-6/12">
-                        <div className="flex flex-row items-center">
-                          <Label htmlFor={`supportItem-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                      <div className="flex flex-col w-full md:w-6/12">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                          <Label
+                            htmlFor={`supportItem-${index}`}
+                            className="text-xs font-medium text-gray-700 mr-2"
+                          >
                             Item
                           </Label>
                           <Input
@@ -183,15 +196,18 @@ export default function ProjectDetailsForm() {
                               handleInputChange(index, "item", e.target.value)
                             }
                             placeholder="Enter item"
-                            className="w-9/12 text-sm"
+                            className="w-full sm:w-9/12 text-sm"
                           />
                         </div>
                       </div>
 
                       {/* Input for Quantity Needed */}
-                      <div className="flex flex-col w-8/12">
-                        <div className="flex flex-row items-center">
-                          <Label htmlFor={`supportQuantity-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                      <div className="flex flex-col w-full md:w-8/12">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                          <Label
+                            htmlFor={`supportQuantity-${index}`}
+                            className="text-xs font-medium text-gray-700 mr-2"
+                          >
                             Quantity Needed
                           </Label>
                           <Input
@@ -201,16 +217,19 @@ export default function ProjectDetailsForm() {
                               handleInputChange(index, "quantity", e.target.value)
                             }
                             placeholder="Enter quantity"
-                            className="w-6/12 text-sm"
+                            className="w-full sm:w-6/12 text-sm"
                           />
                         </div>
                       </div>
 
                       {/* Input for By When */}
-                      <div className="flex flex-col w-8/12">
-                        <div className="flex flex-row items-center">
-                          <Label htmlFor={`supportByWhen-${index}`} className="text-xs font-medium text-gray-700 mr-2">
-                            By When
+                      <div className="flex flex-col w-full md:w-8/12">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                          <Label
+                            htmlFor={`supportByWhen-${index}`}
+                            className="text-xs font-medium text-gray-700 mr-2"
+                          >
+                            By When Needed
                           </Label>
                           <Input
                             id={`supportByWhen-${index}`}
@@ -218,16 +237,19 @@ export default function ProjectDetailsForm() {
                             onChange={(e) =>
                               handleInputChange(index, "byWhen", e.target.value)
                             }
-                            placeholder="Enter deadline"
-                            className="w-8/12 text-sm"
+                            placeholder="Enter date"
+                            className="w-full sm:w-6/12 text-sm"
                           />
                         </div>
                       </div>
 
                       {/* Input for Drop Location */}
-                      <div className="flex flex-col w-8/12">
-                        <div className="flex flex-row items-center">
-                          <Label htmlFor={`supportDropLocation-${index}`} className="text-xs font-medium text-gray-700 mr-2">
+                      <div className="flex flex-col w-full md:w-8/12">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                          <Label
+                            htmlFor={`supportDropLocation-${index}`}
+                            className="text-xs font-medium text-gray-700 mr-2"
+                          >
                             Drop Location
                           </Label>
                           <Input
@@ -237,54 +259,45 @@ export default function ProjectDetailsForm() {
                               handleInputChange(index, "dropLocation", e.target.value)
                             }
                             placeholder="Enter location"
-                            className="w-8/12 text-sm"
+                            className="w-full sm:w-6/12 text-sm"
                           />
                         </div>
                       </div>
                     </div>
                   ))}
 
-                  {/* Add Support Row Button */}
-                  <div className="flex justify-end mr-2">
-                    <Button
-                      type="button"
-                      onClick={handleAddRow}
-                      className="w-14px text-black bg-white border border-gray-300 hover:bg-gray-100"
-                    >
-                      <PlusCircle className="mr-2 h-5 w-5" /> Add More Support
+                  <div className="flex justify-end">
+                    <Button type="button" onClick={handleAddRow} variant="ghost">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add Row
                     </Button>
                   </div>
-
                 </div>
 
-                <div className="flex flex-row w-full items-center space-x-4 py-2">
-                  <Label htmlFor={specifySupport} className="text-sm font-medium text-gray-700">
-                    Specify Support
-                  </Label>
-                  <Input
-                    id={specifySupport}
+                {/* Specify Other Support */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                  <h3 className="text-sm font-semibold text-blue-600">
+                    Specify Other Support:
+                  </h3>
+                  <Textarea
+                    placeholder="Other support needed..."
+                    className="w-full sm:w-10/12 h-10 border border-gray-300 rounded-md text-sm"
                     value={specifySupport}
                     onChange={(e) => setSpecifySupport(e.target.value)}
-                    placeholder="Enter additional support"
-                    className="w-6/12 py-1 text-sm"
                   />
-                  <Label className="text-sm font-medium text-gray-700">
-                    Completed by Creator
-                  </Label>
                 </div>
 
-                <div className="flex justify-center">
-                  <Button type="submit" className="w-1/12 justify-center bg-blue-600 hover:bg-blue-700">
+                {/* Submit Button */}
+                <div className="flex justify-center w-full">
+                  <Button type="submit" className="bg-blue-600 text-white">
                     Submit
                   </Button>
                 </div>
-
               </div>
             </CardContent>
           </ScrollArea>
         </Card>
       </form>
     </div>
-
   );
 }
