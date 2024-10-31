@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 const ProjectDetails: React.FC = () => {
   const projectDetailsRef = useRef<HTMLDivElement>(null);
@@ -15,14 +16,13 @@ const ProjectDetails: React.FC = () => {
   const specifySupport = "Additional funding for resources and materials to enhance project outcomes and ensure the availability of necessary tools.";
 
   return (
-
     <div className="w-full max-w-full p-2" ref={projectDetailsRef}>
       <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full h-full">
         <ScrollArea className="h-full">
           <CardContent className="p-4 grid grid-cols-1 gap-4">
             <div className="space-y-4">
               {/* Project Creator Name */}
-              <div className="flex flex-row items-center space-x-2">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                 <label className="text-sm font-semibold text-blue-600">
                   Project Creator Name:
                 </label>
@@ -30,7 +30,7 @@ const ProjectDetails: React.FC = () => {
               </div>
 
               {/* Project Title/Objective */}
-              <div className="flex flex-row items-center space-x-2">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                 <h3 className="text-sm font-semibold text-blue-600">
                   Project Title/Objective:
                 </h3>
@@ -38,11 +38,11 @@ const ProjectDetails: React.FC = () => {
               </div>
 
               {/* Project Tag Preview */}
-              <div className="flex flex-row items-center space-x-2">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                 <label className="text-sm font-semibold text-blue-600">
                   Project Tag Preview:
                 </label>
-                <div className="flex space-x-2 items-center w-9/12">
+                <div className="flex space-x-2 items-center w-full md:w-9/12">
                   <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
                   <span className="text-sm">explore new areas.</span>
                 </div>
@@ -60,7 +60,7 @@ const ProjectDetails: React.FC = () => {
 
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-center w-full">
                 {/* Category Section */}
-                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                <div className="flex flex-row space-x-2 items-start w-full md:w-1/3">
                   <Label htmlFor="category" className="text-sm font-semibold text-blue-600">
                     Category:
                   </Label>
@@ -68,7 +68,7 @@ const ProjectDetails: React.FC = () => {
                 </div>
 
                 {/* Duration Section */}
-                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
+                <div className="flex flex-row space-x-2 items-start w-full md:w-1/3">
                   <Label htmlFor="duration" className="text-sm font-semibold text-blue-600">
                     Duration:
                   </Label>
@@ -78,12 +78,20 @@ const ProjectDetails: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Photo Section */}
+                {/* Image Section with Next.js Image */}
                 <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
                   <Label htmlFor="photo" className="text-sm font-semibold text-blue-600">
                     Image:
                   </Label>
-                  <span className="text-sm">project_image.png</span>
+                  <div className="w-full">
+                    <Image
+                      src="/public/community"
+                      alt="Social Work"
+                      width={300} // Adjust width as needed
+                      height={200} // Adjust height as needed
+                      className="rounded-md object-cover w-full h-auto"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -97,10 +105,10 @@ const ProjectDetails: React.FC = () => {
                 {supportItems.map((support, index) => (
                   <div
                     key={index}
-                    className="flex flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
+                    className="flex flex-col md:flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
                   >
                     {/* Static for Item */}
-                    <div className="flex flex-col w-6/12">
+                    <div className="flex flex-col w-full md:w-1/4">
                       <div className="flex flex-row items-center">
                         <Label htmlFor={`supportItem-${index}`} className="text-xs font-medium text-gray-700 mr-2">
                           Item
@@ -110,7 +118,7 @@ const ProjectDetails: React.FC = () => {
                     </div>
 
                     {/* Static for Quantity Needed */}
-                    <div className="flex flex-col w-8/12">
+                    <div className="flex flex-col w-full md:w-1/4">
                       <div className="flex flex-row items-center">
                         <Label htmlFor={`supportQuantity-${index}`} className="text-xs font-medium text-gray-700 mr-2">
                           Quantity Needed
@@ -120,7 +128,7 @@ const ProjectDetails: React.FC = () => {
                     </div>
 
                     {/* Static for By When */}
-                    <div className="flex flex-col w-8/12">
+                    <div className="flex flex-col w-full md:w-1/4">
                       <div className="flex flex-row items-center">
                         <Label htmlFor={`supportByWhen-${index}`} className="text-xs font-medium text-gray-700 mr-2">
                           By When
@@ -130,7 +138,7 @@ const ProjectDetails: React.FC = () => {
                     </div>
 
                     {/* Static for Drop Location */}
-                    <div className="flex flex-col w-8/12">
+                    <div className="flex flex-col w-full md:w-1/4">
                       <div className="flex flex-row items-center">
                         <Label htmlFor={`supportDropLocation-${index}`} className="text-xs font-medium text-gray-700 mr-2">
                           Drop Location
@@ -164,7 +172,6 @@ const ProjectDetails: React.FC = () => {
         </ScrollArea>
       </Card>
     </div>
-
   );
 };
 
