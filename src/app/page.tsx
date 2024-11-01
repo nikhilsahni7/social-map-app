@@ -657,7 +657,7 @@ export default function SocialConnectMap() {
       </Button>
 
       {!isMobileDevice && (<div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
-        <Link href="/create-org">
+        <Link href="/create-project">
           <Button
             variant="default"
             className="h-14 w-2/3 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
@@ -694,7 +694,7 @@ export default function SocialConnectMap() {
       {isMobileDevice && (
         <div className="fixed left-0 right-0 z-20 flex flex-col items-center bottom-6 space-y-2">
 
-          <Link href="/create-org">
+          <Link href="/create-project">
             <Button
               variant="default"
               className="h-10 w-[220px] rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
