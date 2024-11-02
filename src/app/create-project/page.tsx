@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle } from "lucide-react";
-import { Label } from "@/components/ui/label";
 
 export default function ProjectDetailsForm() {
   const [supportItems, setSupportItems] = useState([
@@ -115,28 +114,22 @@ export default function ProjectDetailsForm() {
                   />
                 </div>
 
-                <div className="flex space-x-6 items-center">
+                {/* Project Tag Preview */}
+                <div className="flex space-x-4 items-center">
                   <label className="text-sm font-semibold text-blue-600">
                     Project Tag Preview:
                   </label>
-                  <div className="flex items-center space-x-2">
-                    <h1 className="text-sm font-medium whitespace-nowrap">Mr. XXX wants to</h1>
-                    <Input placeholder="Enter objective" className="text-sm w-64" />
+                  <div className="flex flex-col items-center justify-end space-x-2 mt-4">
+                    <h1 className="text-sm font-medium whitespace-nowrap">Mr. Aakash wants to donate 500 blankets.</h1>
+                    <p className="text-xs text-gray-500">
+                      (This is how it will appear on the website.)
+                    </p>
                   </div>
+
                 </div>
 
-                {/* Describe What You Want To Achieve */}
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Describe What You Want To Achieve
-                  </h3>
-                  <Textarea
-                    placeholder="Enter project details..."
-                    className="text-sm"
-                  />
-                </div>
 
-                {/* Category Selection */}
+
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                   <div className="flex flex-col w-full md:w-1/3">
                     <label className="text-sm font-semibold text-blue-600">
@@ -178,150 +171,197 @@ export default function ProjectDetailsForm() {
                   </div>
                 </div>
 
-                {/* Picture of Success - Drag and Drop Area */}
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Image
-                  </h3>
-                  <div
-                    className={`w-full md:w-4/12 h-44 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${isDragActive ? "border-blue-500" : ""
-                      }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => document.getElementById("fileInput")?.click()}
-                  >
-                    {file ? (
-                      <p className="text-sm text-gray-600">
-                        {file.name} <br />
-                        <span className="text-xs text-blue-600">Click to change</span>
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        Drag & drop your file here, or click to upload
-                      </p>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      id="fileInput"
-                      className="hidden"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          setFile(e.target.files[0]);
-                        }
-                      }}
+                {/* Describe What You Want To Achieve and Picture of Success */}
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                  <div className="flex flex-col w-full md:w-6/12">
+                    <h3 className="text-sm font-semibold text-blue-600">
+                      Describe What You Want To Achieve
+                    </h3>
+                    <Textarea
+                      placeholder="Enter project details..."
+                      className="text-sm"
                     />
+                  </div>
+
+                  <div className="flex flex-col w-full md:w-6/12">
+                    <h3 className="text-sm font-semibold text-blue-600">
+                      Picture Of Success
+                    </h3>
+                    <div
+                      className={`w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${isDragActive ? "border-blue-500" : ""
+                        }`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onClick={() =>
+                        document.getElementById("fileInput")?.click()
+                      }
+                    >
+                      {file ? (
+                        <p className="text-sm text-gray-600">
+                          {file.name} <br />
+                          <span className="text-xs text-blue-600">
+                            Click to change
+                          </span>
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          Drag & drop your file here, or click to upload
+                        </p>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="fileInput"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            setFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Support Needed */}
-                <div>
-                  <h3 className="text-sm font-semibold text-blue-600 mb-2">
-                    Support Needed
-                  </h3>
+                {/* Supports Needed */}
 
-                  {supportItems.map((support, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-2 mb-2 p-2 border rounded-md w-full"
-                    >
-                      <span className="text-sm mr-2">{index + 1 + "."}</span>
-                      <div className="flex flex-row items-center w-full md:w-6/12">
-                        <Label
-                          htmlFor={`supportItem-${index}`}
-                          className="text-xs font-medium text-gray-700 mr-2"
-                        >
-                          Item
-                        </Label>
-                        <Input
-                          id={`supportItem-${index}`}
-                          value={support.item}
-                          onChange={(e) =>
-                            handleInputChange(index, "item", e.target.value)
-                          }
-                          className="text-xs w-8/12"
-                        />
-                      </div>
+                <h2 className="text-lg font-semibold text-blue-600 mb-6">
+                  Supports Needed
+                </h2>
+                <div className="w-full p-6">
+                  <div className="grid grid-cols-12 gap-4 mb-4">
+                    <div className="col-span-1 font-medium text-gray-600 text-sm pt-2 text-center"></div>
+                    <div className="col-span-4 font-medium text-gray-600 text-sm text-center pt-2 pl-6">Item</div>
+                    <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">Quantity</div>
+                    <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">By When</div>
+                    <div className="col-span-3 font-medium text-gray-600 text-sm text-center pt-2">Drop Location</div>
+                  </div>
 
-                      <div className="flex flex-row items-center w-full md:w-6/12">
-                        <Label
-                          htmlFor={`supportQuantity-${index}`}
-                          className="text-xs font-medium text-gray-700 mr-2"
-                        >
-                          Quantity
-                        </Label>
-                        <Input
-                          id={`supportQuantity-${index}`}
-                          value={support.quantity}
-                          onChange={(e) =>
-                            handleInputChange(index, "quantity", e.target.value)
-                          }
-                          className="text-xs w-8/12"
-                        />
-                      </div>
-
-                      <div className="flex flex-row items-center w-full md:w-6/12">
-                        <Label
-                          htmlFor={`supportByWhen-${index}`}
-                          className="text-xs font-medium text-gray-700 mr-2"
-                        >
-                          By When
-                        </Label>
-                        <Input
-                          id={`supportByWhen-${index}`}
-                          value={support.byWhen}
-                          onChange={(e) =>
-                            handleInputChange(index, "byWhen", e.target.value)
-                          }
-                          className="text-xs w-8/12"
-                        />
-                      </div>
-
-                      <div className="flex flex-row items-center w-full md:w-6/12">
-                        <Label
-                          htmlFor={`supportDropLocation-${index}`}
-                          className="text-xs font-medium text-gray-700 mr-2"
-                        >
-                          Drop Location
-                        </Label>
-                        <Input
-                          id={`supportDropLocation-${index}`}
-                          value={support.dropLocation}
-                          onChange={(e) =>
-                            handleInputChange(index, "dropLocation", e.target.value)
-                          }
-                          className="text-xs w-8/12"
-                        />
-                      </div>
+                  <div className="grid grid-cols-12 gap-4">
+                    {/* Serial Numbers Column */}
+                    <div className="col-span-1 mt-2">
+                      {supportItems.map((_, index) => (
+                        <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
+                          {index + 1 + "."}
+                        </div>
+                      ))}
                     </div>
-                  ))}
 
+                    {/* Items Column */}
+                    <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                      {supportItems.map((item, index) => (
+                        <div key={index} className="mb-3">
+                          <Input
+                            id={`item-${index}`}
+                            value={item.item}
+                            onChange={(e) => handleInputChange(index, 'item', e.target.value)}
+                            className="w-full h-9 text-sm"
+                            placeholder="Enter item"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Quantity Column */}
+                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                      {supportItems.map((item, index) => (
+                        <div key={index} className="mb-3">
+                          <Input
+                            type="number"
+                            id={`quantity-${index}`}
+                            value={item.quantity}
+                            onChange={(e) => handleInputChange(index, 'quantity', e.target.value)}
+                            className="w-full h-9 text-sm text-center"
+                            placeholder="Quantity"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* By When Column */}
+                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                      {supportItems.map((item, index) => (
+                        <div key={index} className="mb-3">
+                          <Input
+                            type="date"
+                            id={`byWhen-${index}`}
+                            value={item.byWhen}
+                            onChange={(e) => handleInputChange(index, 'byWhen', e.target.value)}
+                            className="w-full h-9 text-sm text-center"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Drop Location Column */}
+                    <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                      {supportItems.map((item, index) => (
+                        <div key={index} className="mb-3">
+                          <Input
+                            id={`dropLocation-${index}`}
+                            value={item.dropLocation}
+                            onChange={(e) => handleInputChange(index, 'dropLocation', e.target.value)}
+                            className="w-full h-9 text-sm text-center"
+                            placeholder="Location"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Add Row Button */}
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleAddRow}
-                    className="flex items-center text-sm mb-2"
+                    className="mt-4 text-sm font-medium text-black hover:text-blue-700 hover:bg-blue-50"
                   >
-                    <PlusCircle className="mr-2" />
-                    Add Support Item
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Add Support Items
                   </Button>
+
+                  {/* Other Support Section */}
+                  <div className="mt-6 flex items-center gap-4">
+                    <span className="text-sm font-medium text-blue-600">
+                      Specify Other Support:
+                    </span>
+                    <Input
+                      placeholder="Other support needed..."
+                      className="w-96 h-9 text-sm"
+                    />
+                  </div>
                 </div>
+
+
+
+
+
               </div>
             </CardContent>
           </ScrollArea>
         </Card>
 
-        {/* Submit Button */}
-        <div className="flex justify-center mt-4">
-          <Button
-            type="submit"
-            className="text-sm w-12px max-w-xs bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Submit
-          </Button>
+        <div className="flex flex-row justify-center gap-6">
+          <div className="flex justify-center mt-3">
+            <Button
+              type="submit"
+              className="text-sm w-12px max-w-xs bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Preview
+            </Button>
+          </div>
+          <div className="flex justify-center mt-3">
+            <Button
+              type="submit"
+              className="text-sm w-12px max-w-xs bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Submit
+            </Button>
+          </div>
         </div>
-      </form>
-    </div>
+
+      </form >
+    </div >
   );
 }

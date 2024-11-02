@@ -577,7 +577,7 @@ export default function SocialConnectMap() {
 
         {/* Total Projects only shown on desktop */}
         {!isMobileDevice && (
-          <div className="absolute right-0 mt-4 mr-5 flex items-center space-x-2 text-sm font-semibold text-blue-400 bg-gray-800 px-4 py-2 rounded-full transition-all duration-300">
+          <div className="absolute right-0 mt-4 mr-5 flex items-center space-x-2 text-sm font-semibold text-black bg-yellow-400 px-4 py-2 rounded-full transition-all duration-300">
             <span>Total Projects: </span>
             <span className="text-sm">{"3"}</span>
           </div>
@@ -596,7 +596,7 @@ export default function SocialConnectMap() {
               <Button
                 variant="outline"
                 size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
                 onClick={handleZoomIn}
               >
                 <ZoomIn className="h-5 w-5" />
@@ -614,7 +614,7 @@ export default function SocialConnectMap() {
               <Button
                 variant="outline"
                 size="icon"
-                className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
                 onClick={handleZoomOut}
               >
                 <ZoomOut className="h-5 w-5" />
@@ -633,7 +633,7 @@ export default function SocialConnectMap() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  className="rounded-full text-black bg-yellow-400 shadow-lg hover:bg-blue-700 hover:text-white transition-all duration-300"
                   onClick={handleResetView}
                 >
                   <Compass className="h-5 w-5" />
@@ -650,7 +650,7 @@ export default function SocialConnectMap() {
 
       <Button
         variant="outline"
-        className="absolute top-4 right-4 z-20 h-11 rounded-full bg-gray-800 text-blue-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+        className="absolute top-4 right-4 z-20 h-11 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         <Menu className="h-5 w-5" />
@@ -660,7 +660,7 @@ export default function SocialConnectMap() {
         <Link href="/create-project">
           <Button
             variant="default"
-            className="h-14 w-2/3 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+            className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
             onClick={handleCreateOrganization}
           >
             <Plus className="h-5 w-5 mr-1" />
@@ -670,7 +670,7 @@ export default function SocialConnectMap() {
 
         <Button
           variant="default"
-          className="h-14 w-2/3 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300"
+          className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="h-5 w-5 mr-1" />
