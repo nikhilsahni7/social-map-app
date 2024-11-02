@@ -1,171 +1,223 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 
-const ProjectDetails: React.FC = () => {
-  const projectDetailsRef = useRef<HTMLDivElement>(null);
-  const supportItems = [
-    { item: "Laptop", quantity: "1", byWhen: "2024-12-01", dropLocation: "Library" },
-    { item: "Stationery", quantity: "10", byWhen: "2024-11-15", dropLocation: "Classroom" },
-    { item: "Projector", quantity: "1", byWhen: "2024-11-25", dropLocation: "Main Hall" },
-  ];
-  const specifySupport = "Additional funding for resources and materials to enhance project outcomes and ensure the availability of necessary tools.";
+export default function ProjectProfile() {
+  // Static data that mirrors the structure of the creation form
+  const projectData = {
+    firstName: "John",
+    lastName: "Doe",
+    projectTitle: "Community Education Initiative",
+    projectObjective: "To provide educational resources to underserved communities",
+    category: "Human",
+    duration: {
+      from: "2024-01-01",
+      to: "2024-12-31"
+    },
+    achievement: "Creating a sustainable education model that can be replicated across different communities",
+    pictureOfSuccess: "/project-success.jpg",
+    supportItems: [
+      { item: "Laptops", quantity: "10", byWhen: "2024-03-15", dropLocation: "Community Center" },
+      { item: "Books", quantity: "100", byWhen: "2024-02-28", dropLocation: "Local Library" },
+      { item: "Stationery", quantity: "50", byWhen: "2024-03-01", dropLocation: "School Office" }
+    ],
+    otherSupport: "Volunteers for weekly teaching sessions and technical support"
+  };
 
   return (
-    <div className="w-full max-w-full p-2" ref={projectDetailsRef}>
-      <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full h-full">
+    <div className="w-full max-w-full p-2">
+      <h2 className="text-2xl font-bold text-center mb-4 text-blue-600">
+        Project Details
+      </h2>
+
+      <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full">
         <ScrollArea className="h-full">
           <CardContent className="p-4 grid grid-cols-1 gap-4">
-            <div className="space-y-4">
-              {/* Project Creator Name */}
-              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
-                <label className="text-sm font-semibold text-blue-600">
-                  Project Creator Name:
-                </label>
-                <span className="text-sm">John Doe</span>
+            <div className="space-y-3">
+              {/* First Name and Last Name */}
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                <div className="flex flex-col w-full md:w-1/6">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    First Name
+                  </Label>
+                  <div className="p-2 text-sm">
+                    {projectData.firstName}
+                  </div>
+                </div>
+                <div className="flex flex-col w-full md:w-1/6">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    Last Name
+                  </Label>
+                  <div className="p-2 text-sm">
+                    {projectData.lastName}
+                  </div>
+                </div>
               </div>
 
-              {/* Project Title/Objective */}
-              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
-                <h3 className="text-sm font-semibold text-blue-600">
-                  Project Title/Objective:
-                </h3>
-                <span className="text-sm">Innovative Mapping Project</span>
+              {/* Project Title */}
+              <div className="flex flex-col">
+                <Label className="text-sm font-semibold text-blue-600">
+                  Project Title
+                </Label>
+                <div className="p-2 text-sm">
+                  {projectData.projectTitle}
+                </div>
+              </div>
+
+              {/* Project Objective */}
+              <div className="flex flex-col">
+                <Label className="text-sm font-semibold text-blue-600">
+                  Project Objective
+                </Label>
+                <div className="p-2 text-sm">
+                  {projectData.projectObjective}
+                </div>
               </div>
 
               {/* Project Tag Preview */}
-              <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
-                <label className="text-sm font-semibold text-blue-600">
+              <div className="flex space-x-4 items-center">
+                <Label className="text-sm font-semibold text-blue-600">
                   Project Tag Preview:
-                </label>
-                <div className="flex space-x-2 items-center w-full md:w-9/12">
-                  <h1 className="text-sm font-medium">Mr. XXX wants to</h1>
-                  <span className="text-sm">explore new areas.</span>
+                </Label>
+                <div className="flex flex-col items-center justify-end space-x-2">
+                  <h1 className="text-sm font-medium whitespace-nowrap">
+                    Mr. {projectData.lastName} wants to {projectData.projectObjective.toLowerCase()}.
+                  </h1>
                 </div>
               </div>
 
-              {/* Project Details */}
-              <div className="flex flex-col items-start space-y-2">
-                <h3 className="text-sm font-semibold text-blue-600 text-left">
-                  Project Details:
-                </h3>
-                <span className="text-sm">
-                  This project aims to utilize advanced mapping techniques to visualize unexplored territories and promote awareness among local communities. By engaging with local stakeholders, we will gather valuable insights that can inform decision-making processes and drive meaningful change.
-                </span>
-              </div>
-
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-center w-full">
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                 {/* Category Section */}
-                <div className="flex flex-row space-x-2 items-start w-full md:w-1/3">
-                  <Label htmlFor="category" className="text-sm font-semibold text-blue-600">
+                <div className="flex flex-col w-full md:w-1/3">
+                  <Label className="text-sm font-semibold text-blue-600">
                     Category:
                   </Label>
-                  <span className="text-sm">Humans</span>
-                </div>
-
-                {/* Duration Section */}
-                <div className="flex flex-row space-x-2 items-start w-full md:w-1/3">
-                  <Label htmlFor="duration" className="text-sm font-semibold text-blue-600">
-                    Duration:
-                  </Label>
-                  <div className="flex space-x-2 w-full">
-                    <span className="text-sm">From: 2024-01-01</span>
-                    <span className="text-sm">to 2024-12-31</span>
+                  <div className="p-2 text-sm">
+                    {projectData.category}
                   </div>
                 </div>
 
-                {/* Image Section with Next.js Image */}
-                <div className="flex flex-row space-x-2 items-center w-full md:w-1/3">
-                  <Label htmlFor="photo" className="text-sm font-semibold text-blue-600">
-                    Image:
+                {/* Duration Section */}
+                <div className="flex flex-col w-full md:w-2/4">
+                  <div className="flex flex-col space-y-2">
+                    <Label className="text-sm font-semibold text-blue-600">
+                      Duration
+                    </Label>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-sm">
+                        {projectData.duration.from}
+                      </div>
+                      <span className="text-sm font-semibold text-black">
+                        to
+                      </span>
+                      <div className="text-sm">
+                        {projectData.duration.to}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Describe What You Want To Achieve and Picture of Success */}
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                <div className="flex flex-col w-full md:w-6/12">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    Describe What You Want To Achieve
                   </Label>
-                  <div className="w-full">
+                  <div className="p-2 text-sm h-48">
+                    {projectData.achievement}
+                  </div>
+                </div>
+
+                <div className="flex flex-col w-full md:w-6/12">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    Picture Of Success
+                  </Label>
+                  <div className="w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center">
                     <Image
-                      src="/public/community"
-                      alt="Social Work"
-                      width={300} // Adjust width as needed
-                      height={200} // Adjust height as needed
-                      className="rounded-md object-cover w-full h-auto"
+                      width={20}
+                      height={20}
+                      src="/api/placeholder/400/320"
+                      alt="Project Success"
+                      className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Support Needed */}
-              <div>
-                <h3 className="text-sm font-semibold text-blue-600 mb-2">
-                  Support Needed
-                </h3>
-
-                {/* Support Item Rows */}
-                {supportItems.map((support, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col md:flex-row space-x-2 mb-2 p-2 border rounded-md w-full"
-                  >
-                    {/* Static for Item */}
-                    <div className="flex flex-col w-full md:w-1/4">
-                      <div className="flex flex-row items-center">
-                        <Label htmlFor={`supportItem-${index}`} className="text-xs font-medium text-gray-700 mr-2">
-                          Item
-                        </Label>
-                        <span className="text-sm">{support.item}</span>
-                      </div>
-                    </div>
-
-                    {/* Static for Quantity Needed */}
-                    <div className="flex flex-col w-full md:w-1/4">
-                      <div className="flex flex-row items-center">
-                        <Label htmlFor={`supportQuantity-${index}`} className="text-xs font-medium text-gray-700 mr-2">
-                          Quantity Needed
-                        </Label>
-                        <span className="text-sm">{support.quantity}</span>
-                      </div>
-                    </div>
-
-                    {/* Static for By When */}
-                    <div className="flex flex-col w-full md:w-1/4">
-                      <div className="flex flex-row items-center">
-                        <Label htmlFor={`supportByWhen-${index}`} className="text-xs font-medium text-gray-700 mr-2">
-                          By When
-                        </Label>
-                        <span className="text-sm">{support.byWhen}</span>
-                      </div>
-                    </div>
-
-                    {/* Static for Drop Location */}
-                    <div className="flex flex-col w-full md:w-1/4">
-                      <div className="flex flex-row items-center">
-                        <Label htmlFor={`supportDropLocation-${index}`} className="text-xs font-medium text-gray-700 mr-2">
-                          Drop Location
-                        </Label>
-                        <span className="text-sm">{support.dropLocation}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Specify Support Section */}
-                <div className="flex flex-col mb-4">
-                  <Label htmlFor="specifySupport" className="text-sm font-semibold text-blue-600">
-                    Specify Support Needed:
-                  </Label>
-                  <span className="text-sm">{specifySupport}</span>
+              {/* Supports Needed */}
+              <Label className="text-lg font-semibold text-blue-600 mb-6">
+                Supports Needed
+              </Label>
+              <div className="w-full p-6">
+                <div className="grid grid-cols-12 gap-4 mb-4">
+                  <div className="col-span-1 font-medium text-gray-600 text-sm pt-2 text-center"></div>
+                  <div className="col-span-4 font-medium text-gray-600 text-sm text-center pt-2 pl-6">Item</div>
+                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">Quantity</div>
+                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">By When</div>
+                  <div className="col-span-3 font-medium text-gray-600 text-sm text-center pt-2">Drop Location</div>
                 </div>
-              </div>
 
-              {/* Additional Information */}
-              <div className="flex flex-col">
-                <h3 className="text-sm font-semibold text-blue-600 mb-2">
-                  Additional Information
-                </h3>
-                <span className="text-sm">
-                  This project aims to utilize advanced mapping techniques to visualize unexplored territories and promote awareness among local communities. This project not only focuses on mapping but also emphasizes the importance of community involvement and education. Through workshops and outreach programs, we aim to empower individuals to utilize mapping tools and technologies for their benefit. Our goal is to foster a culture of collaboration and innovation, ultimately contributing to sustainable development in the region.
-                </span>
+                <div className="grid grid-cols-12 gap-4">
+                  {/* Serial Numbers Column */}
+                  <div className="col-span-1 mt-2">
+                    {projectData.supportItems.map((_, index) => (
+                      <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
+                        {index + 1 + "."}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Items Display */}
+                  <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                    {projectData.supportItems.map((item, index) => (
+                      <div key={index} className="mb-3 p-2 border rounded-md text-sm">
+                        {item.item}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Quantity Display */}
+                  <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                    {projectData.supportItems.map((item, index) => (
+                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                        {item.quantity}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* By When Display */}
+                  <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                    {projectData.supportItems.map((item, index) => (
+                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                        {item.byWhen}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Drop Location Display */}
+                  <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                    {projectData.supportItems.map((item, index) => (
+                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                        {item.dropLocation}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Other Support Section */}
+                <div className="mt-6 flex items-center gap-4">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    Specify Other Support:
+                  </Label>
+                  <div className="p-2 text-sm w-8/12">
+                    {projectData.otherSupport}
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -173,6 +225,4 @@ const ProjectDetails: React.FC = () => {
       </Card>
     </div>
   );
-};
-
-export default ProjectDetails;
+}
