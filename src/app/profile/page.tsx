@@ -155,16 +155,16 @@ export default function ProjectProfile() {
               </Label>
               <div className="w-full p-6">
                 <div className="grid grid-cols-12 gap-4 mb-4">
-                  <div className="col-span-1 font-medium text-gray-600 text-sm pt-2 text-center"></div>
-                  <div className="col-span-4 font-medium text-gray-600 text-sm text-center pt-2 pl-6">Item</div>
-                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">Quantity</div>
-                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">By When</div>
-                  <div className="col-span-3 font-medium text-gray-600 text-sm text-center pt-2">Drop Location</div>
+                  <div className="w-2 font-medium  text-sm pt-2 text-center"></div>
+                  <div className="col-span-3 font-medium text-black text-md text-center pt-2">Item</div>
+                  <div className="col-span-2 font-medium text-black text-md text-center pt-2">Quantity</div>
+                  <div className="col-span-2 font-medium text-black text-md text-center pt-2">By When</div>
+                  <div className="col-span-4 font-medium text-black text-md text-center pt-2">Drop Location</div>
                 </div>
 
                 <div className="grid grid-cols-12 gap-4">
                   {/* Serial Numbers Column */}
-                  <div className="col-span-1 mt-2">
+                  <div className="w-2 mt-2">
                     {projectData.supportItems.map((_, index) => (
                       <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
                         {index + 1 + "."}
@@ -173,7 +173,7 @@ export default function ProjectProfile() {
                   </div>
 
                   {/* Items Display */}
-                  <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                  <div className="col-span-3 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
                       <div key={index} className="mb-3 p-2 border rounded-md text-sm">
                         {item.item}
@@ -200,7 +200,7 @@ export default function ProjectProfile() {
                   </div>
 
                   {/* Drop Location Display */}
-                  <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                  <div className="col-span-4 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
                       <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
                         {item.dropLocation}
@@ -212,7 +212,7 @@ export default function ProjectProfile() {
                 {/* Other Support Section */}
                 <div className="mt-6 flex items-center gap-4">
                   <Label className="text-sm font-semibold text-blue-600">
-                    Specify Other Support:
+                    Other Support:
                   </Label>
                   <div className="p-2 text-sm w-8/12">
                     {projectData.otherSupport}

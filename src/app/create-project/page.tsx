@@ -122,7 +122,7 @@ export default function ProjectDetailsForm() {
                   <div className="flex flex-col items-center justify-end space-x-2 mt-4">
                     <h1 className="text-sm font-medium whitespace-nowrap">Mr. Aakash wants to donate 500 blankets.</h1>
                     <p className="text-xs text-gray-500">
-                      (This is how it will appear on the website.)
+                      (This is how it will appear on the website)
                     </p>
                   </div>
 
@@ -231,16 +231,16 @@ export default function ProjectDetailsForm() {
                 </h2>
                 <div className="w-full p-6">
                   <div className="grid grid-cols-12 gap-4 mb-4">
-                    <div className="col-span-1 font-medium text-gray-600 text-sm pt-2 text-center"></div>
-                    <div className="col-span-4 font-medium text-gray-600 text-sm text-center pt-2 pl-6">Item</div>
-                    <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">Quantity</div>
-                    <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">By When</div>
-                    <div className="col-span-3 font-medium text-gray-600 text-sm text-center pt-2">Drop Location</div>
+                    <div className="font-medium text-sm w-2 pt-2 text-center"></div>
+                    <div className="col-span-3 font-medium text-black text-md text-center pt-2">Item</div>
+                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">Quantity</div>
+                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">By When</div>
+                    <div className="col-span-4 font-medium text-black text-md text-center pt-2">Drop Location</div>
                   </div>
 
                   <div className="grid grid-cols-12 gap-4">
                     {/* Serial Numbers Column */}
-                    <div className="col-span-1 mt-2">
+                    <div className="w-2 mt-2">
                       {supportItems.map((_, index) => (
                         <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
                           {index + 1 + "."}
@@ -249,7 +249,7 @@ export default function ProjectDetailsForm() {
                     </div>
 
                     {/* Items Column */}
-                    <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                    <div className="col-span-3 border border-gray-200 rounded-md p-3">
                       {supportItems.map((item, index) => (
                         <div key={index} className="mb-3">
                           <Input
@@ -295,7 +295,7 @@ export default function ProjectDetailsForm() {
                     </div>
 
                     {/* Drop Location Column */}
-                    <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                    <div className="col-span-4 border border-gray-200 rounded-md p-3">
                       {supportItems.map((item, index) => (
                         <div key={index} className="mb-3">
                           <Input
