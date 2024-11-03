@@ -60,7 +60,6 @@ export default function ProjectDetailsForm() {
 
   return (
     <div className="w-full max-w-full p-2">
-      {/* Create Your Own Project Header */}
       <h2 className="text-2xl font-bold text-center mb-4 text-blue-600">
         Create Your Own Project
       </h2>
@@ -115,20 +114,17 @@ export default function ProjectDetailsForm() {
                 </div>
 
                 {/* Project Tag Preview */}
-                <div className="flex space-x-4 items-center">
+                <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
                   <label className="text-sm font-semibold text-blue-600">
                     Project Tag Preview:
                   </label>
-                  <div className="flex flex-col items-center justify-end space-x-2 mt-4">
-                    <h1 className="text-sm font-medium whitespace-nowrap">Mr. Aakash wants to donate 500 blankets.</h1>
+                  <div className="flex flex-col items-start md:items-center justify-end space-y-1 md:space-y-0 md:space-x-2">
+                    <h1 className="text-sm font-medium">Mr. Aakash wants to donate 500 blankets.</h1>
                     <p className="text-xs text-gray-500">
                       (This is how it will appear on the website)
                     </p>
                   </div>
-
                 </div>
-
-
 
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                   <div className="flex flex-col w-full md:w-1/3">
@@ -225,89 +221,137 @@ export default function ProjectDetailsForm() {
                 </div>
 
                 {/* Supports Needed */}
-
                 <h2 className="text-lg font-semibold text-blue-600 mb-6">
                   Supports Needed
                 </h2>
                 <div className="w-full p-6">
-                  <div className="grid grid-cols-12 gap-4 mb-4">
-                    <div className="font-medium text-sm w-2 pt-2 text-center"></div>
-                    <div className="col-span-3 font-medium text-black text-md text-center pt-2">Item</div>
-                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">Quantity</div>
-                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">By When</div>
-                    <div className="col-span-4 font-medium text-black text-md text-center pt-2">Drop Location</div>
-                  </div>
-
-                  <div className="grid grid-cols-12 gap-4">
-                    {/* Serial Numbers Column */}
-                    <div className="w-2 mt-2">
-                      {supportItems.map((_, index) => (
-                        <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
-                          {index + 1 + "."}
-                        </div>
-                      ))}
+                  {/* Desktop view */}
+                  <div className="hidden md:block">
+                    <div className="grid grid-cols-12 gap-4 mb-4">
+                      <div className="font-medium text-sm w-2 pt-2 text-center"></div>
+                      <div className="col-span-3 font-medium text-black text-md text-center pt-2">Item</div>
+                      <div className="col-span-2 font-medium text-black text-md text-center pt-2">Quantity</div>
+                      <div className="col-span-2 font-medium text-black text-md text-center pt-2">By When</div>
+                      <div className="col-span-4 font-medium text-black text-md text-center pt-2">Drop Location</div>
                     </div>
 
-                    {/* Items Column */}
-                    <div className="col-span-3 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
+                    <div className="grid grid-cols-12 gap-4">
+                      {/* Serial Numbers Column */}
+                      <div className="w-2 mt-2">
+                        {supportItems.map((_, index) => (
+                          <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
+                            {index + 1 + "."}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Items Column */}
+                      <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                        {supportItems.map((item, index) => (
+                          <div key={index} className="mb-3">
+                            <Input
+                              id={`item-${index}`}
+                              value={item.item}
+                              onChange={(e) => handleInputChange(index, 'item', e.target.value)}
+                              className="w-full h-9 text-sm"
+                              placeholder="Enter item"
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Quantity Column */}
+                      <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                        {supportItems.map((item, index) => (
+                          <div key={index} className="mb-3">
+                            <Input
+                              type="number"
+                              id={`quantity-${index}`}
+                              value={item.quantity}
+                              onChange={(e) => handleInputChange(index, 'quantity', e.target.value)}
+                              className="w-full h-9 text-sm text-center"
+                              placeholder="Quantity"
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* By When Column */}
+                      <div className="col-span-2 border border-gray-200 rounded-md p-3">
+                        {supportItems.map((item, index) => (
+                          <div key={index} className="mb-3">
+                            <Input
+                              type="date"
+                              id={`byWhen-${index}`}
+                              value={item.byWhen}
+                              onChange={(e) => handleInputChange(index, 'byWhen', e.target.value)}
+                              className="w-full h-9 text-sm text-center"
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Drop Location Column */}
+                      <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                        {supportItems.map((item, index) => (
+                          <div key={index} className="mb-3">
+                            <Input
+                              id={`dropLocation-${index}`}
+                              value={item.dropLocation}
+                              onChange={(e) => handleInputChange(index, 'dropLocation', e.target.value)}
+                              className="w-full h-9 text-sm text-center"
+                              placeholder="Location"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile view */}
+                  <div className="md:hidden space-y-4">
+                    {supportItems.map((item, index) => (
+                      <div key={index} className="border border-gray-200 rounded-md p-4 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-blue-600">Item {index + 1}</span>
                           <Input
-                            id={`item-${index}`}
                             value={item.item}
                             onChange={(e) => handleInputChange(index, 'item', e.target.value)}
-                            className="w-full h-9 text-sm"
+                            className="w-2/3 p-2 text-sm"
                             placeholder="Enter item"
                           />
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Quantity Column */}
-                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-blue-600">Quantity</span>
                           <Input
                             type="number"
-                            id={`quantity-${index}`}
                             value={item.quantity}
                             onChange={(e) => handleInputChange(index, 'quantity', e.target.value)}
-                            className="w-full h-9 text-sm text-center"
+                            className="w-2/3 p-2 text-sm"
                             placeholder="Quantity"
                           />
                         </div>
-                      ))}
-                    </div>
-
-                    {/* By When Column */}
-                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-blue-600">By When</span>
                           <Input
                             type="date"
-                            id={`byWhen-${index}`}
                             value={item.byWhen}
                             onChange={(e) => handleInputChange(index, 'byWhen', e.target.value)}
-                            className="w-full h-9 text-sm text-center"
+                            className="w-2/3 p-2 text-sm"
                           />
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Drop Location Column */}
-                    <div className="col-span-4 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-blue-600">Drop Location</span>
                           <Input
-                            id={`dropLocation-${index}`}
                             value={item.dropLocation}
                             onChange={(e) => handleInputChange(index, 'dropLocation', e.target.value)}
-                            className="w-full h-9 text-sm text-center"
+                            className="w-2/3 p-2 text-sm"
                             placeholder="Location"
                           />
+
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Add Row Button */}
@@ -322,21 +366,16 @@ export default function ProjectDetailsForm() {
                   </Button>
 
                   {/* Other Support Section */}
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-6 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                     <span className="text-sm font-medium text-blue-600">
                       Specify Other Support:
                     </span>
                     <Input
                       placeholder="Other support needed..."
-                      className="w-96 h-9 text-sm"
+                      className="w-full md:w-96 h-9 text-sm"
                     />
                   </div>
                 </div>
-
-
-
-
-
               </div>
             </CardContent>
           </ScrollArea>
@@ -360,8 +399,7 @@ export default function ProjectDetailsForm() {
             </Button>
           </div>
         </div>
-
-      </form >
-    </div >
+      </form>
+    </div>
   );
 }
