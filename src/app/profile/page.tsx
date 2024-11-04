@@ -79,16 +79,17 @@ export default function ProjectProfile() {
               </div>
 
               {/* Project Tag Preview */}
-              <div className="flex space-x-4 items-center">
+              <div className="flex flex-col">
                 <Label className="text-sm font-semibold text-blue-600">
                   Project Tag Preview:
                 </Label>
-                <div className="flex flex-col items-center justify-end space-x-2">
-                  <h1 className="text-sm font-medium whitespace-nowrap">
-                    Mr. {projectData.lastName} wants to {projectData.projectObjective.toLowerCase()}.
-                  </h1>
+                <div className="p-2 text-sm font-medium">
+
+                  Mr. {projectData.lastName} wants to {projectData.projectObjective.toLowerCase()}.
+
                 </div>
               </div>
+
 
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                 {/* Category Section */}
@@ -128,10 +129,12 @@ export default function ProjectProfile() {
                   <Label className="text-sm font-semibold text-blue-600">
                     Describe What You Want To Achieve
                   </Label>
-                  <div className="p-2 text-sm h-48">
+                  <div className="p-2 text-sm h-28 md:h-48">
                     {projectData.achievement}
                   </div>
                 </div>
+
+
 
                 <div className="flex flex-col w-full md:w-6/12">
                   <Label className="text-sm font-semibold text-blue-600">
@@ -153,27 +156,36 @@ export default function ProjectProfile() {
               <Label className="text-lg font-semibold text-blue-600 mb-6">
                 Supports Needed
               </Label>
-              <div className="w-full p-6">
+              <div className="hidden md:block w-full p-6">
                 <div className="grid grid-cols-12 gap-4 mb-4">
-                  <div className="col-span-1 font-medium text-gray-600 text-sm pt-2 text-center"></div>
-                  <div className="col-span-4 font-medium text-gray-600 text-sm text-center pt-2 pl-6">Item</div>
-                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">Quantity</div>
-                  <div className="col-span-2 font-medium text-gray-600 text-sm text-center pt-2">By When</div>
-                  <div className="col-span-3 font-medium text-gray-600 text-sm text-center pt-2">Drop Location</div>
+                  <div className="w-2 font-medium text-sm pt-2 text-center"></div>
+                  <div className="col-span-3 font-medium text-black text-md text-center pt-2">
+                    Item
+                  </div>
+                  <div className="col-span-2 font-medium text-black text-md text-center pt-2">
+                    Quantity
+                  </div>
+                  <div className="col-span-2 font-medium text-black text-md text-center pt-2">
+                    By When
+                  </div>
+                  <div className="col-span-4 font-medium text-black text-md text-center pt-2">
+                    Drop Location
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-12 gap-4">
-                  {/* Serial Numbers Column */}
-                  <div className="col-span-1 mt-2">
+                  <div className="w-2 mt-2">
                     {projectData.supportItems.map((_, index) => (
-                      <div key={index} className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3">
+                      <div
+                        key={index}
+                        className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3"
+                      >
                         {index + 1 + "."}
                       </div>
                     ))}
                   </div>
 
-                  {/* Items Display */}
-                  <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                  <div className="col-span-3 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
                       <div key={index} className="mb-3 p-2 border rounded-md text-sm">
                         {item.item}
@@ -181,44 +193,109 @@ export default function ProjectProfile() {
                     ))}
                   </div>
 
-                  {/* Quantity Display */}
                   <div className="col-span-2 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
-                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                      <div
+                        key={index}
+                        className="mb-3 p-2 border rounded-md text-sm text-center"
+                      >
                         {item.quantity}
                       </div>
                     ))}
                   </div>
 
-                  {/* By When Display */}
                   <div className="col-span-2 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
-                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                      <div
+                        key={index}
+                        className="mb-3 p-2 border rounded-md text-sm text-center"
+                      >
                         {item.byWhen}
                       </div>
                     ))}
                   </div>
 
-                  {/* Drop Location Display */}
-                  <div className="col-span-3 border border-gray-200 rounded-md p-3">
+                  <div className="col-span-4 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
-                      <div key={index} className="mb-3 p-2 border rounded-md text-sm text-center">
+                      <div
+                        key={index}
+                        className="mb-3 p-2 border rounded-md text-sm text-center"
+                      >
                         {item.dropLocation}
                       </div>
                     ))}
-                  </div>
-                </div>
 
-                {/* Other Support Section */}
-                <div className="mt-6 flex items-center gap-4">
+                  </div>
+
+
+
+                </div>
+                <div className="mt-6 flex flex-row w-full items-center">
                   <Label className="text-sm font-semibold text-blue-600">
-                    Specify Other Support:
+                    Other Support:
                   </Label>
                   <div className="p-2 text-sm w-8/12">
                     {projectData.otherSupport}
                   </div>
                 </div>
               </div>
+
+              {/* Updated Mobile View */}
+              <div className="md:hidden w-full p-4 space-y-4">
+                {projectData.supportItems.map((supportItem, index) => (
+                  <div
+                    key={index}
+                    className="border border-blue-200 p-4 rounded-lg shadow-md flex flex-col space-y-2"
+                  >
+                    <div className="flex items-center justify-start mb-2">
+                      <span className="font-bold text-lg text-blue-600 mr-2">
+                        {index + 1}.
+                      </span>
+                      <span className="block text-md font-semibold">
+                        {supportItem.item}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="block font-semibold text-sm text-blue-600">
+                        Quantity:
+                      </span>
+                      <span className="block text-md font-medium">
+                        {supportItem.quantity}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="block font-semibold text-sm text-blue-600">
+                        By When:
+                      </span>
+                      <span className="block text-md font-medium">
+                        {supportItem.byWhen}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="block font-semibold text-sm text-blue-600">
+                        Drop Location:
+                      </span>
+                      <span className="block text-md font-medium">
+                        {supportItem.dropLocation}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-6 flex flex-col md:flex-row items-start md:items-center w-full">
+                  <Label className="text-sm font-semibold text-blue-600">
+                    Other Support:
+                  </Label>
+                  <div className="p-2 text-sm w-full md:w-8/12">
+                    {projectData.otherSupport}
+                  </div>
+                </div>
+
+              </div>
+
+
             </div>
           </CardContent>
         </ScrollArea>

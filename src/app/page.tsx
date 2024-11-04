@@ -60,6 +60,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Search as SearchIcon } from 'react-feather';
+import { FaHandsHelping, FaUserCircle } from 'react-icons/fa';
 
 const searchSuggestions = [
   "Community Support Center",
@@ -85,6 +86,7 @@ interface Organization {
   donationInfo: string;
   avatar: string;
   category: string;
+  objective: string;
 }
 
 const organizations: Organization[] = [
@@ -98,7 +100,8 @@ const organizations: Organization[] = [
     email: "contact@communitysupport.org",
     donationInfo: "Your donation helps us reach more people in need",
     avatar: "/placeholder.svg?height=40&width=40",
-    category: "Community Services",
+    category: "Animal",
+    objective: "To provide educational resources to underserved communities"
   },
   {
     id: 2,
@@ -110,7 +113,8 @@ const organizations: Organization[] = [
     email: "info@familycarenetwork.org",
     donationInfo: "Help us strengthen families in our community",
     avatar: "/placeholder.svg?height=40&width=40",
-    category: "Family Services",
+    category: "Plant",
+    objective: "To provide educational resources to underserved communities"
   },
   {
     id: 3,
@@ -122,7 +126,8 @@ const organizations: Organization[] = [
     email: "hello@youthempowerment.org",
     donationInfo: "Invest in the future of our youth",
     avatar: "/placeholder.svg?height=40&width=40",
-    category: "Youth Services",
+    category: "Humans",
+    objective: "To provide educational resources to underserved communities"
   },
 ];
 
@@ -490,7 +495,7 @@ export default function SocialConnectMap() {
               <CardHeader className="p-4 bg-gradient-to-r from-blue-500 to-blue-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-xl font-semibold text-white">Asmi is seeking support for {selectedOrg.name}</h2>
+                    <h2 className="text-xl font-semibold text-white">Asmi wants {selectedOrg.objective}</h2>
                     <Badge variant="secondary" className="mt-1 bg-blue-400 text-white">
                       {selectedOrg.category}
                     </Badge>
@@ -500,27 +505,20 @@ export default function SocialConnectMap() {
               </CardHeader>
 
               <CardContent className="p-4 space-y-2 text-gray-800 font-normal">
-                <p className="text-sm">{selectedOrg.description}</p>
 
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-blue-500" />
-                    <span className="text-sm">{selectedOrg.phone}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-blue-500" />
-                    <span className="text-sm">{selectedOrg.email}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <DollarSign className="h-4 w-4 mr-2 text-blue-500" />
-                    <span className="text-sm">{selectedOrg.donationInfo}</span>
-                  </div>
-                </div>
               </CardContent>
 
               <CardFooter className="p-4 -mt-4">
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95">
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                  <FaHandsHelping />
                   Support
+                </Button>
+              </CardFooter>
+
+              <CardFooter className="p-4 -mt-4">
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                  <FaUserCircle />
+                  View Profile
                 </Button>
               </CardFooter>
 
