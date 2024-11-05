@@ -12,20 +12,40 @@ export default function ProjectProfile() {
     firstName: "John",
     lastName: "Doe",
     projectTitle: "Community Education Initiative",
-    projectObjective: "To provide educational resources to underserved communities",
+    projectObjective:
+      "To provide educational resources to underserved communities",
     category: "Human",
     duration: {
       from: "2024-01-01",
-      to: "2024-12-31"
+      to: "2024-12-31",
     },
-    achievement: "Creating a sustainable education model that can be replicated across different communities",
+    achievement:
+      "Creating a sustainable education model that can be replicated across different communities",
     pictureOfSuccess: "/project-success.jpg",
     supportItems: [
-      { item: "Laptops", quantity: "10", byWhen: "2024-03-15", dropLocation: "Community Center" },
-      { item: "Books", quantity: "100", byWhen: "2024-02-28", dropLocation: "Local Library" },
-      { item: "Stationery", quantity: "50", byWhen: "2024-03-01", dropLocation: "School Office" }
+      {
+        item: "Laptops",
+        quantity: "10",
+        byWhen: "2024-03-15",
+        dropLocation: "Community Center",
+      },
+      {
+        item: "Books",
+        quantity: "100",
+        byWhen: "2024-02-28",
+        dropLocation: "Local Library",
+      },
+      {
+        item: "Stationery",
+        quantity: "50",
+        byWhen: "2024-03-01",
+        dropLocation: "School Office",
+      },
     ],
-    otherSupport: "Volunteers for weekly teaching sessions and technical support"
+    otherSupport:
+      "Volunteers for weekly teaching sessions and technical support",
+    MapLocation:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.073292073073!2d3.372073314266073!3d6.524379325292073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8e7b7f1b1b3d%3A0x1b3b3b3b3b3b3b3b!2sLagos%20Island!5e0!3m2!1sen!2sng!4v1633663660007!5m2!1sen!2sng",
   };
 
   return (
@@ -44,17 +64,13 @@ export default function ProjectProfile() {
                   <Label className="text-sm font-semibold text-blue-600">
                     First Name
                   </Label>
-                  <div className="p-2 text-sm">
-                    {projectData.firstName}
-                  </div>
+                  <div className="p-2 text-sm">{projectData.firstName}</div>
                 </div>
                 <div className="flex flex-col w-full md:w-1/6">
                   <Label className="text-sm font-semibold text-blue-600">
                     Last Name
                   </Label>
-                  <div className="p-2 text-sm">
-                    {projectData.lastName}
-                  </div>
+                  <div className="p-2 text-sm">{projectData.lastName}</div>
                 </div>
               </div>
 
@@ -63,9 +79,7 @@ export default function ProjectProfile() {
                 <Label className="text-sm font-semibold text-blue-600">
                   Project Title
                 </Label>
-                <div className="p-2 text-sm">
-                  {projectData.projectTitle}
-                </div>
+                <div className="p-2 text-sm">{projectData.projectTitle}</div>
               </div>
 
               {/* Project Objective */}
@@ -84,12 +98,10 @@ export default function ProjectProfile() {
                   Project Tag Preview:
                 </Label>
                 <div className="p-2 text-sm font-medium">
-
-                  Mr. {projectData.lastName} wants to {projectData.projectObjective.toLowerCase()}.
-
+                  Mr. {projectData.lastName} wants to{" "}
+                  {projectData.projectObjective.toLowerCase()}.
                 </div>
               </div>
-
 
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
                 {/* Category Section */}
@@ -97,9 +109,7 @@ export default function ProjectProfile() {
                   <Label className="text-sm font-semibold text-blue-600">
                     Category:
                   </Label>
-                  <div className="p-2 text-sm">
-                    {projectData.category}
-                  </div>
+                  <div className="p-2 text-sm">{projectData.category}</div>
                 </div>
 
                 {/* Duration Section */}
@@ -109,15 +119,11 @@ export default function ProjectProfile() {
                       Duration
                     </Label>
                     <div className="flex items-center space-x-4">
-                      <div className="text-sm">
-                        {projectData.duration.from}
-                      </div>
+                      <div className="text-sm">{projectData.duration.from}</div>
                       <span className="text-sm font-semibold text-black">
                         to
                       </span>
-                      <div className="text-sm">
-                        {projectData.duration.to}
-                      </div>
+                      <div className="text-sm">{projectData.duration.to}</div>
                     </div>
                   </div>
                 </div>
@@ -133,8 +139,6 @@ export default function ProjectProfile() {
                     {projectData.achievement}
                   </div>
                 </div>
-
-
 
                 <div className="flex flex-col w-full md:w-6/12">
                   <Label className="text-sm font-semibold text-blue-600">
@@ -187,7 +191,10 @@ export default function ProjectProfile() {
 
                   <div className="col-span-3 border border-gray-200 rounded-md p-3">
                     {projectData.supportItems.map((item, index) => (
-                      <div key={index} className="mb-3 p-2 border rounded-md text-sm">
+                      <div
+                        key={index}
+                        className="mb-3 p-2 border rounded-md text-sm"
+                      >
                         {item.item}
                       </div>
                     ))}
@@ -224,11 +231,7 @@ export default function ProjectProfile() {
                         {item.dropLocation}
                       </div>
                     ))}
-
                   </div>
-
-
-
                 </div>
                 <div className="mt-6 flex flex-row w-full items-center">
                   <Label className="text-sm font-semibold text-blue-600">
@@ -236,6 +239,19 @@ export default function ProjectProfile() {
                   </Label>
                   <div className="p-2 text-sm w-8/12">
                     {projectData.otherSupport}
+                  </div>
+                  <div className="mt-6 flex flex-row w-full items-center">
+                    <Label className="text-sm font-semibold text-blue-600">
+                      Map Location
+                    </Label>
+                    <iframe
+                      src={projectData.MapLocation}
+                      width="100%"
+                      height="450"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
                   </div>
                 </div>
               </div>
@@ -292,10 +308,7 @@ export default function ProjectProfile() {
                     {projectData.otherSupport}
                   </div>
                 </div>
-
               </div>
-
-
             </div>
           </CardContent>
         </ScrollArea>

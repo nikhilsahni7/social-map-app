@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef, ChangeEvent } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  ChangeEvent,
+} from "react";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -9,7 +15,7 @@ import {
   OverlayView,
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaThumbsUp } from 'react-icons/fa';
+import { FaThumbsUp } from "react-icons/fa";
 import {
   Search,
   X,
@@ -59,8 +65,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Search as SearchIcon } from 'react-feather';
-import { FaHandsHelping, FaUserCircle } from 'react-icons/fa';
+import { Search as SearchIcon } from "react-feather";
+import { FaHandsHelping, FaUserCircle } from "react-icons/fa";
+import { getAuthUser, logout } from "@/lib/clientAuth";
 
 const searchSuggestions = [
   "Community Support Center",
@@ -101,7 +108,7 @@ const organizations: Organization[] = [
     donationInfo: "Your donation helps us reach more people in need",
     avatar: "/placeholder.svg?height=40&width=40",
     category: "Animal",
-    objective: "To provide educational resources to underserved communities"
+    objective: "To provide educational resources to underserved communities",
   },
   {
     id: 2,
@@ -114,7 +121,7 @@ const organizations: Organization[] = [
     donationInfo: "Help us strengthen families in our community",
     avatar: "/placeholder.svg?height=40&width=40",
     category: "Plant",
-    objective: "To provide educational resources to underserved communities"
+    objective: "To provide educational resources to underserved communities",
   },
   {
     id: 3,
@@ -127,7 +134,7 @@ const organizations: Organization[] = [
     donationInfo: "Invest in the future of our youth",
     avatar: "/placeholder.svg?height=40&width=40",
     category: "Humans",
-    objective: "To provide educational resources to underserved communities"
+    objective: "To provide educational resources to underserved communities",
   },
 ];
 
@@ -135,63 +142,58 @@ const mapStyles = [
   {
     featureType: "all",
     elementType: "labels",
-    stylers: [{ visibility: "on" }]
+    stylers: [{ visibility: "on" }],
   },
   {
     featureType: "administrative",
     elementType: "geometry",
-    stylers: [{ visibility: "off" }]
+    stylers: [{ visibility: "off" }],
   },
   {
     featureType: "poi",
-    stylers: [{ visibility: "off" }]
+    stylers: [{ visibility: "off" }],
   },
   {
     featureType: "road",
     elementType: "labels",
-    stylers: [{ visibility: "on" }]
+    stylers: [{ visibility: "on" }],
   },
   {
     featureType: "transit",
     elementType: "labels",
-    stylers: [{ visibility: "off" }]
+    stylers: [{ visibility: "off" }],
   },
   {
     featureType: "water",
     elementType: "labels",
-    stylers: [{ visibility: "on" }]
+    stylers: [{ visibility: "on" }],
   },
   {
     featureType: "all",
     elementType: "geometry.fill",
-    stylers: [{ color: "#f7f7f7" }]
+    stylers: [{ color: "#f7f7f7" }],
   },
   {
     featureType: "road",
     elementType: "geometry",
-    stylers: [{ color: "#e0e0e0" }]
+    stylers: [{ color: "#e0e0e0" }],
   },
   {
     featureType: "transit.line",
     elementType: "geometry",
-    stylers: [{ color: "#cccccc" }]
+    stylers: [{ color: "#cccccc" }],
   },
   {
     featureType: "transit.station",
     elementType: "geometry",
-    stylers: [{ color: "#dddddd" }]
+    stylers: [{ color: "#dddddd" }],
   },
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#d4e4f4" }]
+    stylers: [{ color: "#d4e4f4" }],
   },
-
-
 ];
-
-
-
 
 const quickNavLocations = [
   { name: "New Delhi", lat: 28.6139, lng: 77.209 },
@@ -202,13 +204,7 @@ const quickNavLocations = [
 
 const organizationTypes = ["Humans", "Animals", "Plants"];
 
-const tags = [
-  "Mumbai",
-  "Delhi",
-  "Bangalore",
-  "Kolkata",
-
-];
+const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 
 const handleCreateOrganization = () => {
   // Implement the logic to create a new organization
@@ -264,7 +260,6 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
             onChange={handleSearch}
             className="w-full h-10 text-md border rounded-full px-4"
           />
-
         </div>
       </div>
 
@@ -281,15 +276,14 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
                 className="flex items-center cursor-pointer hover:bg-blue-100 py-2" // Added items-center to align items vertically
               >
                 <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
-                <span className="flex-1">{suggestion}</span> {/* Added flex-1 to allow span to take available space */}
+                <span className="flex-1">{suggestion}</span>{" "}
+                {/* Added flex-1 to allow span to take available space */}
               </li>
             ))}
           </ul>
         )}
       </div>
-
     </div>
-
   );
 };
 
@@ -306,8 +300,6 @@ export default function SocialConnectMap() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-
 
   const [filteredSuggestions, setFilteredSuggestions] =
     useState(searchSuggestions);
@@ -484,7 +476,6 @@ export default function SocialConnectMap() {
               </OverlayView>
             )}
           </React.Fragment>
-
         ))}
         {selectedOrg && (
           <InfoWindow
@@ -495,18 +486,20 @@ export default function SocialConnectMap() {
               <CardHeader className="p-4 bg-gradient-to-r from-blue-500 to-blue-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-xl font-semibold text-white">Asmi wants {selectedOrg.objective}</h2>
-                    <Badge variant="secondary" className="mt-1 bg-blue-400 text-white">
+                    <h2 className="text-xl font-semibold text-white">
+                      Asmi wants {selectedOrg.objective}
+                    </h2>
+                    <Badge
+                      variant="secondary"
+                      className="mt-1 bg-blue-400 text-white"
+                    >
                       {selectedOrg.category}
                     </Badge>
                   </div>
-
                 </div>
               </CardHeader>
 
-              <CardContent className="p-4 space-y-2 text-gray-800 font-normal">
-
-              </CardContent>
+              <CardContent className="p-4 space-y-2 text-gray-800 font-normal"></CardContent>
 
               <CardFooter className="p-4 -mt-4">
                 <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
@@ -528,7 +521,7 @@ export default function SocialConnectMap() {
                     variant="ghost"
                     size="icon"
                     className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                    onClick={() => console.log('Liked')}
+                    onClick={() => console.log("Liked")}
                   >
                     <Heart className="h-6 w-6 transition-transform duration-300" />
                     <span className="sr-only">Like</span>
@@ -538,7 +531,7 @@ export default function SocialConnectMap() {
                     variant="ghost"
                     size="icon"
                     className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                    onClick={() => console.log('Loved')}
+                    onClick={() => console.log("Loved")}
                   >
                     <FaThumbsUp className="h-6 w-6 transition-transform duration-300" />
                     <span className="sr-only">Love</span>
@@ -546,9 +539,6 @@ export default function SocialConnectMap() {
                 </div>
               </div>
             </Card>
-
-
-
           </InfoWindow>
         )}
       </GoogleMap>
@@ -560,10 +550,11 @@ export default function SocialConnectMap() {
               key={type}
               variant={selectedType === type ? "default" : "outline"}
               size="sm"
-              className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${selectedType === type
-                ? "bg-blue-600 text-white shadow-lg"
-                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                }`}
+              className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${
+                selectedType === type
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+              }`}
               onClick={() =>
                 setSelectedType(selectedType === type ? null : type)
               }
@@ -582,69 +573,65 @@ export default function SocialConnectMap() {
         )}
       </div>
 
-
-
-
-
-
-      {!isMobileDevice && (<div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={handleZoomIn}
-              >
-                <ZoomIn className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Zoom In</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
-                onClick={handleZoomOut}
-              >
-                <ZoomOut className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Zoom Out</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        {!isMobileDevice && (
+      {!isMobileDevice && (
+        <div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full text-black bg-yellow-400 shadow-lg hover:bg-blue-700 hover:text-white transition-all duration-300"
-                  onClick={handleResetView}
+                  className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={handleZoomIn}
                 >
-                  <Compass className="h-5 w-5" />
+                  <ZoomIn className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Reset View</p>
+                <p>Zoom In</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
-      </div>)}
 
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  onClick={handleZoomOut}
+                >
+                  <ZoomOut className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Zoom Out</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {!isMobileDevice && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full text-black bg-yellow-400 shadow-lg hover:bg-blue-700 hover:text-white transition-all duration-300"
+                    onClick={handleResetView}
+                  >
+                    <Compass className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Reset View</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+      )}
 
       <Button
         variant="outline"
@@ -654,44 +641,43 @@ export default function SocialConnectMap() {
         <Menu className="h-5 w-5" />
       </Button>
 
-      {!isMobileDevice && (<div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
-        <Link href="/create-project">
+      {!isMobileDevice && (
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
+          <Link href="/create-project">
+            <Button
+              variant="default"
+              className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
+              onClick={handleCreateOrganization}
+            >
+              <Plus className="h-5 w-5 mr-1" />
+              Create Your Project
+            </Button>
+          </Link>
+
           <Button
             variant="default"
             className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
-            onClick={handleCreateOrganization}
+            onClick={() => setIsSearchOpen(true)}
           >
-            <Plus className="h-5 w-5 mr-1" />
-            Create Your Project
+            <Search className="h-5 w-5 mr-1" />
+            Search
           </Button>
-        </Link>
 
-        <Button
-          variant="default"
-          className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
-          onClick={() => setIsSearchOpen(true)}
-        >
-          <Search className="h-5 w-5 mr-1" />
-          Search
-        </Button>
-
-        {/* Custom Dialog without Background Dimming */}
-        <CustomDialog
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-          tags={tags}
-          searchQuery={searchQuery}
-          handleSearch={handleSearch}
-          filteredSuggestions={filteredSuggestions}
-          handleSelectSuggestion={handleSelectSuggestion}
-        />
-
-
-      </div>)}
+          {/* Custom Dialog without Background Dimming */}
+          <CustomDialog
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            tags={tags}
+            searchQuery={searchQuery}
+            handleSearch={handleSearch}
+            filteredSuggestions={filteredSuggestions}
+            handleSelectSuggestion={handleSelectSuggestion}
+          />
+        </div>
+      )}
 
       {isMobileDevice && (
         <div className="fixed left-0 right-0 z-20 flex flex-col items-center bottom-6 space-y-2">
-
           <Link href="/create-project">
             <Button
               variant="default"
@@ -719,7 +705,6 @@ export default function SocialConnectMap() {
                   Search Organizations
                 </DialogTitle>
               </DialogHeader>
-
 
               <div className="flex flex-wrap gap-2 justify-center">
                 {tags.slice(0, 6).map((tag) => (
@@ -751,7 +736,9 @@ export default function SocialConnectMap() {
                         className="flex cursor-pointer hover:bg-blue-100 py-1 sm:py-2 flex-row"
                       >
                         <Search className="mr-1 sm:mr-2 mt-1 h-4 w-4" />
-                        <span className="text-sm sm:text-base">{suggestion}</span>
+                        <span className="text-sm sm:text-base">
+                          {suggestion}
+                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -759,12 +746,8 @@ export default function SocialConnectMap() {
               </Command>
             </DialogContent>
           </Dialog>
-
-
-
         </div>
       )}
-
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -787,7 +770,7 @@ export default function SocialConnectMap() {
               </div>
 
               <nav className="space-y-2">
-                {["About", "Contact", "Login", "Sign Up"].map((item) => (
+                {["About", "Contact", "Login", "Sign Up,"].map((item) => (
                   <Button
                     key={item}
                     asChild

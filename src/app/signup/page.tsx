@@ -1,61 +1,81 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Loader2, Eye, EyeOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "react-hot-toast";
+
+interface SignupResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  message: string;
+  error?: string;
+}
 
 export default function SignupPage() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [role, setRole] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     if (password !== confirmPassword) {
-      toast({
-        title: "Passwords do not match",
-        description: "Please ensure your passwords match.",
-        variant: "destructive",
-        duration: 3000,
-      })
-      setIsLoading(false)
-      return
+      toast.error("Passwords do not match");
+      setIsLoading(false);
+      return;
     }
 
-    // Simulating an API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    toast({
-      title: "Account created",
-      description: "Welcome to SocialConnect!",
-      duration: 3000,
-    })
-    router.push("/dashboard")
-  }
+      const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.error || "Signup failed");
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      toast.success(data.message || "Welcome to SocialConnect!");
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not create account"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
       <motion.div
@@ -65,7 +85,9 @@ export default function SignupPage() {
       >
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-blue-700">Create an Account</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center text-blue-700">
+              Create an Account
+            </CardTitle>
             <CardDescription className="text-center text-gray-600">
               Join SocialConnect and start connecting
             </CardDescription>
@@ -130,19 +152,7 @@ export default function SignupPage() {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select onValueChange={setRole} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="individual">Individual</SelectItem>
-                    <SelectItem value="organization">Organization</SelectItem>
-                    <SelectItem value="volunteer">Volunteer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" required />
                 <Label htmlFor="terms" className="text-sm text-gray-600">
@@ -170,14 +180,12 @@ export default function SignupPage() {
           </CardContent>
           <Separator className="my-4" />
           <CardFooter className="flex flex-col space-y-4">
-
-            <Button variant="outline" className="w-full">
-              <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
-              Sign up with Google
-            </Button>
             <p className="text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <a href="/login" className="font-medium text-blue-600 hover:underline">
+              <a
+                href="/login"
+                className="font-medium text-blue-600 hover:underline"
+              >
                 Log in
               </a>
             </p>
@@ -185,5 +193,5 @@ export default function SignupPage() {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }
