@@ -6,10 +6,14 @@ import { Project } from "@/lib/models/project.model";
 
 import { auth } from "@/lib/auth";
 
+interface User {
+  _id: string;
+}
+
 // GET /api/projects/[id] - Fetch a project by ID
 export async function GET(req: NextRequest) {
   try {
-    const user = await auth(req);
+    const user = (await auth(req)) as User;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
