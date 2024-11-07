@@ -30,6 +30,8 @@ interface FormData {
 export default function ProjectDetailsForm() {
   const [supportItems, setSupportItems] = useState([
     { item: "", quantity: "", byWhen: "", dropLocation: "" },
+    { item: "", quantity: "", byWhen: "", dropLocation: "" },
+    { item: "", quantity: "", byWhen: "", dropLocation: "" }
   ]);
 
   const [file, setFile] = useState<File | null>(null);
@@ -81,6 +83,7 @@ export default function ProjectDetailsForm() {
     setSupportItems((prev) => [
       ...prev,
       { item: "", quantity: "", byWhen: "", dropLocation: "" },
+      
     ]);
   };
 
@@ -348,13 +351,13 @@ export default function ProjectDetailsForm() {
                       value={formData.description}
                       onChange={handleFormInputChange}
                       placeholder="Enter project details..."
-                      className="text-sm"
+                      className="text-sm h-48"
                     />
                   </div>
 
                   <div className="flex flex-col w-full md:w-6/12">
                     <h3 className="text-sm font-semibold text-blue-600">
-                      Picture Of Success
+                      Picture Of Success ~ Help People See What You Have In Mind
                     </h3>
                     <div
                       className={`w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${isDragActive ? "border-blue-500" : ""
@@ -598,7 +601,7 @@ export default function ProjectDetailsForm() {
                       className="text-sm w-48"
                     >
                       <PlusCircle className="h-4 w-4 mr-2" />
-                      Add Support item
+                      Any Other Support
                     </Button>
 
                     <div className="flex items-center space-x-2">
