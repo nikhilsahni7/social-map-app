@@ -770,7 +770,7 @@ export default function SocialConnectMap() {
               </div>
 
               <nav className="space-y-2">
-                {["About", "Contact", "Login", "Sign Up,"].map((item) => (
+                {["About", "Contact", "Login", "Sign Up"].map((item) => (
                   <Button
                     key={item}
                     asChild

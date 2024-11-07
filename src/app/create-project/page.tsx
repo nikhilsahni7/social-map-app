@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, PlusCircle } from "lucide-react";
 import { getAuthToken } from "@/lib/clientAuth";
 import { toast } from "react-hot-toast";
+import Image from "next/image";
 
 interface FormData {
   firstName: string;
@@ -251,8 +252,8 @@ export default function ProjectDetailsForm() {
                 </div>
 
                 {/* Category and Duration */}
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
-                  <div className="flex flex-col w-full md:w-1/3">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-2 md:space-x-2 w-full">
+                  <div className="flex flex-col w-full md:w-1/3 gap-1">
                     <label className="text-sm font-semibold text-blue-600">
                       Category:
                     </label>
@@ -356,9 +357,8 @@ export default function ProjectDetailsForm() {
                       Picture Of Success
                     </h3>
                     <div
-                      className={`w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${
-                        isDragActive ? "border-blue-500" : ""
-                      }`}
+                      className={`w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${isDragActive ? "border-blue-500" : ""
+                        }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
@@ -366,7 +366,9 @@ export default function ProjectDetailsForm() {
                     >
                       {imagePreview ? (
                         <div className="w-full h-full relative">
-                          <img
+                          <Image
+                            width={20}
+                            height={20}
                             src={imagePreview}
                             alt="Preview"
                             className="w-full h-full object-contain"
@@ -588,15 +590,15 @@ export default function ProjectDetailsForm() {
                     ))}
                   </div>
 
-                  <div className="flex justify-end mt-4">
+                  <div className="flex flex-col justify-end mt-4 gap-4">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={handleAddRow}
-                      className="text-sm"
+                      className="text-sm w-48"
                     >
                       <PlusCircle className="h-4 w-4 mr-2" />
-                      Add Row
+                      Add Support item
                     </Button>
 
                     <div className="flex items-center space-x-2">
@@ -608,12 +610,29 @@ export default function ProjectDetailsForm() {
                         value={formData.otherSupport}
                         onChange={handleFormInputChange}
                         placeholder="Enter other support"
-                        className="text-sm"
+                        className="text-sm w-6/12"
                       />
 
+
+                    </div>
+                    <div className="flex flex-row gap-4 justify-center items-center mt-4 -mb-4">
+                      <Button
+
+                        className="text-sm w-40 bg-blue-600 hover:bg-blue-700"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating Project...
+                          </>
+                        ) : (
+                          "Preview"
+                        )}
+                      </Button>
                       <Button
                         type="submit"
-                        className="text-sm"
+                        className="text-sm w-40 bg-blue-600 hover:bg-blue-700"
                         disabled={isLoading}
                       >
                         {isLoading ? (
