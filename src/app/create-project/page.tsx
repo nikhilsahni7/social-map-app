@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { getAuthToken } from "@/lib/clientAuth";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
@@ -29,9 +29,9 @@ interface FormData {
 
 export default function ProjectDetailsForm() {
   const [supportItems, setSupportItems] = useState([
-    { item: "", quantity: "", byWhen: "", dropLocation: "" },
-    { item: "", quantity: "", byWhen: "", dropLocation: "" },
-    { item: "", quantity: "", byWhen: "", dropLocation: "" }
+    { item: "", quantity: "0", byWhen: "", dropLocation: "" },
+    { item: "", quantity: "0", byWhen: "", dropLocation: "" },
+    { item: "", quantity: "0", byWhen: "", dropLocation: "" }
   ]);
 
   const [file, setFile] = useState<File | null>(null);
@@ -83,8 +83,11 @@ export default function ProjectDetailsForm() {
     setSupportItems((prev) => [
       ...prev,
       { item: "", quantity: "", byWhen: "", dropLocation: "" },
-      
     ]);
+  };
+
+  const handleRemoveRow = (index: number) => {
+    setSupportItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleFileChange = (file: File) => {
@@ -254,9 +257,8 @@ export default function ProjectDetailsForm() {
                   </div>
                 </div>
 
-                {/* Category and Duration */}
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-2 md:space-x-2 w-full">
-                  <div className="flex flex-col w-full md:w-1/3 gap-1">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full">
+                  <div className="flex flex-col w-full md:w-1/3">
                     <label className="text-sm font-semibold text-blue-600">
                       Category:
                     </label>
@@ -318,26 +320,7 @@ export default function ProjectDetailsForm() {
                     onChange={handleFormInputChange}
                     className="text-sm"
                   />
-                  <div className="flex space-x-2">
-                    <Input
-                      name="latitude"
-                      placeholder="Latitude"
-                      value={formData.latitude}
-                      onChange={handleFormInputChange}
-                      className="text-sm"
-                      type="number"
-                      step="any"
-                    />
-                    <Input
-                      name="longitude"
-                      placeholder="Longitude"
-                      value={formData.longitude}
-                      onChange={handleFormInputChange}
-                      className="text-sm"
-                      type="number"
-                      step="any"
-                    />
-                  </div>
+
                 </div>
 
                 {/* Describe What You Want To Achieve and Picture of Success */}
@@ -499,25 +482,32 @@ export default function ProjectDetailsForm() {
                       </div>
 
                       {/* Drop Location Column */}
-                      <div className="col-span-4 border border-gray-200 rounded-md p-3">
+                      <div className="col-span-4 border border-gray-200 rounded-md p-3 relative">
                         {supportItems.map((item, index) => (
-                          <div key={index} className="mb-3">
+                          <div key={index} className="mb-3 flex items-center relative">
                             <Input
                               id={`dropLocation-${index}`}
                               value={item.dropLocation}
                               onChange={(e) =>
-                                handleInputChange(
-                                  index,
-                                  "dropLocation",
-                                  e.target.value
-                                )
+                                handleInputChange(index, "dropLocation", e.target.value)
                               }
-                              className="w-full h-9 text-sm text-center"
+                              className="w-full h-9 text-sm text-center mr-2"
                               placeholder="Location"
                             />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              onClick={() => handleRemoveRow(index)}
+                              className="h-9 w-9 p-0 absolute -right-12 flex-shrink-0"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
                           </div>
                         ))}
                       </div>
+
+
+
                     </div>
                   </div>
 
@@ -532,15 +522,23 @@ export default function ProjectDetailsForm() {
                           <span className="font-medium text-blue-600">
                             Item {index + 1}
                           </span>
-                          <Input
-                            value={item.item}
-                            onChange={(e) =>
-                              handleInputChange(index, "item", e.target.value)
-                            }
-                            className="w-2/3 p-2 text-sm"
-                            placeholder="Enter item"
-                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => handleRemoveRow(index)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
                         </div>
+                        <Input
+                          value={item.item}
+                          onChange={(e) =>
+                            handleInputChange(index, "item", e.target.value)
+                          }
+                          className="w-full p-2 text-sm"
+                          placeholder="Enter item"
+                        />
                         <div className="flex justify-between items-center">
                           <span className="font-medium text-blue-600">
                             Quantity
@@ -598,15 +596,15 @@ export default function ProjectDetailsForm() {
                       type="button"
                       variant="outline"
                       onClick={handleAddRow}
-                      className="text-sm w-48"
+                      className="text-sm w-40"
                     >
                       <PlusCircle className="h-4 w-4 mr-2" />
-                      Any Other Support
+                      Add Support
                     </Button>
 
                     <div className="flex items-center space-x-2">
                       <label className="text-sm text-gray-600">
-                        Other Support:
+                        Any Other Support:
                       </label>
                       <Input
                         name="otherSupport"
@@ -615,18 +613,15 @@ export default function ProjectDetailsForm() {
                         placeholder="Enter other support"
                         className="text-sm w-6/12"
                       />
-
-
                     </div>
                     <div className="flex flex-row gap-4 justify-center items-center mt-4 -mb-4">
                       <Button
-
                         className="text-sm w-40 bg-blue-600 hover:bg-blue-700"
                         disabled={isLoading}
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-3 animate-spin" />
                             Creating Project...
                           </>
                         ) : (
@@ -640,11 +635,11 @@ export default function ProjectDetailsForm() {
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-3 animate-spin" />
                             Creating Project...
                           </>
                         ) : (
-                          "Create Project"
+                          "Submit"
                         )}
                       </Button>
                     </div>
