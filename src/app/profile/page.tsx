@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import ProfileDetails from "@/components/SupportButton";
 
 export default function ProjectProfile() {
   // Static data that mirrors the structure of the creation form
@@ -233,27 +234,30 @@ export default function ProjectProfile() {
                     ))}
                   </div>
                 </div>
-                <div className="mt-6 flex flex-row w-full items-center">
-                  <Label className="text-sm font-semibold text-blue-600">
-                    Other Support:
-                  </Label>
-                  <div className="p-2 text-sm w-8/12">
-                    {projectData.otherSupport}
+                <div className="mt-6 w-full">
+                  {/* Other Support Section */}
+                  <div className="flex flex-col w-full">
+                    <Label className="text-sm font-semibold text-blue-600">Other Support:</Label>
+                    <div className="p-2 text-sm w-full">
+                      {projectData.otherSupport}
+                    </div>
                   </div>
-                  <div className="mt-6 flex flex-row w-full items-center">
-                    <Label className="text-sm font-semibold text-blue-600">
-                      Map Location
-                    </Label>
+
+                  {/* Map Location Section */}
+                  <div className="mt-6 w-full">
+                    <Label className="text-sm font-semibold text-blue-600">Map Location</Label>
                     <iframe
                       src={projectData.MapLocation}
                       width="100%"
-                      height="450"
+                      height="400"
                       style={{ border: 0 }}
                       allowFullScreen
                       loading="lazy"
+                      className="mt-2"
                     ></iframe>
                   </div>
                 </div>
+
               </div>
 
               {/* Updated Mobile View */}
@@ -304,7 +308,7 @@ export default function ProjectProfile() {
                   <Label className="text-sm font-semibold text-blue-600">
                     Other Support:
                   </Label>
-                  <div className="p-2 text-sm w-full md:w-8/12">
+                  <div className="p-2 text-sm w-full md:w-full">
                     {projectData.otherSupport}
                   </div>
                 </div>
@@ -313,6 +317,7 @@ export default function ProjectProfile() {
           </CardContent>
         </ScrollArea>
       </Card>
+      <ProfileDetails />
     </div>
   );
 }
