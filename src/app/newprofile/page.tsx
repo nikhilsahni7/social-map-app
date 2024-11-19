@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Target, Calendar, Award, Briefcase, Heart, MessageSquare, Layers } from "lucide-react";
 import ProfileDetails from "@/components/SupportButton";
+import Image from 'next/image';
 
 const projectData = {
     firstName: "John",
@@ -120,7 +121,7 @@ export default function App() {
             {/* Profile Header */}
             <div className="relative">
                 <div className="h-48 overflow-hidden">
-                    <img
+                    <Image
                         src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80"
                         alt="Profile Banner"
                         className="w-full h-full object-cover"
@@ -188,7 +189,7 @@ export default function App() {
                     <Card>
                         <CardContent className="p-6">
                             <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-                                <img
+                                <Image
                                     src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80"
                                     alt="Project Success Vision"
                                     className="w-full h-full object-cover"
