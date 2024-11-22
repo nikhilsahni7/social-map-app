@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { User } from "@/lib/models/user.model";
 import { createToken } from "@/lib/jwt";
+import { sendVerificationEmail } from "@/lib/email";
 import { z } from "zod";
+import crypto from "crypto";
 
 const signupSchema = z.object({
   name: z.string().min(2),
@@ -13,7 +15,6 @@ const signupSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-
     const body = await req.json();
     const validation = signupSchema.safeParse(body);
 
@@ -25,10 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { name, email, password } = validation.data;
-
-    const existingUser = await User.findOne({
-      email: email.toLowerCase(),
-    });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
 
     if (existingUser) {
       return NextResponse.json(
@@ -37,21 +35,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const verificationToken = crypto.randomBytes(32).toString("hex");
     const user = await User.create({
       name,
       email: email.toLowerCase(),
       password,
+      verificationToken,
+      verificationTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     });
+
+    await sendVerificationEmail(email, name, verificationToken);
 
     const token = createToken(user._id);
 
     return NextResponse.json({
-      message: "User created successfully",
+      message:
+        "User created successfully. Please check your email to verify your account.",
       token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
+        isVerified: user.isVerified,
       },
     });
   } catch (error) {

@@ -13,4 +13,8 @@ export const getAuthUser = () => {
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
+
+  if (typeof window !== "undefined") {
+    window.location.reload();
+  }
 };

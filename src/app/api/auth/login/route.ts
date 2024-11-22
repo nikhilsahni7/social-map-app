@@ -12,7 +12,6 @@ const loginSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-
     const body = await req.json();
     const validation = loginSchema.safeParse(body);
 
@@ -24,11 +23,18 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password } = validation.data;
-
     const user = await User.findOne({ email: email.toLowerCase() });
+
     if (!user) {
       return NextResponse.json(
         { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    if (!user.isVerified) {
+      return NextResponse.json(
+        { error: "Please verify your email before logging in" },
         { status: 401 }
       );
     }
@@ -50,6 +56,7 @@ export async function POST(req: NextRequest) {
         id: user._id,
         name: user.name,
         email: user.email,
+        isVerified: user.isVerified,
       },
     });
   } catch (error) {

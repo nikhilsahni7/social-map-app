@@ -19,17 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
 
-interface SignupResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  message: string;
-  error?: string;
-}
-
 export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,6 +26,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,12 +52,10 @@ export default function SignupPage() {
         throw new Error(data.error || "Signup failed");
       }
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      toast.success(data.message || "Welcome to SocialConnect!");
-      router.push("/");
-      router.refresh();
+      setIsEmailSent(true);
+      toast.success(
+        "Account created successfully! Please check your email to verify your account."
+      );
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not create account"
@@ -76,6 +64,32 @@ export default function SignupPage() {
       setIsLoading(false);
     }
   };
+
+  const handleResendVerification = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to resend verification email");
+      }
+
+      toast.success("A new verification email has been sent to your inbox");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to resend verification"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
       <motion.div
@@ -84,100 +98,135 @@ export default function SignupPage() {
         transition={{ duration: 0.5 }}
       >
         <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-blue-700">
-              Create an Account
-            </CardTitle>
-            <CardDescription className="text-center text-gray-600">
-              Join SocialConnect and start connecting
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-500" />
+          {!isEmailSent ? (
+            <>
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-center text-blue-700">
+                  Create an Account
+                </CardTitle>
+                <CardDescription className="text-center text-gray-600">
+                  Join us and start your journey
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="terms" required />
+                    <Label htmlFor="terms" className="text-sm text-gray-600">
+                      I agree to the{" "}
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Terms of Service
+                      </a>{" "}
+                      and{" "}
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Privacy Policy
+                      </a>
+                    </Label>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
                     ) : (
-                      <Eye className="h-4 w-4 text-gray-500" />
+                      "Create Account"
                     )}
                   </Button>
-                </div>
+                </form>
+              </CardContent>
+            </>
+          ) : (
+            <CardContent className="space-y-4 py-6">
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Check Your Email
+                </h3>
+                <p className="text-sm text-gray-600">
+                  We sent a verification link to{" "}
+                  <span className="font-medium text-gray-900">{email}</span>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Click the link in the email to verify your account.
+                </p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" required />
-                <Label htmlFor="terms" className="text-sm text-gray-600">
-                  I agree to the{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </a>
-                </Label>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResendVerification}
+                disabled={isLoading}
+              >
+                Resend Verification Email
               </Button>
-            </form>
-          </CardContent>
+              <p className="text-center text-sm text-gray-500">
+                Already verified?{" "}
+                <a
+                  href="/login"
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  Sign in
+                </a>
+              </p>
+            </CardContent>
+          )}
           <Separator className="my-4" />
           <CardFooter className="flex flex-col space-y-4">
             <p className="text-center text-sm text-gray-600">

@@ -1,3 +1,4 @@
+// app/login/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -19,21 +20,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
 
-interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  message: string;
-  error?: string;
-}
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -50,6 +41,10 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.error === "Please verify your email before logging in") {
+          setNeedsVerification(true);
+          throw new Error(data.error);
+        }
         throw new Error(data.error || "Login failed");
       }
 
@@ -62,6 +57,33 @@ export default function LoginPage() {
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Invalid credentials"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to resend verification email");
+      }
+
+      toast.success(
+        "If your email is unverified, you will receive a new verification link shortly"
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to resend verification"
       );
     } finally {
       setIsLoading(false);
@@ -118,9 +140,13 @@ export default function LoginPage() {
                     Remember me
                   </Label>
                 </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">
+                <Button
+                  variant="link"
+                  className="text-sm text-blue-600 hover:underline p-0"
+                  onClick={() => router.push("/forgot-password")}
+                >
                   Forgot password?
-                </a>
+                </Button>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
@@ -133,6 +159,21 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+            {needsVerification && (
+              <div className="mt-4">
+                <p className="text-sm text-red-600 mb-2">
+                  Please verify your email before logging in.
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleResendVerification}
+                  disabled={isLoading}
+                >
+                  Resend Verification Email
+                </Button>
+              </div>
+            )}
           </CardContent>
           <Separator className="my-4" />
           <CardFooter className="flex flex-col space-y-4">
