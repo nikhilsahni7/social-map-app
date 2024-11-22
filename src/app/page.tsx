@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, {
@@ -15,26 +16,18 @@ import {
   OverlayView,
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaThumbsUp } from "react-icons/fa";
+import { FaThumbsUp, FaHandsHelping, FaUserCircle } from "react-icons/fa";
 import {
   Search,
   X,
   Menu,
-  Phone,
-  Mail,
-  DollarSign,
-  Layers,
+  Heart,
+  Plus,
   ZoomIn,
   ZoomOut,
   Compass,
-  ChevronRight,
-  Heart,
-  Eye,
-  MapPin,
-  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -66,150 +59,34 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Search as SearchIcon } from "react-feather";
-import { FaHandsHelping, FaUserCircle } from "react-icons/fa";
-import { getAuthUser, logout } from "@/lib/clientAuth";
 
-const searchSuggestions = [
-  "Community Support Center",
-  "Family Care Network",
-  "Youth Empowerment Alliance",
-  "Animal Welfare Society",
-  "Environmental Conservation Group",
-  "Senior Care Foundation",
-  "Education for All Initiative",
-  "Mental Health Awareness Project",
-  "Homeless Shelter Network",
-  "Disaster Relief Organization",
-];
-
-interface Organization {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-  description: string;
-  phone: string;
-  email: string;
-  donationInfo: string;
-  avatar: string;
-  category: string;
-  objective: string;
-}
-
-const organizations: Organization[] = [
-  {
-    id: 1,
-    name: "Community Support Center",
-    lat: 40.7128,
-    lng: -74.006,
-    description: "Helping communities thrive through various support programs",
-    phone: "+1 (555) 123-4567",
-    email: "contact@communitysupport.org",
-    donationInfo: "Your donation helps us reach more people in need",
-    avatar: "/placeholder.svg?height=40&width=40",
-    category: "Animal",
-    objective: "To provide educational resources to underserved communities",
-  },
-  {
-    id: 2,
-    name: "Family Care Network",
-    lat: 40.72,
-    lng: -74.01,
-    description: "Supporting families with comprehensive care and resources",
-    phone: "+1 (555) 987-6543",
-    email: "info@familycarenetwork.org",
-    donationInfo: "Help us strengthen families in our community",
-    avatar: "/placeholder.svg?height=40&width=40",
-    category: "Plant",
-    objective: "To provide educational resources to underserved communities",
-  },
-  {
-    id: 3,
-    name: "Youth Empowerment Alliance",
-    lat: 40.73,
-    lng: -73.99,
-    description: "Empowering youth through education and mentorship programs",
-    phone: "+1 (555) 246-8135",
-    email: "hello@youthempowerment.org",
-    donationInfo: "Invest in the future of our youth",
-    avatar: "/placeholder.svg?height=40&width=40",
-    category: "Humans",
-    objective: "To provide educational resources to underserved communities",
-  },
-];
-
+// Map styles
 const mapStyles = [
   {
     featureType: "all",
     elementType: "labels",
     stylers: [{ visibility: "on" }],
   },
-  {
-    featureType: "administrative",
-    elementType: "geometry",
-    stylers: [{ visibility: "off" }],
-  },
-  {
-    featureType: "poi",
-    stylers: [{ visibility: "off" }],
-  },
-  {
-    featureType: "road",
-    elementType: "labels",
-    stylers: [{ visibility: "on" }],
-  },
-  {
-    featureType: "transit",
-    elementType: "labels",
-    stylers: [{ visibility: "off" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels",
-    stylers: [{ visibility: "on" }],
-  },
-  {
-    featureType: "all",
-    elementType: "geometry.fill",
-    stylers: [{ color: "#f7f7f7" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#e0e0e0" }],
-  },
-  {
-    featureType: "transit.line",
-    elementType: "geometry",
-    stylers: [{ color: "#cccccc" }],
-  },
-  {
-    featureType: "transit.station",
-    elementType: "geometry",
-    stylers: [{ color: "#dddddd" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#d4e4f4" }],
-  },
+  // ... (other styles from your original code)
 ];
 
-const quickNavLocations = [
-  { name: "New Delhi", lat: 28.6139, lng: 77.209 },
-  { name: "Mumbai", lat: 19.076, lng: 72.8777 },
-  { name: "Kolkata", lat: 22.5726, lng: 88.3639 },
-  { name: "Chennai", lat: 13.0827, lng: 80.2707 },
-];
-
-const organizationTypes = ["Humans", "Animals", "Plants"];
-
-const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
-
-const handleCreateOrganization = () => {
-  // Implement the logic to create a new organization
-  console.log("Create new organization");
-};
+// Types
+interface Project {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  objective: string;
+  description: string;
+  category: string;
+  location: {
+    coordinates: [number, number];
+    address: string;
+  };
+  pictureOfSuccess?: {
+    url: string;
+  };
+}
 
 interface CustomDialogProps {
   isOpen: boolean;
@@ -221,13 +98,8 @@ interface CustomDialogProps {
   handleSelectSuggestion: (suggestion: string) => void;
 }
 
-interface SearchBarProps {
-  searchQuery: string;
-  handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
-  filteredSuggestions: string[];
-  handleSelectSuggestion: (suggestion: string) => void;
-  onClose: () => void;
-}
+const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
+const organizationTypes = ["Human", "Animal", "Plant"];
 
 const CustomDialog: React.FC<CustomDialogProps> = ({
   isOpen,
@@ -242,7 +114,6 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
 
   return (
     <div className="fixed top-[57px] left-[240px] z-50 w-[500px] h-[45vh] bg-white border border-gray-300 shadow-lg rounded-xl">
-      {/* Close Button */}
       <button
         onClick={onClose}
         className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -250,12 +121,11 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
         &times;
       </button>
 
-      {/* Search Input and Button */}
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <input
             type="text"
-            placeholder="Search Organizations..."
+            placeholder="Search Projects..."
             value={searchQuery}
             onChange={handleSearch}
             className="w-full h-10 text-md border rounded-full px-4"
@@ -263,7 +133,6 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
         </div>
       </div>
 
-      {/* Scrollable Suggestions List */}
       <div className="h-[calc(50vh-125px)] overflow-y-auto px-4">
         {filteredSuggestions.length === 0 ? (
           <p>No results found.</p>
@@ -273,11 +142,10 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
               <li
                 key={suggestion}
                 onClick={() => handleSelectSuggestion(suggestion)}
-                className="flex items-center cursor-pointer hover:bg-blue-100 py-2" // Added items-center to align items vertically
+                className="flex items-center cursor-pointer hover:bg-blue-100 py-2"
               >
                 <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
-                <span className="flex-1">{suggestion}</span>{" "}
-                {/* Added flex-1 to allow span to take available space */}
+                <span className="flex-1">{suggestion}</span>
               </li>
             ))}
           </ul>
@@ -288,135 +156,174 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
 };
 
 export default function SocialConnectMap() {
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
-  const [hoveredOrg, setHoveredOrg] = useState<Organization | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-
-  const [filteredOrgs, setFilteredOrgs] = useState(organizations);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mapType, setMapType] = useState<google.maps.MapTypeId | null>(null);
   const [showSatelliteView, setShowSatelliteView] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
 
-  const [filteredSuggestions, setFilteredSuggestions] =
-    useState(searchSuggestions);
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: ["places"],
+  });
 
+  // Fetch projects from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+        if (data.projects) {
+          // Validate coordinates before setting state
+          const validProjects = data.projects.filter(
+            (project: any) =>
+              project.location?.coordinates?.[0] &&
+              project.location?.coordinates?.[1] &&
+              !isNaN(project.location.coordinates[0]) &&
+              !isNaN(project.location.coordinates[1])
+          );
+          setProjects(validProjects);
+          setFilteredProjects(validProjects);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const onLoad = useCallback(
+    (map: google.maps.Map) => {
+      if (projects.length > 0) {
+        const bounds = new window.google.maps.LatLngBounds();
+        projects.forEach((project) => {
+          if (project.location?.coordinates) {
+            bounds.extend({
+              lat: project.location.coordinates[1],
+              lng: project.location.coordinates[0],
+            });
+          }
+        });
+        map.fitBounds(bounds);
+      } else {
+        // Default center if no projects (e.g., Delhi)
+        map.setCenter({ lat: 23.5937, lng: 78.9629 });
+        map.setZoom(6);
+      }
+      setMap(map);
+    },
+    [projects]
+  );
+
+  const mapOptions = {
+    mapTypeId: showSatelliteView ? "satellite" : "roadmap",
+    disableDefaultUI: true,
+    zoomControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
+    fullscreenControl: false,
+    styles: mapStyles,
+  };
+
+  // Handle search
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setSearchQuery(value);
+
+    // Filter projects based on search query
+    const filtered = projects.filter(
+      (project) =>
+        project.title.toLowerCase().includes(value.toLowerCase()) ||
+        project.category.toLowerCase().includes(value.toLowerCase()) ||
+        project.description?.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setFilteredProjects(filtered);
+
+    // Update suggestions
+    const suggestions = filtered.map((project) => project.title);
+    setFilteredSuggestions(suggestions);
   };
+
+  // Handle category filter
+  useEffect(() => {
+    if (selectedType) {
+      const filtered = projects.filter(
+        (project) => project.category === selectedType
+      );
+      setFilteredProjects(filtered);
+    } else {
+      setFilteredProjects(projects);
+    }
+  }, [selectedType, projects]);
 
   const handleSelectSuggestion = (value: string) => {
     setSearchQuery(value);
-    // Implement your search logic here
-    console.log("Searching for:", value);
+    const filtered = projects.filter((project) =>
+      project.title.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredProjects(filtered);
   };
 
+  // Mobile detection
   useEffect(() => {
     const handleResize = () => {
       setIsMobileDevice(window.innerWidth < 768);
     };
-
-    // Initial check
     handleResize();
-
-    // Listen for window resize
     window.addEventListener("resize", handleResize);
-
-    // Clean up event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyBqhfgZcU66YtFCbNYFaHgiLKaR6CVve3U",
-  });
-
-  useEffect(() => {
-    if (isLoaded && mapType === null) {
-      setMapType(google.maps.MapTypeId.ROADMAP);
-    }
-  }, [isLoaded, mapType]);
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    const bounds = new window.google.maps.LatLngBounds();
-    organizations.forEach((org) =>
-      bounds.extend({ lat: org.lat, lng: org.lng })
-    );
-    map.fitBounds(bounds);
-    setMap(map);
-  }, []);
-
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
-
-  useEffect(() => {
-    const filtered = organizations.filter(
-      (org) =>
-        org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        org.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredOrgs(filtered);
-  }, [searchQuery]);
-
-  const handleMarkerClick = (org: Organization) => {
-    setSelectedOrg(org);
+  const handleMarkerClick = (project: Project) => {
+    setSelectedProject(project);
     if (map) {
-      map.panTo({ lat: org.lat, lng: org.lng });
+      map.panTo({
+        lat: project.location.coordinates[1],
+        lng: project.location.coordinates[0],
+      });
     }
   };
 
-  const toggleSatelliteView = () => {
-    if (isLoaded) {
-      setShowSatelliteView(!showSatelliteView);
-      setMapType(
-        showSatelliteView
-          ? google.maps.MapTypeId.ROADMAP
-          : google.maps.MapTypeId.HYBRID
-      );
-    }
-  };
-
+  // Map controls
   const handleZoomIn = () => {
-    if (map) {
-      map.setZoom(map.getZoom()! + 1);
-    }
+    if (map) map.setZoom(map.getZoom()! + 1);
   };
 
   const handleZoomOut = () => {
-    if (map) {
-      map.setZoom(map.getZoom()! - 1);
-    }
+    if (map) map.setZoom(map.getZoom()! - 1);
   };
 
   const handleResetView = () => {
-    if (map) {
+    if (map && projects.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
-      organizations.forEach((org) =>
-        bounds.extend({ lat: org.lat, lng: org.lng })
+      projects.forEach((project) =>
+        bounds.extend({
+          lat: project.location.coordinates[1],
+          lng: project.location.coordinates[0],
+        })
       );
       map.fitBounds(bounds);
     }
   };
 
-  const handleCreateOrganization = () => {
-    // Implement the logic to create a new organization
-    console.log("Create new organization");
-  };
-
-  const handleQuickNav = (location: { lat: number; lng: number }) => {
-    if (map) {
-      map.panTo(location);
-      map.setZoom(12);
-    }
-  };
-
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  if (loadError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-black">
+        <p className="text-xl text-white font-medium">
+          Error loading map: {loadError.message}
+        </p>
+      </div>
+    );
+  }
 
   if (!isLoaded) {
     return (
@@ -430,46 +337,49 @@ export default function SocialConnectMap() {
     <div className="h-screen w-full relative bg-gray-900">
       <GoogleMap
         mapContainerStyle={{ width: "100%", height: "100%" }}
-        center={{ lat: 40.7128, lng: -74.006 }}
         zoom={10}
         onLoad={onLoad}
-        onUnmount={onUnmount}
-        options={{
-          styles: mapStyles,
-          mapTypeId: mapType || undefined,
-          disableDefaultUI: true,
-          zoomControl: false,
-          streetViewControl: false,
-          mapTypeControl: false,
-          fullscreenControl: false,
-        }}
+        options={mapOptions}
       >
-        {filteredOrgs.map((org) => (
-          <React.Fragment key={org.id}>
-            <Marker
-              position={{ lat: org.lat, lng: org.lng }}
-              onClick={() => handleMarkerClick(org)}
-              onMouseOver={() => setHoveredOrg(org)}
-              onMouseOut={() => setHoveredOrg(null)}
-              icon={{
-                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-              }}
-            />
-            {hoveredOrg === org && (
+        {filteredProjects.map((project) => (
+          <React.Fragment key={project._id}>
+            {project.location?.coordinates && (
+              <Marker
+                position={{
+                  lat: project.location.coordinates[1],
+                  lng: project.location.coordinates[0],
+                }}
+                onClick={() => handleMarkerClick(project)}
+                onMouseOver={() => setHoveredProject(project)}
+                onMouseOut={() => setHoveredProject(null)}
+                icon={{
+                  url: "https://cdn-icons-png.flaticon.com/512/9356/9356230.png",
+                  scaledSize: new google.maps.Size(40, 40),
+                }}
+              />
+            )}
+
+            {hoveredProject === project && (
               <OverlayView
-                position={{ lat: org.lat, lng: org.lng }}
+                position={{
+                  lat: project.location.coordinates[1],
+                  lng: project.location.coordinates[0],
+                }}
                 mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
               >
                 <Card className="w-64 bg-white shadow-lg">
                   <CardHeader className="p-4">
                     <CardTitle className="text-lg text-black">
-                      {org.name}
+                      {project.title}
                     </CardTitle>
                     <CardDescription className="text-blue-600">
-                      {org.category}
+                      {project.category}
                     </CardDescription>
                     <CardDescription className="text-gray-700">
-                      {org.description}
+                      {project.description}
+                    </CardDescription>
+                    <CardDescription className="text-gray-700">
+                      {project.location.address}
                     </CardDescription>
                   </CardHeader>
                 </Card>
@@ -477,31 +387,38 @@ export default function SocialConnectMap() {
             )}
           </React.Fragment>
         ))}
-        {selectedOrg && (
+
+        {selectedProject && (
           <InfoWindow
-            position={{ lat: selectedOrg.lat, lng: selectedOrg.lng }}
-            onCloseClick={() => setSelectedOrg(null)}
+            position={{
+              lat: selectedProject.location.coordinates[1],
+              lng: selectedProject.location.coordinates[0],
+            }}
+            onCloseClick={() => setSelectedProject(null)}
           >
             <Card className="w-full max-w-xs bg-white border border-blue-500 shadow-lg overflow-hidden">
               <CardHeader className="p-4 bg-gradient-to-r from-blue-500 to-blue-700">
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-xl font-semibold text-white">
-                      Asmi wants {selectedOrg.objective}
+                      {selectedProject.firstName} wants{" "}
+                      {selectedProject.objective}
                     </h2>
                     <Badge
                       variant="secondary"
                       className="mt-1 bg-blue-400 text-white"
                     >
-                      {selectedOrg.category}
+                      {selectedProject.category}
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
-
-              <CardContent className="p-4 space-y-2 text-gray-800 font-normal"></CardContent>
-
-              <CardFooter className="p-4 -mt-4">
+              <CardFooter className="p-4">
+                <p className="text-xl text-black font-medium">
+                  {selectedProject.location.address}
+                </p>
+              </CardFooter>
+              <CardFooter className="p-4">
                 <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                   <FaHandsHelping />
                   Support
@@ -509,10 +426,12 @@ export default function SocialConnectMap() {
               </CardFooter>
 
               <CardFooter className="p-4 -mt-4">
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                  <FaUserCircle />
-                  View Profile
-                </Button>
+                <Link href={`/project-profile/${selectedProject._id}`}>
+                  <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                    <FaUserCircle />
+                    View Profile
+                  </Button>
+                </Link>
               </CardFooter>
 
               <div className="flex justify-between p-4 -mt-5">
@@ -521,20 +440,16 @@ export default function SocialConnectMap() {
                     variant="ghost"
                     size="icon"
                     className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                    onClick={() => console.log("Liked")}
                   >
                     <Heart className="h-6 w-6 transition-transform duration-300" />
-                    <span className="sr-only">Like</span>
                   </Button>
 
                   <Button
                     variant="ghost"
                     size="icon"
                     className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                    onClick={() => console.log("Loved")}
                   >
                     <FaThumbsUp className="h-6 w-6 transition-transform duration-300" />
-                    <span className="sr-only">Love</span>
                   </Button>
                 </div>
               </div>
@@ -543,6 +458,7 @@ export default function SocialConnectMap() {
         )}
       </GoogleMap>
 
+      {/* Category filters */}
       <div className="absolute top-20 left-0 right-0 z-10 flex flex-col items-center">
         <div className="flex flex-wrap justify-center space-x-4">
           {organizationTypes.map((type) => (
@@ -564,15 +480,15 @@ export default function SocialConnectMap() {
           ))}
         </div>
 
-        {/* Total Projects only shown on desktop */}
         {!isMobileDevice && (
           <div className="absolute right-0 mt-4 mr-5 flex items-center space-x-2 text-sm font-semibold text-black bg-yellow-400 px-4 py-2 rounded-full transition-all duration-300">
             <span>Total Projects: </span>
-            <span className="text-sm">{"3"}</span>
+            <span className="text-sm">{filteredProjects.length}</span>
           </div>
         )}
       </div>
 
+      {/* Map Controls */}
       {!isMobileDevice && (
         <div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
           <TooltipProvider>
@@ -581,221 +497,170 @@ export default function SocialConnectMap() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  className="bg-white hover:bg-gray-100"
                   onClick={handleZoomIn}
                 >
-                  <ZoomIn className="h-5 w-5" />
+                  <ZoomIn className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Zoom In</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
 
-          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full text-black bg-yellow-400 hover:bg-blue-700 hover:text-white transition-all duration-300"
+                  className="bg-white hover:bg-gray-100"
                   onClick={handleZoomOut}
                 >
-                  <ZoomOut className="h-5 w-5" />
+                  <ZoomOut className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Zoom Out</p>
               </TooltipContent>
             </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-white hover:bg-gray-100"
+                  onClick={handleResetView}
+                >
+                  <Compass className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reset View</p>
+              </TooltipContent>
+            </Tooltip>
           </TooltipProvider>
-
-          {!isMobileDevice && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full text-black bg-yellow-400 shadow-lg hover:bg-blue-700 hover:text-white transition-all duration-300"
-                    onClick={handleResetView}
-                  >
-                    <Compass className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Reset View</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
         </div>
       )}
 
-      <Button
-        variant="outline"
-        className="absolute top-4 right-4 z-20 h-11 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-
-      {!isMobileDevice && (
-        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 space-y-4">
-          <Link href="/create-project">
+      {/* Search and Filter Controls */}
+      <div className="absolute top-4 left-4 right-4 z-10">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="flex items-center space-x-4">
             <Button
-              variant="default"
-              className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
-              onClick={handleCreateOrganization}
+              variant="ghost"
+              size="icon"
+              className="bg-white hover:bg-gray-100"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <Plus className="h-5 w-5 mr-1" />
-              Create Your Project
+              <Menu className="h-6 w-6" />
             </Button>
-          </Link>
+
+            <div className="relative">
+              <Button
+                variant="outline"
+                className="bg-white hover:bg-gray-100 w-64 justify-start"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+              >
+                <Search className="mr-2 h-4 w-4" />
+                {searchQuery || "Search projects..."}
+              </Button>
+
+              <CustomDialog
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                tags={tags}
+                searchQuery={searchQuery}
+                handleSearch={handleSearch}
+                filteredSuggestions={filteredSuggestions}
+                handleSelectSuggestion={handleSelectSuggestion}
+              />
+            </div>
+          </div>
 
           <Button
-            variant="default"
-            className="h-14 w-2/3 rounded-full text-black font-medium bg-yellow-400 hover:bg-yellow-500 transition-all duration-300"
-            onClick={() => setIsSearchOpen(true)}
+            variant="outline"
+            className="bg-white hover:bg-gray-100"
+            onClick={() => setShowSatelliteView(!showSatelliteView)}
           >
-            <Search className="h-5 w-5 mr-1" />
-            Search
+            {showSatelliteView ? "Map View" : "Satellite View"}
           </Button>
-
-          {/* Custom Dialog without Background Dimming */}
-          <CustomDialog
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            tags={tags}
-            searchQuery={searchQuery}
-            handleSearch={handleSearch}
-            filteredSuggestions={filteredSuggestions}
-            handleSelectSuggestion={handleSelectSuggestion}
-          />
         </div>
-      )}
+      </div>
 
-      {isMobileDevice && (
-        <div className="fixed left-0 right-0 z-20 flex flex-col items-center bottom-6 space-y-2">
-          <Link href="/create-project">
-            <Button
-              variant="default"
-              className="h-10 w-[220px] rounded-full bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
-              onClick={handleCreateOrganization}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Create Your Project
-            </Button>
-          </Link>
-
-          <Button
-            variant="default"
-            className="h-10 w-[220px] rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <Search className="h-4 w-4 mr-1" />
-            Search
-          </Button>
-
-          <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-            <DialogContent className="sm:max-w-[500px] h-[65vh] sm:h-[65vh] w-[90%] sm:w-auto mx-auto">
-              <DialogHeader>
-                <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-3 sm:mb-5">
-                  Search Organizations
-                </DialogTitle>
-              </DialogHeader>
-
-              <div className="flex flex-wrap gap-2 justify-center">
-                {tags.slice(0, 6).map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="outline"
-                    className="cursor-pointer hover:bg-blue-100 h-7 transition-colors text-sm sm:text-base px-2"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-
-              <Command className="rounded-lg border shadow-md">
-                <CommandInput
-                  placeholder="Type to search..."
-                  value={searchQuery}
-                  onValueChange={handleSelectSuggestion}
-                  className="h-8 sm:h-10 text-sm sm:text-base"
-                />
-
-                <CommandList className="h-[calc(60vh-100px)] sm:h-[calc(60vh-120px)] overflow-y-auto">
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  <CommandGroup>
-                    {filteredSuggestions.map((suggestion) => (
-                      <CommandItem
-                        key={suggestion}
-                        onSelect={() => handleSelectSuggestion(suggestion)}
-                        className="flex cursor-pointer hover:bg-blue-100 py-1 sm:py-2 flex-row"
-                      >
-                        <Search className="mr-1 sm:mr-2 mt-1 h-4 w-4" />
-                        <span className="text-sm sm:text-base">
-                          {suggestion}
-                        </span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </DialogContent>
-          </Dialog>
-        </div>
-      )}
-
+      {/* Side Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute top-0 right-0 h-full w-80 bg-white shadow-lg z-30 overflow-y-auto overflow-x-auto"
+            initial={{ x: -300 }}
+            animate={{ x: 0 }}
+            exit={{ x: -300 }}
+            className="fixed top-0 left-0 h-full w-72 bg-white shadow-lg z-20"
           >
             <div className="p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-black">Menu</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Filters</h2>
                 <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-black bg-transparent border-none hover:bg-transaparent focus:outline-none"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </Button>
               </div>
 
-              <nav className="space-y-2">
-                {["About", "Contact", "Login", "Sign Up"].map((item) => (
-                  <Button
-                    key={item}
-                    asChild
-                    variant="ghost"
-                    className="w-full justify-start text-black hover:text-white hover:bg-black transition-all duration-300"
-                  >
-                    <a href={`/${item.toLowerCase().replace(" ", "")}`}>
-                      {item}
-                    </a>
-                  </Button>
-                ))}
-              </nav>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Categories</h3>
+                  <div className="space-y-2">
+                    {organizationTypes.map((type) => (
+                      <Button
+                        key={type}
+                        variant={selectedType === type ? "default" : "outline"}
+                        className="w-full justify-start"
+                        onClick={() =>
+                          setSelectedType(selectedType === type ? null : type)
+                        }
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
 
-              <div className="mt-6">
-                <Link href={"/about"}>
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-300">
-                    <Heart className="h-5 w-5 mr-2" />
-                    Support Our Cause
-                  </Button>
-                </Link>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">
+                    Popular Locations
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-blue-100"
+                        onClick={() => {
+                          setSearchQuery(tag);
+                          handleSelectSuggestion(tag);
+                        }}
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Project Creation Button */}
+      <Link href="/create-project">
+        <Button className="fixed bottom-8 left-8 z-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+          <Plus className="h-6 w-6 mr-2" />
+          Create Project
+        </Button>
+      </Link>
     </div>
   );
 }

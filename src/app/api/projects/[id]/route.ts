@@ -1,29 +1,39 @@
-import { NextResponse, NextRequest } from "next/server";
-
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-
 import { Project } from "@/lib/models/project.model";
+import mongoose from "mongoose";
 
-import { auth } from "@/lib/auth";
-
-interface User {
-  _id: string;
-}
-
-// GET /api/projects/[id] - Fetch a project by ID
-export async function GET(req: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const user = (await auth(req)) as User;
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Establish database connection
+    await connectDB();
+
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json(
+        { error: "Invalid project ID format" },
+        { status: 400 }
+      );
     }
 
-    await connectDB();
-    const projects = await Project.find({ creator: user._id });
+    // Find the project using Mongoose
+    const project = await Project.findById(params.id);
 
-    return NextResponse.json(projects);
+    // If no project is found, return 404
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    // Return the project data
+    return NextResponse.json(project);
   } catch (error) {
     console.error("Project fetch error:", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch project" },
+      { status: 500 }
+    );
   }
 }

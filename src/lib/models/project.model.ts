@@ -7,6 +7,14 @@ const projectSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -39,7 +47,6 @@ const projectSchema = new mongoose.Schema(
       },
       coordinates: {
         type: [Number], // [longitude, latitude]
-        required: true,
       },
       address: String,
     },
@@ -63,6 +70,5 @@ const projectSchema = new mongoose.Schema(
 );
 
 projectSchema.index({ location: "2dsphere" });
-
 export const Project =
   mongoose.models.Project || mongoose.model("Project", projectSchema);

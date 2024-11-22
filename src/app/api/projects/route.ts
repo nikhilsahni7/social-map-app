@@ -29,6 +29,8 @@ export async function POST(req: NextRequest) {
 
     const projectData = {
       creator: user._id,
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
       title: formData.get("title"),
       objective: formData.get("objective"),
       description: formData.get("description"),
@@ -51,7 +53,6 @@ export async function POST(req: NextRequest) {
     };
 
     const project = await Project.create(projectData);
-
     return NextResponse.json({
       message: "Project created successfully",
       project,
@@ -61,7 +62,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
-
 // GET /api/projects - Fetch all projects
 export async function GET(req: NextRequest) {
   try {
