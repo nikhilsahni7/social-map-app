@@ -1,12 +1,13 @@
-"use client";
-
+"use client"
+import React from 'react';
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Target,
   Calendar,
@@ -14,7 +15,11 @@ import {
   Briefcase,
   Heart,
   MessageSquare,
-  Layers,
+  ChevronRight,
+  MapPin,
+  Clock,
+  Package,
+  Share2
 } from "lucide-react";
 
 interface ProjectData {
@@ -54,6 +59,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSupporting, setIsSupporting] = useState(false);
 
   const relatedProjects = [
     {
@@ -95,93 +101,139 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="space-y-4 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600">Loading project details...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !projectData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Error: {error}
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="p-6 max-w-md mx-auto">
+          <div className="text-red-500 flex flex-col items-center gap-4">
+            <span className="text-4xl">⚠️</span>
+            <p className="text-lg font-medium">Error: {error}</p>
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="mt-4"
+            >
+              Try Again
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
+  const handleSupport = () => {
+    setIsSupporting(true);
+    // Add support logic here
+    setTimeout(() => setIsSupporting(false), 1000);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Profile Header */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
       <div className="relative">
-        <div className="h-48 overflow-hidden">
+        <div className="h-40 lg:h-56 overflow-hidden">
+          <div className="absolute inset-0 bg-blue-600 mix-blend-multiply opacity-10"></div>
           <Image
-            width={1200}
-            height={300}
-            src="/api/placeholder/1200/300"
-            alt="Profile Banner"
+            width={1920}
+            height={200}
+            src="/api/placeholder/1920/500"
+            alt="Project Banner"
             className="w-full h-full object-cover"
+            priority
           />
         </div>
 
-        <div className="relative bg-white shadow-sm p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="absolute -top-12 left-1/2 md:left-6 transform -translate-x-1/2 md:translate-x-0">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-100 border-4 border-white flex items-center justify-center shadow-lg">
-              <span className="text-3xl font-bold text-blue-600">
-                {projectData.firstName[0]}
-                {projectData.lastName[0]}
-              </span>
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative -mt-32">
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                <Avatar className="w-32 h-32 border-4 border-white shadow-xl">
+                  <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    {projectData.firstName[0]}
+                    {projectData.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
 
-          <div className="flex-1 text-center md:text-left mt-12 md:mt-0 md:ml-40">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {projectData.firstName} {projectData.lastName}
-            </h1>
-            <p className="text-lg text-blue-600 font-medium mt-1">
-              {projectData.title}
-            </p>
-            <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-              <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">
-                {projectData.category}
-              </span>
+                <div className="flex-1 space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {/* <Badge variant="secondary" className="bg-blue-50 text-blue-600 hover:bg-blue-100">
+                      {projectData.category}
+                    </Badge> */}
+                  </div>
+
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {projectData.firstName} {projectData.lastName}
+                    </h1>
+                    <p className="text-xl text-blue-600 font-medium mt-1">
+                      {projectData.title}
+                    </p>
+                  </div>
+
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         {/* Project Details */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardContent className="p-6 space-y-6">
+        <div className="grid lg:grid-cols-2 gap-8">
+          <Card className="overflow-hidden">
+            <CardContent className="p-6 space-y-8">
               <div className="flex items-start gap-4">
-                <Target className="w-5 h-5 text-blue-600 mt-1" />
-                <div>
-                  <Label className="text-sm text-blue-600">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <Target className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-blue-600">
                     Project Objective
                   </Label>
-                  <p className="mt-1 text-gray-700">{projectData.objective}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <Calendar className="w-5 h-5 text-blue-600 mt-1" />
-                <div>
-                  <Label className="text-sm text-blue-600">Timeline</Label>
-                  <p className="mt-1 text-gray-700">
-                    Starts {projectData.duration.startDate} | Ends{" "}
-                    {projectData.duration.endDate}
+                  <p className="mt-2 text-gray-700 leading-relaxed">
+                    {projectData.objective}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <Award className="w-5 h-5 text-blue-600 mt-1" />
-                <div>
-                  <Label className="text-sm text-blue-600">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-blue-600">
+                    Timeline
+                  </Label>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-gray-700">
+                      <span className="font-medium">Starts:</span> {projectData.duration.startDate}
+                    </p>
+                    <p className="text-gray-700">
+                      <span className="font-medium">Ends:</span> {projectData.duration.endDate}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <Award className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-blue-600">
                     Project Description
                   </Label>
-                  <p className="mt-1 text-gray-700">
+                  <p className="mt-2 text-gray-700 leading-relaxed">
                     {projectData.description}
                   </p>
                 </div>
@@ -189,19 +241,16 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="overflow-hidden">
             <CardContent className="p-6">
-              <Label className="text-lg font-semibold text-gray-900 mb-3">
-                The Project Idea in a Picture
+              <Label className="text-lg font-semibold text-gray-900 block mb-4">
+                Project Vision
               </Label>
-              <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
+              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100">
                 <Image
                   width={600}
                   height={400}
-                  src={
-                    projectData.pictureOfSuccess?.url ||
-                    "/api/placeholder/600/400"
-                  }
+                  src={projectData.pictureOfSuccess?.url || "/api/placeholder/600/400"}
                   alt="Project Success Vision"
                   className="w-full h-full object-cover"
                 />
@@ -211,77 +260,112 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         </div>
 
         {/* Support Section */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-semibold">Support Required</h2>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <Briefcase className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-900">Support Required</h2>
               </div>
-              <div className="text-sm text-blue-600 gap-5 flex flex-row items-center">
-                <p>Click Here to Support and Do Your Bit</p>
-                <Button className="bg-blue-600">Support Project</Button>
+              <div className="flex flex-row gap-4 items-center">
+                <Label className="text-sm font-medium text-blue-600 block">
+                  DO YOUR BIT BY SUPPORTING THIS PROJECT
+                </Label>
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
+                  onClick={handleSupport}
+                  disabled={isSupporting}
+                >
+                  Support Project
+                </Button>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
-              <Label className="text-sm font-bold text-gray-700">Items</Label>
-              <Label className="text-sm font-bold text-gray-700">
-                Quantity
-              </Label>
-              <Label className="text-sm font-bold text-gray-700">
-                Needed By
-              </Label>
-              <Label className="text-sm font-bold text-gray-700">
-                Drop Location
-              </Label>
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-medium text-gray-700">
+                <div>Items</div>
+                <div>Quantity</div>
+                <div>Needed By</div>
+                <div>Drop Location</div>
+              </div>
+
+              {projectData.supportItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-blue-600" />
+                    <span>{item.item}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>{item.quantity}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    <span>{item.byWhen}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span>{item.dropLocation}</span>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {projectData.supportItems.map((item, index) => (
-              <div
-                key={index}
-                className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg"
-              >
-                <p>{item.item}</p>
-                <p>{item.quantity}</p>
-                <p>{item.byWhen}</p>
-                <p>{item.dropLocation}</p>
-              </div>
-            ))}
-
-            <div className="mt-6">
-              <Label className="text-sm text-blue-600">
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+              <Label className="text-sm font-medium text-blue-600 block mb-2">
                 Additional Support Needed
               </Label>
-              <p className="mt-2 text-gray-700">{projectData.otherSupport}</p>
+              <p className="text-gray-700 leading-relaxed">
+                {projectData.otherSupport}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Related Projects */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Other Projects by {projectData.firstName}
-          </h2>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Other related Projects
+            </h2>
+
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6">
             {relatedProjects.map((project) => (
-              <Card key={project.id}>
-                <CardContent className="p-6 space-y-4">
-                  <Image
-                    width={400}
-                    height={200}
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-40 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h3 className="text-lg font-semibold">{project.title}</h3>
-                    <p className="text-gray-700 text-sm">
-                      {project.description}
-                    </p>
+              <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="relative h-48">
+                    <Image
+                      width={400}
+                      height={200}
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 text-blue-600 hover:bg-white">
+                        {project.category}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-blue-600">{project.category}</span>
+
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {project.title}
+                      </h3>
+                      <p className="mt-2 text-gray-600">
+                        {project.description}
+                      </p>
+                    </div>
+
+
                   </div>
                 </CardContent>
               </Card>

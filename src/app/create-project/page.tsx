@@ -1,16 +1,21 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, ChangeEvent } from "react";
+import { PlusCircle, Trash2, Upload, Calendar, User, FileText, Target, Tag, Clock, Box, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, PlusCircle, Trash2 } from "lucide-react";
-import { getAuthToken } from "@/lib/clientAuth";
-import { toast } from "react-hot-toast";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { LocationInput } from "@/components/LocationInput";
+
+interface SupportItem {
+  item: string;
+  quantity: string;
+  byWhen: string;
+  dropLocation: string;
+}
 
 interface FormData {
   firstName: string;
@@ -24,14 +29,11 @@ interface FormData {
   pictureOfSuccess: File | null;
   otherSupport: string;
   address: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  } | null;
+  coordinates: [number, number] | null;
 }
 
 export default function ProjectDetailsForm() {
-  const [supportItems, setSupportItems] = useState([
+  const [supportItems, setSupportItems] = useState<SupportItem[]>([
     { item: "", quantity: "0", byWhen: "", dropLocation: "" },
     { item: "", quantity: "0", byWhen: "", dropLocation: "" },
     { item: "", quantity: "0", byWhen: "", dropLocation: "" },
@@ -42,6 +44,7 @@ export default function ProjectDetailsForm() {
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -58,11 +61,7 @@ export default function ProjectDetailsForm() {
     coordinates: null,
   });
 
-  const handleInputChange = (
-    rowIndex: number,
-    field: keyof (typeof supportItems)[0],
-    value: string
-  ) => {
+  const handleInputChange = (rowIndex: number, field: keyof SupportItem, value: string) => {
     setSupportItems((prev) => {
       const newItems = [...prev];
       newItems[rowIndex][field] = value;
@@ -70,9 +69,7 @@ export default function ProjectDetailsForm() {
     });
   };
 
-  const handleFormInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleFormInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -125,262 +122,254 @@ export default function ProjectDetailsForm() {
     setIsDragActive(true);
   };
 
-  const handleLocationSelect = (address: string, lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      address,
-      coordinates: { lat, lng },
-    }));
-  };
-
   const handleDragLeave = () => {
     setIsDragActive(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const token = getAuthToken();
-
-    if (!token) {
-      toast.error("Please login to create a project");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       const formDataToSend = new FormData();
-
-      // Append all form fields
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== "pictureOfSuccess" && key !== "coordinates") {
+        if (key === 'pictureOfSuccess' && value instanceof File) {
           formDataToSend.append(key, value);
+        } else if (typeof value === 'string' || value instanceof Blob) {
+          formDataToSend.append(key, value);
+        } else if (value !== null) {
+          formDataToSend.append(key, JSON.stringify(value));
         }
       });
+      formDataToSend.append('supportItems', JSON.stringify(supportItems));
 
-      if (file) {
-        formDataToSend.append("pictureOfSuccess", file);
-      }
-
-      formDataToSend.append("supportItems", JSON.stringify(supportItems));
-
-      if (formData.coordinates) {
-        formDataToSend.append("latitude", formData.coordinates.lat.toString());
-        formDataToSend.append("longitude", formData.coordinates.lng.toString());
-      }
-
-      const response = await fetch("/api/projects", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await fetch('/api/projects', {
+        method: 'POST',
         body: formDataToSend,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Project created successfully!");
-        // Reset form or redirect
-      } else {
-        toast.error(data.error || "Failed to create project");
+      if (!response.ok) {
+        throw new Error('Failed to create project');
       }
+
+      const data = await response.json();
+      toast({
+        title: "Success",
+        description: "Project created successfully!",
+      });
+      // Reset form or redirect to project page
     } catch (error) {
-      console.error("Error creating project:", error);
-      toast.error("An error occurred while creating the project");
+      console.error('Error creating project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create project. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-full p-2">
-      <h2 className="text-2xl font-bold text-center mb-4 text-blue-600">
-        Create Your Own Project
-      </h2>
+    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="space-y-8">
+        <div className="text-center space-y-2">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Create Your Project
+          </h2>
+          <p className="text-gray-600">Make a Difference By Doing your Bit</p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="w-full">
-        <Card className="border-2 border-blue-200 rounded-lg overflow-hidden w-full">
-          <ScrollArea className="h-full">
-            <CardContent className="p-4 grid grid-cols-1 gap-4">
-              <div className="space-y-3">
-                {/* First Name and Last Name */}
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-                  <div className="flex flex-col w-full md:w-1/6">
-                    <label className="text-sm font-semibold text-blue-600">
-                      First Name
-                    </label>
+        <form onSubmit={handleSubmit} className="w-full">
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+            <CardContent className="p-6 md:p-8 space-y-8">
+              {/* Personal Information */}
+              <div className="space-y-6">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <User className="h-5 w-5" />
+                    <span>Personal Information</span>
+                  </CardTitle>
+                </CardHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                     <Input
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleFormInputChange}
                       placeholder="Enter your first name"
-                      className="text-sm"
                     />
                   </div>
-                  <div className="flex flex-col w-full md:w-1/6">
-                    <label className="text-sm font-semibold text-blue-600">
-                      Last Name
-                    </label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                     <Input
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleFormInputChange}
                       placeholder="Enter your last name"
-                      className="text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* Project Title */}
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Project Title
-                  </h3>
-                  <Input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleFormInputChange}
-                    placeholder="Enter your Project Title"
-                    className="text-sm"
-                  />
-                </div>
-
-                {/* Project Objective */}
-                <div className="flex flex-col">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Project Objective
-                  </h3>
-                  <Textarea
-                    name="objective"
-                    value={formData.objective}
-                    onChange={handleFormInputChange}
-                    placeholder="Enter project objective..."
-                    className="text-sm"
-                  />
-                </div>
-
-                {/* Project Tag Preview */}
-                <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
-                  <label className="text-sm font-semibold text-blue-600">
-                    Project Tag Preview:
-                  </label>
-                  <div className="flex flex-col items-start md:items-center justify-end space-y-1 md:space-y-0 md:space-x-2">
-                    <h1 className="text-sm font-medium">
-                      {formData.firstName
-                        ? `${formData.firstName} wants to ${formData.objective}`
-                        : "Mr. Aakash wants to donate 500 blankets."}
-                    </h1>
-                    <p className="text-xs text-gray-500">
-                      (This is how it will appear on the website)
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col w-full md:w-1/3">
-                  <label className="text-sm font-semibold text-blue-600">
-                    Category:
-                  </label>
-                  <div className="flex space-x-4 flex-wrap">
-                    {["Human", "Plant", "Animal"].map((category) => (
-                      <Button
-                        key={category}
-                        type="button"
-                        variant={
-                          formData.category === category ? "default" : "outline"
-                        }
-                        className="text-sm"
-                        onClick={() =>
-                          setFormData((prev) => ({ ...prev, category }))
-                        }
-                      >
-                        {category}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Duration Section */}
-                <div className="flex flex-col w-full md:w-2/4">
-                  <label className="text-sm font-semibold text-blue-600">
-                    Duration
-                  </label>
-                  <div className="flex space-x-4 w-8/12">
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate}
-                      onChange={handleFormInputChange}
-                      className="w-4/12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
-                    />
-                    <span className="text-sm font-semibold text-black">to</span>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate}
-                      onChange={handleFormInputChange}
-                      className="w-4/12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 text-sm"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Location Fields */}
+              {/* Project Details */}
+              <div className="space-y-6">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <FileText className="h-5 w-5" />
+                    <span>Project Details</span>
+                  </CardTitle>
+                </CardHeader>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
+                    <Input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleFormInputChange}
+                      placeholder="Enter a compelling title for your project"
+                    />
+                  </div>
 
-              <div className="flex flex-col space-y-2">
-                <h3 className="text-sm font-semibold text-blue-600">
-                  Location Details
-                </h3>
-                <LocationInput
-                  address={formData.address}
-                  onAddressSelect={handleLocationSelect}
-                />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Project Objective</label>
+                    <Textarea
+                      name="objective"
+                      value={formData.objective}
+                      onChange={handleFormInputChange}
+                      placeholder="What do you want to achieve?"
+                      rows={4}
+                    />
+                  </div>
+
+                  <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Tag className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Project Preview</span>
+                      </div>
+                      <p className="text-gray-700 font-medium">
+                        {formData.firstName
+                          ? `${formData.firstName} wants to ${formData.objective}`
+                          : "Mr. Aakash wants to donate 500 blankets."}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-              {/* Describe What You Want To Achieve and Picture of Success */}
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-                <div className="flex flex-col w-full md:w-6/12">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Describe What You Want To Achieve
-                  </h3>
+
+              {/* Category Selection */}
+              <div className="space-y-4">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <Target className="h-5 w-5" />
+                    <span>Category</span>
+                  </CardTitle>
+                </CardHeader>
+                <div className="flex flex-wrap gap-3">
+                  {["Human", "Plant", "Animal"].map((category) => (
+                    <Button
+                      key={category}
+                      type="button"
+                      onClick={() => handleCategorySelect(category)}
+                      variant={formData.category === category ? "default" : "outline"}
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-4">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <Clock className="h-5 w-5" />
+                    <span>Duration</span>
+                  </CardTitle>
+                </CardHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        name="startDate"
+                        value={formData.startDate}
+                        onChange={handleFormInputChange}
+                      />
+                      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <div className="relative">
+                      <Input
+                        type="date"
+                        name="endDate"
+                        value={formData.endDate}
+                        onChange={handleFormInputChange}
+                      />
+                      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Description and Image */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <CardHeader className="p-0">
+                    <CardTitle className="flex items-center space-x-2 text-blue-600">
+                      <FileText className="h-5 w-5" />
+                      <span>Project Description</span>
+                    </CardTitle>
+                  </CardHeader>
                   <Textarea
                     name="description"
                     value={formData.description}
                     onChange={handleFormInputChange}
-                    placeholder="Enter project details..."
-                    className="text-sm h-48"
+                    placeholder="Describe your project in detail..."
+                    rows={8}
                   />
                 </div>
 
-                <div className="flex flex-col w-full md:w-6/12">
-                  <h3 className="text-sm font-semibold text-blue-600">
-                    Picture Of Success ~ Help People See What You Have In Mind
-                  </h3>
+                <div className="space-y-4">
+                  <CardHeader className="p-0">
+                    <CardTitle className="flex items-center space-x-2 text-blue-600">
+                      <Upload className="h-5 w-5" />
+                      <span>Picture of Success</span>
+                    </CardTitle>
+                  </CardHeader>
                   <div
-                    className={`w-10/12 h-48 border-2 border-gray-300 rounded-lg flex justify-center items-center cursor-pointer ${
-                      isDragActive ? "border-blue-500" : ""
-                    }`}
+                    className={`relative h-[200px] border-2 border-dashed rounded-xl transition-all ${isDragActive
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-400"
+                      }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {imagePreview ? (
-                      <div className="w-full h-full relative">
+                      <div className="relative w-full h-full">
                         <Image
-                          width={20}
-                          height={20}
                           src={imagePreview}
                           alt="Preview"
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover rounded-lg"
                         />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
                           <p className="text-white text-sm">Click to change</p>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">
-                        Drag & drop your file here, or click to upload
-                      </p>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <Upload className="h-8 w-8 text-blue-500 mb-2" />
+                        <p className="text-sm text-gray-600">
+                          Drag & drop your image here, or click to browse
+                        </p>
+                      </div>
                     )}
                     <input
                       type="file"
@@ -397,266 +386,158 @@ export default function ProjectDetailsForm() {
                 </div>
               </div>
 
-              {/* Supports Needed */}
-              <h2 className="text-lg font-semibold text-blue-600 mb-6">
-                Supports Needed
-              </h2>
-              <div className="w-full p-6">
+              {/* Support Items */}
+              <div className="space-y-6">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <Box className="h-5 w-5" />
+                    <span>Support Items</span>
+                  </CardTitle>
+                </CardHeader>
+
                 {/* Desktop view */}
                 <div className="hidden md:block">
-                  <div className="grid grid-cols-12 gap-4 mb-4">
-                    <div className="font-medium text-sm w-2 pt-2 text-center"></div>
-                    <div className="col-span-3 font-medium text-black text-md text-center pt-2">
-                      Item
-                    </div>
-                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">
-                      Quantity
-                    </div>
-                    <div className="col-span-2 font-medium text-black text-md text-center pt-2">
-                      By When
-                    </div>
-                    <div className="col-span-4 font-medium text-black text-md text-center pt-2">
-                      Drop Location
-                    </div>
+                  <div className="grid grid-cols-12 gap-4 mb-4 px-4">
+                    <div className="col-span-3 text-sm font-medium text-gray-600">Item</div>
+                    <div className="col-span-2 text-sm font-medium text-gray-600">Quantity</div>
+                    <div className="col-span-3 text-sm font-medium text-gray-600">By When</div>
+                    <div className="col-span-4 text-sm font-medium text-gray-600">Drop Location</div>
                   </div>
 
-                  <div className="grid grid-cols-12 gap-4">
-                    {/* Serial Numbers Column */}
-                    <div className="w-2 mt-2">
-                      {supportItems.map((_, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-center text-sm text-gray-600 h-9 mb-3"
-                        >
-                          {index + 1 + "."}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Items Column */}
-                    <div className="col-span-3 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
-                          <Input
-                            id={`item-${index}`}
-                            value={item.item}
-                            onChange={(e) =>
-                              handleInputChange(index, "item", e.target.value)
-                            }
-                            className="w-full h-9 text-sm"
-                            placeholder="Enter item"
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Quantity Column */}
-                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
-                          <Input
-                            type="number"
-                            id={`quantity-${index}`}
-                            value={item.quantity}
-                            onChange={(e) =>
-                              handleInputChange(
-                                index,
-                                "quantity",
-                                e.target.value
-                              )
-                            }
-                            className="w-full h-9 text-sm text-center"
-                            placeholder="Quantity"
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* By When Column */}
-                    <div className="col-span-2 border border-gray-200 rounded-md p-3">
-                      {supportItems.map((item, index) => (
-                        <div key={index} className="mb-3">
-                          <Input
-                            type="date"
-                            id={`byWhen-${index}`}
-                            value={item.byWhen}
-                            onChange={(e) =>
-                              handleInputChange(index, "byWhen", e.target.value)
-                            }
-                            className="w-full h-9 text-sm text-center"
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Drop Location Column */}
-                    <div className="col-span-4 border border-gray-200 rounded-md p-3 relative">
-                      {supportItems.map((item, index) => (
-                        <div
-                          key={index}
-                          className="mb-3 flex items-center relative"
-                        >
-                          <Input
-                            id={`dropLocation-${index}`}
-                            value={item.dropLocation}
-                            onChange={(e) =>
-                              handleInputChange(
-                                index,
-                                "dropLocation",
-                                e.target.value
-                              )
-                            }
-                            className="w-full h-9 text-sm text-center mr-2"
-                            placeholder="Location"
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => handleRemoveRow(index)}
-                            className="h-9 w-9 p-0 absolute -right-12 flex-shrink-0"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile view */}
-                <div className="md:hidden space-y-4">
                   {supportItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className="border border-gray-200 rounded-md p-4 space-y-2"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-blue-600">
-                          Item {index + 1}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() => handleRemoveRow(index)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
+                    <div key={index} className="grid grid-cols-12 gap-4 mb-4">
+                      <div className="col-span-3">
+                        <Input
+                          value={item.item}
+                          onChange={(e) => handleInputChange(index, "item", e.target.value)}
+                          placeholder="Enter item"
+                        />
                       </div>
-                      <Input
-                        value={item.item}
-                        onChange={(e) =>
-                          handleInputChange(index, "item", e.target.value)
-                        }
-                        className="w-full p-2 text-sm"
-                        placeholder="Enter item"
-                      />
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-blue-600">
-                          Quantity
-                        </span>
+                      <div className="col-span-2">
                         <Input
                           type="number"
                           value={item.quantity}
-                          onChange={(e) =>
-                            handleInputChange(index, "quantity", e.target.value)
-                          }
-                          className="w-2/3 p-2 text-sm"
-                          placeholder="Quantity"
+                          onChange={(e) => handleInputChange(index, "quantity", e.target.value)}
+                          placeholder="Qty"
                         />
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-blue-600">
-                          By When
-                        </span>
+                      <div className="col-span-3">
                         <Input
                           type="date"
                           value={item.byWhen}
-                          onChange={(e) =>
-                            handleInputChange(index, "byWhen", e.target.value)
-                          }
-                          className="w-2/3 p-2 text-sm"
+                          onChange={(e) => handleInputChange(index, "byWhen", e.target.value)}
                         />
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-blue-600">
-                          Drop Location
-                        </span>
+                      <div className="col-span-4 flex gap-2">
                         <Input
                           value={item.dropLocation}
-                          onChange={(e) =>
-                            handleInputChange(
-                              index,
-                              "dropLocation",
-                              e.target.value
-                            )
-                          }
-                          className="w-2/3 p-2 text-sm"
+                          onChange={(e) => handleInputChange(index, "dropLocation", e.target.value)}
                           placeholder="Location"
                         />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleRemoveRow(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex flex-col justify-end mt-4 gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleAddRow}
-                    className="text-sm w-40"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add Support
-                  </Button>
+                {/* Mobile view */}
+                <div className="md:hidden space-y-6">
+                  {supportItems.map((item, index) => (
+                    <Card key={index}>
+                      <CardContent className="p-4 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <Badge variant="secondary">Item {index + 1}</Badge>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleRemoveRow(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Input
+                          value={item.item}
+                          onChange={(e) => handleInputChange(index, "item", e.target.value)}
+                          placeholder="Enter item"
+                        />
+                        <Input
+                          type="number"
+                          value={item.quantity}
+                          onChange={(e) => handleInputChange(index, "quantity", e.target.value)}
+                          placeholder="Quantity"
+                        />
+                        <Input
+                          type="date"
+                          value={item.byWhen}
+                          onChange={(e) => handleInputChange(index, "byWhen", e.target.value)}
+                        />
+                        <Input
+                          value={item.dropLocation}
+                          onChange={(e) => handleInputChange(index, "dropLocation", e.target.value)}
+                          placeholder="Drop Location"
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
 
-                  <div className="flex items-center space-x-2">
-                    <label className="text-sm text-gray-600">
-                      Any Other Support:
-                    </label>
-                    <Input
-                      name="otherSupport"
-                      value={formData.otherSupport}
-                      onChange={handleFormInputChange}
-                      placeholder="Enter other support"
-                      className="text-sm w-6/12"
-                    />
-                  </div>
-                  <div className="flex flex-row gap-4 justify-center items-center mt-4 -mb-4">
-                    <Button
-                      className="text-sm w-40 bg-blue-600 hover:bg-blue-700"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-3 animate-spin" />
-                          Creating Project...
-                        </>
-                      ) : (
-                        "Preview"
-                      )}
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="text-sm w-40 bg-blue-600 hover:bg-blue-700"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-3 animate-spin" />
-                          Creating Project...
-                        </>
-                      ) : (
-                        "Submit"
-                      )}
-                    </Button>
-                  </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddRow}
+                  className="w-full md:w-auto"
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Support Item
+                </Button>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Other Support</label>
+                  <Input
+                    name="otherSupport"
+                    value={formData.otherSupport}
+                    onChange={handleFormInputChange}
+                    placeholder="Any additional support needed?"
+                  />
                 </div>
               </div>
+
+              {/* Submit Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  Preview
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                      Creating Project...
+                    </>
+                  ) : (
+                    "Submit Project"
+                  )}
+                </Button>
+              </div>
             </CardContent>
-          </ScrollArea>
-        </Card>
-      </form>
+          </Card>
+        </form>
+      </div>
     </div>
   );
 }
