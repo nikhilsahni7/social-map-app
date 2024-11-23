@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 "use client";
 
 import React, {
@@ -162,7 +163,6 @@ export default function SocialConnectMap() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showSatelliteView, setShowSatelliteView] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -175,7 +175,7 @@ export default function SocialConnectMap() {
     libraries: ["places"],
   });
 
-  // Fetch projects from backend
+  // Fetch projects from backend (unchanged)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -200,6 +200,7 @@ export default function SocialConnectMap() {
     fetchProjects();
   }, []);
 
+
   const onLoad = useCallback(
     (map: google.maps.Map) => {
       if (projects.length > 0) {
@@ -214,7 +215,6 @@ export default function SocialConnectMap() {
         });
         map.fitBounds(bounds);
       } else {
-        // Default center if no projects (e.g., Delhi)
         map.setCenter({ lat: 23.5937, lng: 78.9629 });
         map.setZoom(6);
       }
@@ -224,7 +224,7 @@ export default function SocialConnectMap() {
   );
 
   const mapOptions = {
-    mapTypeId: showSatelliteView ? "satellite" : "roadmap",
+    mapTypeId: "roadmap",
     disableDefaultUI: true,
     zoomControl: false,
     streetViewControl: false,
@@ -233,12 +233,11 @@ export default function SocialConnectMap() {
     styles: mapStyles,
   };
 
-  // Handle search
+  // Handle search (unchanged)
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
 
-    // Filter projects based on search query
     const filtered = projects.filter(
       (project) =>
         project.title.toLowerCase().includes(value.toLowerCase()) ||
@@ -248,12 +247,11 @@ export default function SocialConnectMap() {
 
     setFilteredProjects(filtered);
 
-    // Update suggestions
     const suggestions = filtered.map((project) => project.title);
     setFilteredSuggestions(suggestions);
   };
 
-  // Handle category filter
+  // Handle category filter (unchanged)
   useEffect(() => {
     if (selectedType) {
       const filtered = projects.filter(
@@ -273,7 +271,7 @@ export default function SocialConnectMap() {
     setFilteredProjects(filtered);
   };
 
-  // Mobile detection
+  // Mobile detection (unchanged)
   useEffect(() => {
     const handleResize = () => {
       setIsMobileDevice(window.innerWidth < 768);
@@ -293,7 +291,7 @@ export default function SocialConnectMap() {
     }
   };
 
-  // Map controls
+  // Map controls (unchanged)
   const handleZoomIn = () => {
     if (map) map.setZoom(map.getZoom()! + 1);
   };
@@ -459,34 +457,38 @@ export default function SocialConnectMap() {
       </GoogleMap>
 
       {/* Category filters */}
-      <div className="absolute top-20 left-0 right-0 z-10 flex flex-col items-center">
-        <div className="flex flex-wrap justify-center space-x-4">
-          {organizationTypes.map((type) => (
-            <Button
-              key={type}
-              variant={selectedType === type ? "default" : "outline"}
-              size="sm"
-              className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${
-                selectedType === type
+      <div className="absolute top-20 left-0 right-0 z-10 flex flex-col md:flex-row items-center">
+        <div className="relative w-full">
+          {/* Tags Section */}
+          <div className="flex flex-wrap justify-center space-x-4">
+            {organizationTypes.map((type) => (
+              <Button
+                key={type}
+                variant={selectedType === type ? "default" : "outline"}
+                size="sm"
+                className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${selectedType === type
                   ? "bg-blue-600 text-white shadow-lg"
                   : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-              }`}
-              onClick={() =>
-                setSelectedType(selectedType === type ? null : type)
-              }
-            >
-              {type}
-            </Button>
-          ))}
-        </div>
-
-        {!isMobileDevice && (
-          <div className="absolute right-0 mt-4 mr-5 flex items-center space-x-2 text-sm font-semibold text-black bg-yellow-400 px-4 py-2 rounded-full transition-all duration-300">
-            <span>Total Projects: </span>
-            <span className="text-sm">{filteredProjects.length}</span>
+                  }`}
+                onClick={() =>
+                  setSelectedType(selectedType === type ? null : type)
+                }
+              >
+                {type}
+              </Button>
+            ))}
           </div>
-        )}
+
+          {/* Total Projects Section */}
+          <div className="mt-4 md:absolute md:top-0 md:right-0 md:mt-0 flex justify-center md:justify-end mr-4">
+            <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full transition-all duration-300">
+              Total Projects: {filteredProjects.length}
+            </div>
+          </div>
+        </div>
       </div>
+
+
 
       {/* Map Controls */}
       {!isMobileDevice && (
@@ -543,10 +545,31 @@ export default function SocialConnectMap() {
         </div>
       )}
 
-      {/* Search and Filter Controls */}
+      {/* Search and Menu Controls */}
       <div className="absolute top-4 left-4 right-4 z-10">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-4">
+          <div className="relative">
+            <Button
+              variant="outline"
+              className="fixed bottom-24 left-8 z-10 py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Search projects
+            </Button>
+
+            <CustomDialog
+              isOpen={isSearchOpen}
+              onClose={() => setIsSearchOpen(false)}
+              tags={tags}
+              searchQuery={searchQuery}
+              handleSearch={handleSearch}
+              filteredSuggestions={filteredSuggestions}
+              handleSelectSuggestion={handleSelectSuggestion}
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="icon"
@@ -556,50 +579,24 @@ export default function SocialConnectMap() {
               <Menu className="h-6 w-6" />
             </Button>
 
-            <div className="relative">
-              <Button
-                variant="outline"
-                className="bg-white hover:bg-gray-100 w-64 justify-start"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-              >
-                <Search className="mr-2 h-4 w-4" />
-                {searchQuery || "Search projects..."}
-              </Button>
-
-              <CustomDialog
-                isOpen={isSearchOpen}
-                onClose={() => setIsSearchOpen(false)}
-                tags={tags}
-                searchQuery={searchQuery}
-                handleSearch={handleSearch}
-                filteredSuggestions={filteredSuggestions}
-                handleSelectSuggestion={handleSelectSuggestion}
-              />
-            </div>
           </div>
-
-          <Button
-            variant="outline"
-            className="bg-white hover:bg-gray-100"
-            onClick={() => setShowSatelliteView(!showSatelliteView)}
-          >
-            {showSatelliteView ? "Map View" : "Satellite View"}
-          </Button>
         </div>
       </div>
+
+
 
       {/* Side Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ x: -300 }}
+            initial={{ x: 300 }}
             animate={{ x: 0 }}
-            exit={{ x: -300 }}
-            className="fixed top-0 left-0 h-full w-72 bg-white shadow-lg z-20"
+            exit={{ x: 300 }}
+            className="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-20"
           >
             <div className="p-4">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Filters</h2>
+                <h2 className="text-xl font-semibold">Menu</h2>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -610,44 +607,18 @@ export default function SocialConnectMap() {
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Categories</h3>
-                  <div className="space-y-2">
-                    {organizationTypes.map((type) => (
-                      <Button
-                        key={type}
-                        variant={selectedType === type ? "default" : "outline"}
-                        className="w-full justify-start"
-                        onClick={() =>
-                          setSelectedType(selectedType === type ? null : type)
-                        }
-                      >
-                        {type}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">
-                    Popular Locations
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="outline"
-                        className="cursor-pointer hover:bg-blue-100"
-                        onClick={() => {
-                          setSearchQuery(tag);
-                          handleSelectSuggestion(tag);
-                        }}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                <Button variant="outline" className="w-full justify-start">
+                  Login
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  Sign Up
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  About Us
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  Contact Us
+                </Button>
               </div>
             </div>
           </motion.div>
@@ -656,7 +627,8 @@ export default function SocialConnectMap() {
 
       {/* Project Creation Button */}
       <Link href="/create-project">
-        <Button className="fixed bottom-8 left-8 z-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+        <Button className="fixed bottom-8 left-8 z-10 py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+
           <Plus className="h-6 w-6 mr-2" />
           Create Project
         </Button>
