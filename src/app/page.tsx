@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
 
@@ -29,6 +29,7 @@ import {
   Compass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -61,6 +62,8 @@ import {
 } from "@/components/ui/command";
 import { Search as SearchIcon } from "react-feather";
 
+import { getAuthUser, logout } from "@/lib/clientAuth"; // Import auth functions
+
 // Map styles
 const mapStyles = [
   {
@@ -68,7 +71,6 @@ const mapStyles = [
     elementType: "labels",
     stylers: [{ visibility: "on" }],
   },
-  // ... (other styles from your original code)
 ];
 
 // Types
@@ -157,6 +159,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
 };
 
 export default function SocialConnectMap() {
+  const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -168,12 +171,22 @@ export default function SocialConnectMap() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(
+    null
+  );
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
+
+  useEffect(() => {
+    const authUser = getAuthUser();
+    if (authUser) {
+      setUser(authUser);
+    }
+  }, []);
 
   // Fetch projects from backend (unchanged)
   useEffect(() => {
@@ -199,7 +212,6 @@ export default function SocialConnectMap() {
     };
     fetchProjects();
   }, []);
-
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
@@ -466,10 +478,11 @@ export default function SocialConnectMap() {
                 key={type}
                 variant={selectedType === type ? "default" : "outline"}
                 size="sm"
-                className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${selectedType === type
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                  }`}
+                className={`w-24 sm:w-28 rounded-full transition-all duration-300 ${
+                  selectedType === type
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                }`}
                 onClick={() =>
                   setSelectedType(selectedType === type ? null : type)
                 }
@@ -487,8 +500,6 @@ export default function SocialConnectMap() {
           </div>
         </div>
       </div>
-
-
 
       {/* Map Controls */}
       {!isMobileDevice && (
@@ -578,12 +589,9 @@ export default function SocialConnectMap() {
             >
               <Menu className="h-6 w-6" />
             </Button>
-
           </div>
         </div>
       </div>
-
-
 
       {/* Side Menu */}
       <AnimatePresence>
@@ -607,12 +615,40 @@ export default function SocialConnectMap() {
               </div>
 
               <div className="space-y-4">
-                <Button variant="outline" className="w-full justify-start">
-                  Login
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  Sign Up
-                </Button>
+                {user ? (
+                  <div className="flex flex-col space-y-2">
+                    <Card className="p-4 bg-gray-100">
+                      <CardTitle className="text-lg">{user.name}</CardTitle>
+                      <CardDescription className="text-sm text-gray-600">
+                        {user.email}
+                      </CardDescription>
+                    </Card>
+                    <Button
+                      onClick={logout}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => router.push("/login")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/signup")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
                 <Button variant="outline" className="w-full justify-start">
                   About Us
                 </Button>
@@ -628,7 +664,6 @@ export default function SocialConnectMap() {
       {/* Project Creation Button */}
       <Link href="/create-project">
         <Button className="fixed bottom-8 left-8 z-10 py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
-
           <Plus className="h-6 w-6 mr-2" />
           Create Project
         </Button>

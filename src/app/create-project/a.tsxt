@@ -1,12 +1,307 @@
-<div className="flex justify-center mt-4 space-x-4">
-                  <Button
-                    variant="outline"
-                    className="rounded bg-blue-600 text-white hover:bg-blue-700"
-                    onClick={() => {
-                      logout();
-                      toast.success("Logged out successfully.");
-                    }}
-                  >
-                    logout
-                  </Button>
-                  
+"use client";
+
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  ChangeEvent,
+} from "react";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Marker,
+  InfoWindow,
+  OverlayView,
+} from "@react-google-maps/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaThumbsUp, FaHandsHelping, FaUserCircle } from "react-icons/fa";
+import {
+  Search,
+  X,
+  Menu,
+  Heart,
+  Plus,
+  ZoomIn,
+  ZoomOut,
+  Compass,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Search as SearchIcon } from "react-feather";
+import { getAuthUser, logout } from "@/lib/clientAuth"; // Import auth functions
+
+// ... (rest of the imports)
+
+// Types
+interface Project {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  objective: string;
+  description: string;
+  category: string;
+  location: {
+    coordinates: [number, number];
+    address: string;
+  };
+  pictureOfSuccess?: {
+    url: string;
+  };
+}
+
+interface CustomDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tags: string[];
+  searchQuery: string;
+  handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+  filteredSuggestions: string[];
+  handleSelectSuggestion: (suggestion: string) => void;
+}
+
+const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
+const organizationTypes = ["Human", "Animal", "Plant"];
+
+const CustomDialog: React.FC<CustomDialogProps> = ({
+  isOpen,
+  onClose,
+  tags,
+  searchQuery,
+  handleSearch,
+  filteredSuggestions,
+  handleSelectSuggestion,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed top-[57px] left-[240px] z-50 w-[500px] h-[45vh] bg-white border border-gray-300 shadow-lg rounded-xl">
+      {/* ... (dialog content) */}
+    </div>
+  );
+};
+
+export default function SocialConnectMap() {
+  const router = useRouter();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null); // User state
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: ["places"],
+  });
+
+  // Fetch user on component mount
+  useEffect(() => {
+    const authUser = getAuthUser();
+    if (authUser) {
+      setUser(authUser);
+    }
+  }, []);
+
+  // Fetch projects from backend (unchanged)
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+        if (data.projects) {
+          // Validate coordinates before setting state
+          const validProjects = data.projects.filter(
+            (project: any) =>
+              project.location?.coordinates?.[0] &&
+              project.location?.coordinates?.[1] &&
+              !isNaN(project.location.coordinates[0]) &&
+              !isNaN(project.location.coordinates[1])
+          );
+          setProjects(validProjects);
+          setFilteredProjects(validProjects);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  // ... (rest of the existing code)
+
+  return (
+    <div className="h-screen w-full relative bg-gray-900">
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        zoom={10}
+        onLoad={onLoad}
+        options={mapOptions}
+      >
+        {/* ... (map markers and overlays) */}
+      </GoogleMap>
+
+      {/* Category filters */}
+      <div className="absolute top-20 left-0 right-0 z-10 flex flex-col md:flex-row items-center">
+        {/* ... (filters content) */}
+      </div>
+
+      {/* Map Controls */}
+      {!isMobileDevice && (
+        <div className="absolute bottom-8 right-6 z-10 flex space-x-3 justify-end">
+          {/* ... (map control buttons) */}
+        </div>
+      )}
+
+      {/* Search and Menu Controls */}
+      <div className="absolute top-4 left-4 right-4 z-10">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="relative">
+            <Button
+              variant="outline"
+              className="fixed bottom-24 left-8 z-10 py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Search projects
+            </Button>
+
+            <CustomDialog
+              isOpen={isSearchOpen}
+              onClose={() => setIsSearchOpen(false)}
+              tags={tags}
+              searchQuery={searchQuery}
+              handleSearch={handleSearch}
+              filteredSuggestions={filteredSuggestions}
+              handleSelectSuggestion={handleSelectSuggestion}
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-white hover:bg-gray-100"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Side Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ x: 300 }}
+            animate={{ x: 0 }}
+            exit={{ x: 300 }}
+            className="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-20"
+          >
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Menu</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {user ? (
+                  <div className="flex flex-col space-y-2">
+                    <Card className="p-4 bg-gray-100">
+                      <CardTitle className="text-lg">{user.name}</CardTitle>
+                      <CardDescription className="text-sm text-gray-600">
+                        {user.email}
+                      </CardDescription>
+                    </Card>
+                    <Button
+                      onClick={logout}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => router.push("/login")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/signup")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+                <Button variant="outline" className="w-full justify-start">
+                  About Us
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  Contact Us
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Project Creation Button */}
+      <Link href="/create-project">
+        <Button className="fixed bottom-8 left-8 z-10 py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+          <Plus className="h-6 w-6 mr-2" />
+          Create Project
+        </Button>
+      </Link>
+    </div>
+  );
+}

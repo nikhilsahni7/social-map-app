@@ -1,5 +1,5 @@
-"use client"
-import React from 'react';
+"use client";
+import React from "react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +19,7 @@ import {
   MapPin,
   Clock,
   Package,
-  Share2
+  Share2,
 } from "lucide-react";
 
 interface ProjectData {
@@ -66,7 +66,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       id: "1",
       title: "Digital Literacy Program",
       description: "Empowering communities through technology education",
-      image: "/api/placeholder/400/320",
+      image: "/digital.jpg",
       category: "Education",
       progress: 60,
     },
@@ -74,7 +74,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       id: "2",
       title: "Youth Mentorship Initiative",
       description: "Connecting students with professional mentors",
-      image: "/api/placeholder/400/320",
+      image: "/mentorship.png",
       category: "Human Development",
       progress: 45,
     },
@@ -178,8 +178,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                       {projectData.title}
                     </p>
                   </div>
-
-
                 </div>
               </div>
             </div>
@@ -216,10 +214,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   </Label>
                   <div className="mt-2 space-y-2">
                     <p className="text-gray-700">
-                      <span className="font-medium">Starts:</span> {projectData.duration.startDate}
+                      <span className="font-medium">Starts:</span>{" "}
+                      {projectData.duration.startDate}
                     </p>
                     <p className="text-gray-700">
-                      <span className="font-medium">Ends:</span> {projectData.duration.endDate}
+                      <span className="font-medium">Ends:</span>{" "}
+                      {projectData.duration.endDate}
                     </p>
                   </div>
                 </div>
@@ -250,7 +250,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 <Image
                   width={600}
                   height={400}
-                  src={projectData.pictureOfSuccess?.url || "/api/placeholder/600/400"}
+                  src={
+                    projectData.pictureOfSuccess?.url ||
+                    "/api/placeholder/600/400"
+                  }
                   alt="Project Success Vision"
                   className="w-full h-full object-cover"
                 />
@@ -267,7 +270,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 <div className="p-2 bg-blue-50 rounded-lg">
                   <Briefcase className="w-6 h-6 text-blue-600" />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900">Support Required</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Support Required
+                </h2>
               </div>
               <div className="flex flex-row gap-4 items-center">
                 <Label className="text-sm font-medium text-blue-600 block">
@@ -333,12 +338,14 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             <h2 className="text-2xl font-semibold text-gray-900">
               Other related Projects
             </h2>
-
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {relatedProjects.map((project) => (
-              <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card
+                key={project.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="p-0">
                   <div className="relative h-48">
                     <Image
@@ -364,8 +371,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         {project.description}
                       </p>
                     </div>
-
-
                   </div>
                 </CardContent>
               </Card>
