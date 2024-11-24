@@ -69,7 +69,7 @@ const mapStyles = [
     elementType: "labels",
     stylers: [{ visibility: "on" }],
   },
-  // ... (other styles from your original code)
+
 ];
 
 interface PageProps {
