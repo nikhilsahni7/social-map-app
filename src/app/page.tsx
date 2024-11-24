@@ -100,6 +100,10 @@ interface CustomDialogProps {
   handleSelectSuggestion: (suggestion: string) => void;
 }
 
+export const isMobileDevice = () => {
+  return window.matchMedia("(max-width: 768px)").matches;
+};
+
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = ["Human", "Animal", "Plant"];
 
@@ -175,6 +179,8 @@ export default function SocialConnectMap() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
+
+
 
   // Fetch projects from backend (unchanged)
   useEffect(() => {
@@ -292,6 +298,29 @@ export default function SocialConnectMap() {
     }
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  const checkIsMobile = () => {
+    return window.innerWidth <= 768;
+  };
+
+  useEffect(() => {
+    // Initial check
+    setIsMobile(checkIsMobile());
+
+    // Add resize listener
+    const handleResize = () => {
+      setIsMobile(checkIsMobile());
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
+
   // Map controls (unchanged)
   const handleZoomIn = () => {
     if (map) map.setZoom(map.getZoom()! + 1);
@@ -313,6 +342,8 @@ export default function SocialConnectMap() {
       map.fitBounds(bounds);
     }
   };
+
+
 
   if (loadError) {
     return (
@@ -568,41 +599,121 @@ export default function SocialConnectMap() {
 
 
       {/* Search and Menu Controls */}
-      <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2">
-        <div className="flex flex-col items-center space-y-4">
+
+      {isMobile ? (
+        <div className="">
+          {/* Centered Search Modal */}
+          {isSearchOpen && (
+            <div>
+              {/* Button to open search modal */}
+              <button onClick={() => setIsSearchOpen(true)} className="btn btn-primary">
+                Open Search
+              </button>
+
+              {/* Search Dialog */}
+              <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                <DialogContent className="sm:max-w-[500px] h-[65vh] sm:h-[65vh] w-[90%] sm:w-auto mx-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-3 sm:mb-5">
+                      Search Organizations
+                    </DialogTitle>
+                  </DialogHeader>
 
 
 
-          <Link href="/create-project">
-            <Button className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
-              <Plus className="h-6 w-6 mr-2" />
-              Create Project
+                  {/* Search Input */}
+                  <Command className="rounded-lg border shadow-md">
+                    <CommandInput
+                      placeholder="Type to search..."
+                      value={searchQuery}
+                      onValueChange={handleSearch}
+                      className="h-8 sm:h-10 text-sm sm:text-base"
+                    />
+
+                    {/* Suggestions List */}
+                    <CommandList className="h-[calc(60vh-100px)] sm:h-[calc(60vh-120px)] overflow-y-auto">
+                      <CommandEmpty>No results found.</CommandEmpty>
+                      <CommandGroup>
+                        {filteredSuggestions.map((suggestion) => (
+                          <CommandItem
+                            key={suggestion}
+                            onSelect={() => handleSelectSuggestion(suggestion)}
+                            className="flex cursor-pointer hover:bg-blue-100 py-1 sm:py-2 flex-row"
+                          >
+                            <Search className="mr-1 sm:mr-2 mt-1 h-4 w-4" />
+                            <span className="text-sm sm:text-base">{suggestion}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+
+          {/* Button Section (Mobile) */}
+          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-4">
+            {/* Create Project Button */}
+            <Link href="/create-project">
+              <Button className="w-full py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center">
+                <Plus className="h-6 w-7 mr-2" />
+                Create Project
+              </Button>
+            </Link>
+
+            {/* Search Button */}
+            <Button
+              className="py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <Search className="h-6 w-7 mr-2" />
+              Search Projects
             </Button>
-          </Link>
-
-          {/* Side Menu (for mobile) */}
-          <CustomDialog
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            tags={tags}
-            searchQuery={searchQuery}
-            handleSearch={handleSearch}
-            filteredSuggestions={filteredSuggestions}
-            handleSelectSuggestion={handleSelectSuggestion}
-
-          />
-
-          {/* Search Button */}
-          <Button
-
-            className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-          >
-            <Search className="mr-2 h-4 w-4" />
-            Search projects
-          </Button>
+          </div>
         </div>
-      </div>
+
+      ) : (
+
+        <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2">
+
+          <div className="flex flex-col items-center space-y-4">
+
+
+
+            <Link href="/create-project">
+              <Button className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+                <Plus className="h-6 w-6 mr-2" />
+                Create Project
+              </Button>
+            </Link>
+
+            {/* Side Menu (for mobile) */}
+            <CustomDialog
+              isOpen={isSearchOpen}
+              onClose={() => setIsSearchOpen(false)}
+              tags={tags}
+              searchQuery={searchQuery}
+              handleSearch={handleSearch}
+              filteredSuggestions={filteredSuggestions}
+              handleSelectSuggestion={handleSelectSuggestion}
+
+            />
+
+            {/* Search Button */}
+            <Button
+
+              className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Search projects
+            </Button>
+          </div>
+        </div>
+
+      )
+      }
 
       {/* Side Menu */}
       <AnimatePresence>
@@ -660,10 +771,11 @@ export default function SocialConnectMap() {
             </div>
           </motion.div>
         )}
+
       </AnimatePresence>
 
 
 
-    </div>
+    </div >
   );
 }
