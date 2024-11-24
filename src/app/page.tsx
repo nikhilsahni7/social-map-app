@@ -72,6 +72,11 @@ const mapStyles = [
   // ... (other styles from your original code)
 ];
 
+interface PageProps {
+  params?: { [key: string]: string | string[] }
+  searchParams?: { [key: string]: string | string[] }
+}
+
 // Types
 interface Project {
   _id: string;
@@ -100,9 +105,6 @@ interface CustomDialogProps {
   handleSelectSuggestion: (suggestion: string) => void;
 }
 
-export const isMobileDevice = () => {
-  return window.matchMedia("(max-width: 768px)").matches;
-};
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = ["Human", "Animal", "Plant"];
@@ -161,7 +163,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
   );
 };
 
-export default function SocialConnectMap() {
+export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -191,7 +193,8 @@ export default function SocialConnectMap() {
         if (data.projects) {
           // Validate coordinates before setting state
           const validProjects = data.projects.filter(
-            (project: any) =>
+            (project: Project) =>
+
               project.location?.coordinates?.[0] &&
               project.location?.coordinates?.[1] &&
               !isNaN(project.location.coordinates[0]) &&
@@ -241,7 +244,7 @@ export default function SocialConnectMap() {
   };
 
   // Handle search 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setSearchQuery(value);
 
@@ -298,26 +301,18 @@ export default function SocialConnectMap() {
     }
   };
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  const checkIsMobile = () => {
-    return window.innerWidth <= 768;
-  };
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    // Initial check
-    setIsMobile(checkIsMobile());
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // Adjust this breakpoint as needed
+    }
 
-    // Add resize listener
-    const handleResize = () => {
-      setIsMobile(checkIsMobile());
-    };
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
 
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
 
 
@@ -626,7 +621,7 @@ export default function SocialConnectMap() {
                     <CommandInput
                       placeholder="Type to search..."
                       value={searchQuery}
-                      onValueChange={handleSearch}
+                      // onValueChange={handleSearch}
                       className="h-8 sm:h-10 text-sm sm:text-base"
                     />
 
