@@ -77,7 +77,7 @@ interface PageProps {
   searchParams?: { [key: string]: string | string[] }
 }
 
-// Types
+/// Types
 interface Project {
   _id: string;
   firstName: string;
