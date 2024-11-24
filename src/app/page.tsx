@@ -240,7 +240,7 @@ export default function SocialConnectMap() {
     styles: mapStyles,
   };
 
-  // Handle search (unchanged)
+  // Handle search 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
