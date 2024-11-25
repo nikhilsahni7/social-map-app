@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import CommentSection from "@/components/Comments";
 
 import {
   Target,
@@ -378,7 +379,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             ))}
           </div>
         </div>
-
+        <CommentSection slug="your-post-slug" />
       </div>
     </div>
   );
