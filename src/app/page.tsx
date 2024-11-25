@@ -163,6 +163,72 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
   );
 };
 
+interface CustomDialogMobileProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tags: string[];
+  searchQuery: string;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  filteredSuggestions: string[];
+  handleSelectSuggestion: (suggestion: string) => void;
+}
+
+const CustomDialogMobile: React.FC<CustomDialogMobileProps> = ({
+  isOpen,
+  onClose,
+  tags,
+  searchQuery,
+  handleSearch,
+  filteredSuggestions,
+  handleSelectSuggestion,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white w-[90%] sm:w-[500px] md:w-[600px] lg:w-[700px] h-[60vh] sm:h-[40vh] rounded-xl shadow-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+          &times;
+        </button>
+
+        <div className="p-4">
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              placeholder="Search Projects..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="w-full h-10 text-md border rounded-full px-4"
+            />
+          </div>
+        </div>
+
+        <div className="h-[calc(100vh-170px)] overflow-y-auto px-4">
+          {filteredSuggestions.length === 0 ? (
+            <p>No results found.</p>
+          ) : (
+            <ul>
+              {filteredSuggestions.map((suggestion) => (
+                <li
+                  key={suggestion}
+                  onClick={() => handleSelectSuggestion(suggestion)}
+                  className="flex items-center cursor-pointer hover:bg-blue-100 py-2"
+                >
+                  <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
+                  <span className="flex-1">{suggestion}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -606,44 +672,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               </button>
 
               {/* Search Dialog */}
-              <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-                <DialogContent className="sm:max-w-[500px] h-[65vh] sm:h-[65vh] w-[90%] sm:w-auto mx-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-3 sm:mb-5">
-                      Search Organizations
-                    </DialogTitle>
-                  </DialogHeader>
 
 
+              <CustomDialogMobile
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                tags={tags}
+                searchQuery={searchQuery}
+                handleSearch={handleSearch}
+                filteredSuggestions={filteredSuggestions}
+                handleSelectSuggestion={handleSelectSuggestion}
 
-                  {/* Search Input */}
-                  <Command className="rounded-lg border shadow-md">
-                    <CommandInput
-                      placeholder="Type to search..."
-                      value={searchQuery}
-                      // onValueChange={handleSearch}
-                      className="h-8 sm:h-10 text-sm sm:text-base"
-                    />
 
-                    {/* Suggestions List */}
-                    <CommandList className="h-[calc(60vh-100px)] sm:h-[calc(60vh-120px)] overflow-y-auto">
-                      <CommandEmpty>No results found.</CommandEmpty>
-                      <CommandGroup>
-                        {filteredSuggestions.map((suggestion) => (
-                          <CommandItem
-                            key={suggestion}
-                            onSelect={() => handleSelectSuggestion(suggestion)}
-                            className="flex cursor-pointer hover:bg-blue-100 py-1 sm:py-2 flex-row"
-                          >
-                            <Search className="mr-1 sm:mr-2 mt-1 h-4 w-4" />
-                            <span className="text-sm sm:text-base">{suggestion}</span>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </DialogContent>
-              </Dialog>
+              />
+
+
             </div>
           )}
 

@@ -3,7 +3,6 @@ import { MessageSquare, ThumbsUp, ThumbsDown, Loader2, Send } from 'lucide-react
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
@@ -81,14 +80,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
         }
     };
 
-    const CommentInput = ({ onSubmit, value, onChange, placeholder, autoFocus = false }: {
+    const CommentInput = ({
+        onSubmit,
+        value,
+        onChange,
+        placeholder,
+        autoFocus = false,
+    }: {
         onSubmit: () => void;
         value: string;
         onChange: (value: string) => void;
         placeholder: string;
         autoFocus?: boolean;
     }) => (
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-4 sm:space-y-0">
             <Avatar className="h-8 w-8 mt-1">
                 <div className="bg-primary text-primary-foreground rounded-full h-full w-full flex items-center justify-center">
                     A
@@ -99,7 +104,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder}
-                    className="min-h-[40px] resize-none focus:min-h-[80px] transition-all duration-200"
+                    className="min-h-[40px] resize-none focus:min-h-[80px] transition-all duration-200 w-full"
                     autoFocus={autoFocus}
                 />
                 <div className="flex justify-end mt-2 space-x-2">
@@ -132,8 +137,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
     );
 
     const CommentComponent = ({ comment, depth = 0 }: { comment: Comment; depth?: number }) => (
-        <div className={cn("group py-4", depth > 0 && "ml-12")}>
-            <div className="flex space-x-4">
+        <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
                 <Avatar className="h-8 w-8">
                     <div className="bg-primary text-primary-foreground rounded-full h-full w-full flex items-center justify-center">
                         {comment.author ? comment.author[0].toUpperCase() : 'A'}
@@ -147,7 +152,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                                 ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
                                 : 'Invalid date'}
                         </span>
-
                     </div>
                     <p className="mt-1 text-sm">{comment.text}</p>
                     <div className="flex items-center space-x-4 mt-2">
@@ -176,7 +180,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                             onClick={() => {
                                 setShowReplyBox(prev => ({
                                     ...prev,
-                                    [comment._id]: !prev[comment._id]
+                                    [comment._id]: !prev[comment._id],
                                 }));
                             }}
                         >
@@ -197,7 +201,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 </div>
             </div>
             {comment.replies?.length > 0 && (
-                <div className="mt-4">
+                <div className="mt-4 pl-2 sm:pl-12">
                     {comment.replies.map((reply) => (
                         <CommentComponent key={reply._id} comment={reply} depth={depth + 1} />
                     ))}
@@ -225,25 +229,19 @@ const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 />
             </div>
 
-            <Separator className="my-6" />
-
-            {loading ? (
-                <div className="flex justify-center py-8">
+            {loading && (
+                <div className="flex justify-center py-4">
                     <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
-            ) : error ? (
-                <div className="text-destructive text-center py-4">{error}</div>
-            ) : comments.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                    No comments yet. Be the first to comment!
-                </div>
-            ) : (
-                <div className="space-y-2 divide-y">
-                    {comments.map((comment) => (
-                        <CommentComponent key={comment._id} comment={comment} />
-                    ))}
+            )}
+            {error && (
+                <div className="text-red-500 text-center py-4">
+                    <span>{error}</span>
                 </div>
             )}
+            {comments.map((comment) => (
+                <CommentComponent key={comment._id} comment={comment} />
+            ))}
         </div>
     );
 };

@@ -249,7 +249,7 @@ export default function ProjectDetailsForm() {
                       <span>Personal Information</span>
                     </CardTitle>
                   </CardHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         First Name
@@ -259,6 +259,7 @@ export default function ProjectDetailsForm() {
                         value={formData.firstName}
                         onChange={handleFormInputChange}
                         placeholder="Enter your first name"
+                        className="md:w-6/12"
                       />
                     </div>
                     <div>
@@ -270,6 +271,7 @@ export default function ProjectDetailsForm() {
                         value={formData.lastName}
                         onChange={handleFormInputChange}
                         placeholder="Enter your last name"
+                        className="md:w-6/12"
                       />
                     </div>
                   </div>
@@ -372,8 +374,9 @@ export default function ProjectDetailsForm() {
                           name="startDate"
                           value={formData.startDate}
                           onChange={handleFormInputChange}
+                          className="md:w-4/12"
                         />
-                        <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+
                       </div>
                     </div>
                     <div>
@@ -386,8 +389,9 @@ export default function ProjectDetailsForm() {
                           name="endDate"
                           value={formData.endDate}
                           onChange={handleFormInputChange}
+                          className="md:w-4/12"
                         />
-                        <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+
                       </div>
                     </div>
                   </div>
