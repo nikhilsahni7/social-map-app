@@ -322,6 +322,8 @@ export default function ProjectDetailsForm() {
                             ? `${formData.firstName} wants to ${formData.objective}`
                             : "Mr. Aakash wants to donate 500 blankets."}
                         </p>
+                        <p className="text-gray-700 text-xs">(This is how it will appear on website)</p>
+
                       </CardContent>
                     </Card>
                   </div>
@@ -422,11 +424,10 @@ export default function ProjectDetailsForm() {
                       Picture Of Success ~ Help People See What You Have In Mind
                     </h3>
                     <div
-                      className={`relative h-48 border-2 border-dashed rounded-xl transition-all ${
-                        isDragActive
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300 hover:border-blue-400"
-                      }`}
+                      className={`relative h-48 border-2 border-dashed rounded-xl transition-all ${isDragActive
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 hover:border-blue-400"
+                        }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}

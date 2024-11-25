@@ -378,8 +378,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </Card>
             ))}
           </div>
+          
         </div>
         <CommentSection slug="your-post-slug" />
+
       </div>
     </div>
   );
