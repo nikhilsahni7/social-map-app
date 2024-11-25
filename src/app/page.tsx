@@ -37,6 +37,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Loader2 } from 'lucide-react'
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -418,8 +419,13 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   if (!isLoaded) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-black">
-        <p className="text-xl text-white font-medium">Loading map...</p>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-16 h-16 text-white animate-spin mx-auto" />
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Loading...</h2>
+          <p className="text-lg text-blue-300">Make an impact by doing your bit</p>
+        </div>
+
       </div>
     );
   }
