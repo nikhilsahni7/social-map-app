@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, {
@@ -18,6 +16,8 @@ import {
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaThumbsUp, FaHandsHelping, FaUserCircle } from "react-icons/fa";
+import { Input } from "@/components/ui/input"
+import { Home, LogIn, UserPlus, Info, Mail, Settings, HelpCircle, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
 import {
   Search,
   X,
@@ -29,6 +29,8 @@ import {
   Compass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CountUp from 'react-countup';
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -62,14 +64,13 @@ import {
 } from "@/components/ui/command";
 import { Search as SearchIcon } from "react-feather";
 import { Label } from "recharts";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Map styles
-const mapStyles = [
-  {
-    featureType: "all",
-    elementType: "labels",
-    stylers: [{ visibility: "on" }],
-  },
+const mapStyles = [{
+  featureType: "all", elementType: "labels", stylers: [{ visibility: "on" }, { saturation: -20 }, { lightness: -10 }
+  ],
+}
 
 ];
 
@@ -77,7 +78,6 @@ interface PageProps {
   params?: { [key: string]: string | string[] }
   searchParams?: { [key: string]: string | string[] }
 }
-
 /// Types
 interface Project {
   _id: string;
@@ -96,9 +96,11 @@ interface Project {
   };
 }
 
+const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
+const organizationTypes = ["🧑‍💼 Human", "🐕 Animal", "🌳 Plant"];
+
+
 interface CustomDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
   tags: string[];
   searchQuery: string;
   handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -106,31 +108,17 @@ interface CustomDialogProps {
   handleSelectSuggestion: (suggestion: string) => void;
 }
 
-
-const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
-const organizationTypes = ["Human", "Animal", "Plant"];
-
 const CustomDialog: React.FC<CustomDialogProps> = ({
-  isOpen,
-  onClose,
   tags,
   searchQuery,
   handleSearch,
   filteredSuggestions,
   handleSelectSuggestion,
 }) => {
-  if (!isOpen) return null;
-
   return (
     <div className="fixed top-[57px] left-[240px] z-50 w-[500px] h-[45vh] bg-white border border-gray-300 shadow-lg rounded-xl">
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-      >
-        &times;
-      </button>
-
       <div className="p-4">
+        {/* Search Input */}
         <div className="flex items-center space-x-2">
           <input
             type="text"
@@ -142,6 +130,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
         </div>
       </div>
 
+      {/* Suggestions List */}
       <div className="h-[calc(50vh-125px)] overflow-y-auto px-4">
         {filteredSuggestions.length === 0 ? (
           <p>No results found.</p>
@@ -163,6 +152,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
     </div>
   );
 };
+
 
 interface CustomDialogMobileProps {
   isOpen: boolean;
@@ -230,6 +220,19 @@ const CustomDialogMobile: React.FC<CustomDialogMobileProps> = ({
   );
 };
 
+const getCategoryEmoji = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'human':
+      return '🧑‍💼';
+    case 'animal':
+      return '🐕';
+    case 'plant':
+      return '🌳';
+    default:
+      return '📍';
+  }
+};
+
 export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -242,14 +245,13 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
-
-
 
   // Fetch projects from backend (unchanged)
   useEffect(() => {
@@ -261,7 +263,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           // Validate coordinates before setting state
           const validProjects = data.projects.filter(
             (project: Project) =>
-
               project.location?.coordinates?.[0] &&
               project.location?.coordinates?.[1] &&
               !isNaN(project.location.coordinates[0]) &&
@@ -276,7 +277,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     };
     fetchProjects();
   }, []);
-
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
@@ -360,6 +360,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   const handleMarkerClick = (project: Project) => {
     setSelectedProject(project);
+    setIsProjectPanelOpen(true);
+    setIsSearchOpen(false)
+    setIsMenuOpen(false)
     if (map) {
       map.panTo({
         lat: project.location.coordinates[1],
@@ -380,8 +383,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
-
-
 
   // Map controls (unchanged)
   const handleZoomIn = () => {
@@ -405,8 +406,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     }
   };
 
-
-
   if (loadError) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-black">
@@ -425,7 +424,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <h2 className="text-2xl md:text-3xl font-bold text-white">Loading...</h2>
           <p className="text-lg text-blue-300">Make an impact by doing your bit</p>
         </div>
-
       </div>
     );
   }
@@ -450,8 +448,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 onMouseOver={() => setHoveredProject(project)}
                 onMouseOut={() => setHoveredProject(null)}
                 icon={{
-                  url: "https://cdn-icons-png.flaticon.com/512/9356/9356230.png",
-                  scaledSize: new google.maps.Size(40, 40),
+                  url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
+                      <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
+                      <circle cx="20" cy="18" r="14" fill="white" />
+                      <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">${getCategoryEmoji(project.category)}</text>
+                    </svg>
+                  `)}`,
+                  scaledSize: new google.maps.Size(40, 60),
+                  anchor: new google.maps.Point(20, 60),
                 }}
               />
             )}
@@ -466,97 +471,35 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               >
                 <Card className="w-64 bg-white shadow-lg">
                   <CardHeader className="p-4">
-                    <CardTitle className="text-lg text-black">
-                      {project.title}
-                    </CardTitle>
-                    <CardDescription className="text-blue-600">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-black">
+                        {project.title}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-lg">
+                        {getCategoryEmoji(project.category)}
+                      </Badge>
+                    </div>
+                    <CardDescription className="text-blue-600 mt-2">
                       {project.category}
                     </CardDescription>
-                    <CardDescription className="text-gray-700">
-                      {project.description}
-                    </CardDescription>
-                    <CardDescription className="text-gray-700">
-                      {project.location.address}
-                    </CardDescription>
                   </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 text-sm mb-2">{project.description}</p>
+                    <p className="text-gray-600 text-xs">{project.location.address}</p>
+                  </CardContent>
+                  <CardFooter className="bg-gray-50 p-2">
+                    <Button variant="ghost" size="sm" className="w-full text-blue-600 hover:bg-blue-50">
+                      View Details
+                    </Button>
+                  </CardFooter>
                 </Card>
               </OverlayView>
             )}
           </React.Fragment>
         ))}
 
-        {selectedProject && (
-          <InfoWindow
-            position={{
-              lat: selectedProject.location.coordinates[1],
-              lng: selectedProject.location.coordinates[0],
-            }}
-            onCloseClick={() => setSelectedProject(null)}
-          >
-            <Card className="w-full max-w-xs bg-white border border-blue-500 shadow-lg overflow-hidden">
-              {/* Header */}
-              <CardHeader className="p-4 bg-gradient-to-r from-blue-500 to-blue-700">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    {selectedProject.firstName} wants {selectedProject.objective}
-                  </h2>
-                  <Badge
-                    variant="secondary"
-                    className="mt-2 bg-blue-400 text-white"
-                  >
-                    {selectedProject.category}
-                  </Badge>
-                </div>
-              </CardHeader>
-
-              {/* Address */}
-              <CardContent className="p-4 border-b border-gray-200">
-                <p className="text-sm text-gray-600 font-medium">
-                  {selectedProject.location.address}
-                </p>
-              </CardContent>
-
-              {/* Full-Width Buttons */}
-              <CardFooter className="p-4 flex flex-col gap-3">
-                <Link href={`/project-profile/${selectedProject._id}`} className="w-full">
-                  <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center gap-2 py-2">
-                    <FaHandsHelping className="h-4 w-4" />
-                    Support
-                  </Button>
-                </Link>
-                <Link href={`/creator-profile/${selectedProject._id}`} className="w-full">
-                  <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center gap-2 py-2">
-                    <FaUserCircle className="h-4 w-4" />
-                    View Profile
-                  </Button>
-                </Link>
-              </CardFooter>
-
-              {/* Action Buttons */}
-              <div className="flex justify-between p-4 -mt-5">
-                <div className="flex space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                  >
-                    <Heart className="h-6 w-6 transition-transform duration-300" />
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-black hover:text-blue-500 transition-colors duration-300 transform hover:scale-110 active:scale-95"
-                  >
-                    <FaThumbsUp className="h-6 w-6 transition-transform duration-300" />
-                  </Button>
-                </div>
-              </div>
 
 
-            </Card>
-          </InfoWindow>
-        )}
       </GoogleMap>
 
 
@@ -589,16 +532,17 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           {/* Total Projects Section */}
           <div className="sm:ml-4">
             <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full shadow-md">
-              Total Projects: {filteredProjects.length}
+              Total Projects: <CountUp
+                start={0}
+                end={filteredProjects.length}
+                duration={2}
+                separator=","
+                enableScrollSpy={true}
+              />
             </div>
           </div>
         </div>
       </div>
-
-
-
-
-
 
       {/* Map Controls */}
       {!isMobileDevice && (
@@ -659,14 +603,16 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         variant="ghost"
         size="icon"
         className="absolute top-4 right-4 bg-white hover:bg-gray-100 p-4 rounded-full shadow-lg z-20"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        onClick={() => {
+          setIsMenuOpen(!isMenuOpen)
+          setIsSearchOpen(false)
+          setIsProjectPanelOpen(false)
+        }}
       >
         <Menu className="h-6 w-6" />
       </Button>
 
-
       {/* Search and Menu Controls */}
-
       {isMobile ? (
         <div className="">
           {/* Centered Search Modal */}
@@ -677,9 +623,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 Open Search
               </button>
 
-              {/* Search Dialog */}
-
-
+              {/* Search Dialog
               <CustomDialogMobile
                 isOpen={isSearchOpen}
                 onClose={() => setIsSearchOpen(false)}
@@ -688,16 +632,12 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 handleSearch={handleSearch}
                 filteredSuggestions={filteredSuggestions}
                 handleSelectSuggestion={handleSelectSuggestion}
-
-
-              />
-
-
+              /> */}
             </div>
           )}
 
           {/* Button Section (Mobile) */}
-          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-4">
+          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-2 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
               <Button className="w-full py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center">
@@ -709,55 +649,49 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             {/* Search Button */}
             <Button
               className="py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              onClick={() => {
+                setIsSearchOpen(!isSearchOpen)
+                setIsProjectPanelOpen(false)
+                setIsMenuOpen(false)
+              }}
             >
               <Search className="h-6 w-7 mr-2" />
               Search Projects
             </Button>
           </div>
         </div>
-
       ) : (
-
-        <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2">
-
-          <div className="flex flex-col items-center space-y-4">
-
-
-
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="flex space-x-4">
+            {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">
+              <Button className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center">
                 <Plus className="h-6 w-6 mr-2" />
                 Create Project
               </Button>
             </Link>
 
-            {/* Side Menu (for mobile) */}
-            <CustomDialog
-              isOpen={isSearchOpen}
-              onClose={() => setIsSearchOpen(false)}
-              tags={tags}
-              searchQuery={searchQuery}
-              handleSearch={handleSearch}
-              filteredSuggestions={filteredSuggestions}
-              handleSelectSuggestion={handleSelectSuggestion}
-
-            />
-
             {/* Search Button */}
             <Button
-
-              className="py-7 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center"
+              onClick={() => {
+                setIsSearchOpen(!isSearchOpen)
+                setIsProjectPanelOpen(false)
+                setIsMenuOpen(false)
+              }}
             >
-              <Search className="mr-2 h-4 w-4" />
-              Search projects
+              <Search className="mr-2 h-6 w-6" />
+              Search Projects
             </Button>
           </div>
+
+          {/* Search Menu */}
+
+
+
         </div>
 
-      )
-      }
+      )}
 
       {/* Side Menu */}
       <AnimatePresence>
@@ -766,57 +700,419 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             initial={{ x: 300 }}
             animate={{ x: 0 }}
             exit={{ x: 300 }}
-            className="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-20"
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 overflow-y-auto"
           >
-            <div className="p-4">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Menu</h2>
+            <div className="flex flex-col h-full">
+
+              {/* Header */}
+              <div className="p-6 bg-blue-600 text-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Menu</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-white hover:bg-blue-700 transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Did My Bit</h3>
+                  <p className="text-sm text-blue-100">Make an impact, one bit at a time</p>
+                </div>
+              </div>
+
+              {/* Menu Items */}
+              <nav className="flex-grow p-6 space-y-6">
+                {/* Main Menu */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-500 mb-2">MAIN MENU</h4>
+                  <ul className="space-y-4">
+                    <li>
+                      <Link href="/">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <Home className="mr-3 h-5 w-5" />
+                          Home
+                        </Button>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/login">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <LogIn className="mr-3 h-5 w-5" />
+                          Login
+                        </Button>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/signup">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <UserPlus className="mr-3 h-5 w-5" />
+                          Sign Up
+                        </Button>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* About Us */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-500 mb-2">ABOUT US</h4>
+                  <ul className="space-y-4">
+                    <li>
+                      <Link href="/about">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <Info className="mr-3 h-5 w-5" />
+                          About Us
+                        </Button>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/contact">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <Mail className="mr-3 h-5 w-5" />
+                          Contact Us
+                        </Button>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Support */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-500 mb-2">SUPPORT</h4>
+                  <ul className="space-y-4">
+
+                    <li>
+                      <Link href="/about">
+                        <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all">
+                          <HelpCircle className="mr-3 h-5 w-5" />
+                          Help & FAQ
+                        </Button>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+
+              {/* Footer */}
+              <div className="p-6 bg-gray-50">
+                <div className="flex justify-center space-x-4 mb-6">
+                  <Button variant="ghost" size="icon" className="text-blue-600 hover:bg-blue-100">
+                    <Facebook className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-blue-600 hover:bg-blue-100">
+                    <Twitter className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-blue-600 hover:bg-blue-100">
+                    <Instagram className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-blue-600 hover:bg-blue-100">
+                    <Linkedin className="h-5 w-5" />
+                  </Button>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">© 2024 Did My Bit. All rights reserved.</p>
+                  <p className="text-xs text-blue-600 font-medium mt-2">Making the world better, one bit at a time</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!isMobile && (
+        <div>{/* Project Details Panel */}
+          <AnimatePresence>
+            {isProjectPanelOpen && selectedProject && (
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden -translate-y-2"
+                style={{ maxWidth: "400px", height: "calc(100% - 14rem)", scrollbarWidth: 'thin' }}
+              >
+
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsMenuOpen(false)}
+                  className="absolute top-2 right-2"
+                  onClick={() => setIsProjectPanelOpen(false)}
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+
+                <div className="p-6 h-full overflow-y-auto">
+                  <h2 className="text-2xl font-bold mb-4">{selectedProject.title}</h2>
+                  <Badge className="mb-4">{selectedProject.category}</Badge>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{selectedProject.description}</p>
+                  <p className="font-semibold mb-2">Objective:</p>
+                  <p className="text-gray-600 mb-4">{selectedProject.objective}</p>
+                  <p className="font-semibold mb-2">Location:</p>
+                  <p className="text-gray-600 mb-4">{selectedProject.location.address}</p>
+                  <div className="flex space-x-4 mt-6">
+                    <Link href={`/creator-profile/${selectedProject._id}`}>
+                      <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                        <FaUserCircle className="mr-2" />
+                        View Profile
+                      </Button>
+                    </Link>
+                    <Link href={`/project-profile/${selectedProject._id}`}>
+                      <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                        <FaHandsHelping className="mr-2" />
+                        Support
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/*Search Menu*/}
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+                style={{ maxWidth: "600px", width: "35%", height: "calc(100% - 15rem)", scrollbarWidth: "thin" }}
+              >
+                {/* Header Section */}
+                <div className="bg-blue-500 text-white flex items-center justify-between px-6 py-4">
+                  <div className="flex items-center space-x-3">
+
+                    <h2 className="text-lg font-semibold">Find all Projects</h2>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-gray-200"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </div>
+
+                {/* Content Section */}
+                <div className="p-6 h-full w-full overflow-y-auto">
+                  <div className="relative">
+                    {/* Search Input */}
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search projects..."
+                      value={searchQuery}
+                      onChange={handleSearch}
+                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl"
+                    />
+                  </div>
+
+                  {/* Search Results */}
+                  <ScrollArea className="mt-6 h-[50vh] px-2">
+                    {filteredProjects.length === 0 ? (
+                      <p className="text-center text-gray-500 py-4">No results found.</p>
+                    ) : (
+                      <ul className="space-y-3">
+
+                        {/* NIKHIL BHAI please fix here (and below same thing also) -------------------------------------------------------------------------------------------------------------------------------------------
+                        {filteredProjects.map((project) => (
+                          <li key={project.id}>
+                            <Button
+                              variant="ghost"
+                              className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                              onClick={() => handleSelectSuggestion(suggestion)}
+                            >
+                              <div>
+                                <p className="font-medium text-blue-600">{project.title}</p>
+                                <p className="text-sm text-gray-500">{project.category}</p>
+                              </div>
+                            </Button>
+                          </li>
+                        ))} */}
+                      </ul>
+                    )}
+                  </ScrollArea>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Left Sidebar */}
+          <div
+            className="absolute top-20 left-4 bottom-24 w-72 bg-white shadow-lg rounded-2xl z-10"
+            style={{ height: "80%" }}
+          >
+            {/* Header */}
+            <div className="flex flex-row p-4 items-center bg-blue-600 text-white rounded-t-2xl">
+              <h2 className="text-xl font-bold flex-grow">Top Projects</h2>
+              <div className="ml-auto">
+                <CountUp
+                  start={0}
+                  end={filteredProjects.length}
+                  duration={2}
+                  separator=","
+                  enableScrollSpy={true}
+                />
+              </div>
+            </div>
+
+
+            {/* Scrollable Section */}
+            <div className="overflow-y-auto h-[calc(100%-4rem)]"
+              style={{
+                scrollbarWidth: "none", // Firefox
+                msOverflowStyle: "none", // IE and Edge
+              }}>
+              {projects.slice(0, 5).map((project) => (
+                <Card
+                  key={project._id}
+                  className="m-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                  onClick={() => handleMarkerClick(project)}
+                >
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-sm font-semibold">{project.title}</CardTitle>
+                    <Badge className="mt-1 w-4/12">{project.category}</Badge>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <p className="text-xs text-gray-600">
+                      {project.description.substring(0, 50)}...
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>)
+      }
+
+      {isMobile && (<div>
+        {/* Project Details Panel for mobile */}
+        <AnimatePresence>
+          {isProjectPanelOpen && selectedProject && (
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden -translate-y-2"
+              style={{ maxWidth: "400px", height: "calc(100% - 18rem)", scrollbarWidth: 'thin' }}
+            >
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2"
+                onClick={() => setIsProjectPanelOpen(false)}
+              >
+                <X className="h-6 w-6" />
+              </Button>
+
+              <div className="p-6 h-full overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">{selectedProject.title}</h2>
+                <Badge className="mb-4">{selectedProject.category}</Badge>
+                <p className="text-gray-600 mb-4 line-clamp-3">{selectedProject.description}</p>
+                <p className="font-semibold mb-2">Objective:</p>
+                <p className="text-gray-600 mb-4">{selectedProject.objective}</p>
+                <p className="font-semibold mb-2">Location:</p>
+                <p className="text-gray-600 mb-4">{selectedProject.location.address}</p>
+                <div className="flex space-x-4 mt-6">
+                  <Link href={`/creator-profile/${selectedProject._id}`}>
+                    <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                      <FaUserCircle className="mr-2" />
+                      View Profile
+                    </Button>
+                  </Link>
+                  <Link href={`/project-profile/${selectedProject._id}`}>
+                    <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                      <FaHandsHelping className="mr-2" />
+                      Support
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/*Search Menu*/}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+              style={{ maxWidth: "600px", width: "90%", height: "calc(100% - 18rem)", scrollbarWidth: "thin" }}
+            >
+              {/* Header Section */}
+              <div className="bg-blue-500 text-white flex items-center justify-between px-6 py-4">
+                <div className="flex items-center space-x-3">
+
+                  <h2 className="text-lg font-semibold">Find all Projects</h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-gray-200"
+                  onClick={() => setIsSearchOpen(false)}
                 >
                   <X className="h-6 w-6" />
                 </Button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <Link href="/login">
-                    <Button variant="outline" className="w-full justify-start">
-                      Login
-                    </Button>
-                  </Link>
+              {/* Content Section */}
+              <div className="p-6 h-full w-full overflow-y-auto">
+                <div className="relative">
+                  {/* Search Input */}
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search projects..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl"
+                  />
                 </div>
-                <div>
-                  <Link href="/signup">
-                    <Button variant="outline" className="w-full justify-start">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-                <div>
-                  <Link href="/about">
-                    <Button variant="outline" className="w-full justify-start">
-                      About Us
-                    </Button>
-                  </Link>
-                </div>
-                <div>
-                  <Link href="/contact">
-                    <Button variant="outline" className="w-full justify-start">
-                      Contact Us
-                    </Button>
-                  </Link>
-                </div>
+
+                {/* Search Results */}
+                <ScrollArea className="mt-6 h-[50vh] px-2">
+                  {filteredProjects.length === 0 ? (
+                    <p className="text-center text-gray-500 py-4">No results found.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {/* Here it is, Fix here tooooooooo----------------------------------------------------------------------------------------------------------------------
+                      {filteredProjects.map((project) => (
+                        <li key={project.id}>
+                          <Button
+                            variant="ghost"
+                            className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                            onClick={() => handleSelectSuggestion(suggestion)}
+                          >
+                            <div>
+                              <p className="font-medium text-blue-600">{project.title}</p>
+                              <p className="text-sm text-gray-500">{project.category}</p>
+                            </div>
+                          </Button>
+                        </li>
+                      ))} */}
+                    </ul>
+                  )}
+                </ScrollArea>
               </div>
-              <Label className="text-blue-600 font-medium">Did My Bit</Label>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>)}
 
-            </div>
-          </motion.div>
-        )}
 
-      </AnimatePresence>
+
+
+
+
 
 
 

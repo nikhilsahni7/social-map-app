@@ -228,10 +228,10 @@ export default function ProjectDetailsForm() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50">
       <div className="space-y-8">
         <div className="text-center space-y-2">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">
             Create Your Project
           </h2>
           <p className="text-gray-600">Make a Difference By Doing your Bit</p>
@@ -244,13 +244,14 @@ export default function ProjectDetailsForm() {
                 {/* Personal Information */}
                 <div className="space-y-6">
                   <CardHeader className="p-0">
-                    <CardTitle className="flex items-center space-x-2 text-blue-600">
-                      <User className="h-5 w-5" />
-                      <span>Personal Information</span>
+                    <CardTitle className="flex items-center space-x-2 text-red-600">
+                      <User className="h-5 w-5 text-2xl font-bold" />
+                      <span className="text-2xl font-bold">Personal Information</span>
                     </CardTitle>
                   </CardHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+
+                  <div className="flex flex-col md:flex-row w-full gap-12">
+                    <div className="flex flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         First Name
                       </label>
@@ -258,11 +259,11 @@ export default function ProjectDetailsForm() {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleFormInputChange}
-                        placeholder="Enter your first name"
-                        className="md:w-6/12"
+                        placeholder="Enter your First name"
+                        className="w-56"
                       />
                     </div>
-                    <div>
+                    <div className="flex flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Last Name
                       </label>
@@ -270,21 +271,50 @@ export default function ProjectDetailsForm() {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleFormInputChange}
-                        placeholder="Enter your last name"
-                        className="md:w-6/12"
+                        placeholder="Enter your Last name"
+                        className="w-56"
                       />
                     </div>
                   </div>
+
+
                 </div>
 
                 {/* Project Details */}
                 <div className="space-y-6">
+
                   <CardHeader className="p-0">
-                    <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <CardTitle className="flex items-center space-x-2 text-red-600">
                       <FileText className="h-5 w-5" />
-                      <span>Project Details</span>
+                      <span className="text-2xl font-bold">Project Details</span>
                     </CardTitle>
                   </CardHeader>
+                  {/* Category Selection */}
+                  <div className="">
+                    <CardHeader className="p-0">
+                      <CardTitle className="flex items-center text-red-600">
+
+
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Category
+                        </label>
+                      </CardTitle>
+                    </CardHeader>
+                    <div className="flex flex-wrap gap-3">
+                      {["🧑‍💼 Human", "🌳 Plant", "🐕 Animal"].map((category) => (
+                        <Button
+                          key={category}
+                          type="button"
+                          onClick={() => handleCategorySelect(category)}
+                          variant={
+                            formData.category === category ? "default" : "outline"
+                          }
+                        >
+                          {category}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -311,11 +341,11 @@ export default function ProjectDetailsForm() {
                       />
                     </div>
 
-                    <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                    <Card className="bg-gradient-to-r from-red-50 to-indigo-50 border-red-100">
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-2 mb-2">
-                          <Tag className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-800">
+                          <Tag className="h-4 w-4 text-red-600" />
+                          <span className="text-sm font-medium text-red-800">
                             Project Preview
                           </span>
                         </div>
@@ -331,39 +361,17 @@ export default function ProjectDetailsForm() {
                   </div>
                 </div>
 
-                {/* Category Selection */}
-                <div className="space-y-4">
-                  <CardHeader className="p-0">
-                    <CardTitle className="flex items-center space-x-2 text-blue-600">
-                      <Target className="h-5 w-5" />
-                      <span>Category</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <div className="flex flex-wrap gap-3">
-                    {["Human", "Plant", "Animal"].map((category) => (
-                      <Button
-                        key={category}
-                        type="button"
-                        onClick={() => handleCategorySelect(category)}
-                        variant={
-                          formData.category === category ? "default" : "outline"
-                        }
-                      >
-                        {category}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+
 
                 {/* Duration */}
                 <div className="space-y-4">
                   <CardHeader className="p-0">
-                    <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <CardTitle className="flex items-center space-x-2 text-red-600">
                       <Clock className="h-5 w-5" />
-                      <span>Duration</span>
+                      <span className="text-2xl font-bold">Duration</span>
                     </CardTitle>
                   </CardHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex gap-10 flex-col md:flex-row">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Start Date
@@ -374,7 +382,7 @@ export default function ProjectDetailsForm() {
                           name="startDate"
                           value={formData.startDate}
                           onChange={handleFormInputChange}
-                          className="md:w-4/12"
+                          className="md:w-w-40"
                         />
 
                       </div>
@@ -389,7 +397,7 @@ export default function ProjectDetailsForm() {
                           name="endDate"
                           value={formData.endDate}
                           onChange={handleFormInputChange}
-                          className="md:w-4/12"
+                          className="md:w-w-40"
                         />
 
                       </div>
@@ -399,7 +407,7 @@ export default function ProjectDetailsForm() {
 
                 {/* Location Details */}
                 <div className="flex flex-col space-y-2">
-                  <h3 className="text-sm font-semibold text-blue-600">
+                  <h3 className="text-2xl font-bold text-red-600">
                     Location Details
                   </h3>
                   <LocationInput
@@ -411,7 +419,7 @@ export default function ProjectDetailsForm() {
                 {/* Project Description and Image */}
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                   <div className="flex flex-col w-full md:w-6/12">
-                    <h3 className="text-sm font-semibold text-blue-600">
+                    <h3 className="text-md font-bold text-red-600">
                       Describe What You Want To Achieve
                     </h3>
                     <Textarea
@@ -424,13 +432,13 @@ export default function ProjectDetailsForm() {
                   </div>
 
                   <div className="flex flex-col w-full md:w-6/12">
-                    <h3 className="text-sm font-semibold text-blue-600">
+                    <h3 className="text-md font-bold text-red-600">
                       Picture Of Success ~ Help People See What You Have In Mind
                     </h3>
                     <div
                       className={`relative h-48 border-2 border-dashed rounded-xl transition-all ${isDragActive
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300 hover:border-red-400"
                         }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
@@ -453,7 +461,7 @@ export default function ProjectDetailsForm() {
                         </div>
                       ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <Upload className="h-8 w-8 text-blue-500 mb-2" />
+                          <Upload className="h-8 w-8 text-red-500 mb-2" />
                           <p className="text-sm text-gray-600">
                             Drag & drop your image here, or click to upload
                           </p>
@@ -477,9 +485,9 @@ export default function ProjectDetailsForm() {
                 {/* Support Items */}
                 <div className="space-y-6">
                   <CardHeader className="p-0">
-                    <CardTitle className="flex items-center space-x-2 text-blue-600">
+                    <CardTitle className="flex items-center space-x-2 text-red-600">
                       <Box className="h-5 w-5" />
-                      <span>Support Items</span>
+                      <span className="text-xl font-bold">Support Items</span>
                     </CardTitle>
                   </CardHeader>
 
@@ -641,30 +649,12 @@ export default function ProjectDetailsForm() {
                 </div>
 
                 {/* Submit Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                  <Button type="button" variant="outline" disabled={isLoading}>
-                    Preview
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                        Creating Project...
-                      </>
-                    ) : (
-                      "Submit Project"
-                    )}
-                  </Button>
-                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6"> <Button type="button" variant="outline" disabled={isLoading}> Preview </Button> <Button type="submit" disabled={isLoading} className="bg-red-600 hover:bg-red-700 text-white" > {isLoading ? (<> <Loader2 className="animate-spin mr-2 h-4 w-4" /> Creating Project... </>) : ("Submit Project")} </Button> </div>
               </CardContent>
             </ScrollArea>
           </Card>
         </form>
       </div>
-    </div>
+    </div >
   );
 }

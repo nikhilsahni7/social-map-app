@@ -26,7 +26,7 @@ const projectSchema = new mongoose.Schema(
     description: String,
     category: {
       type: String,
-      enum: ["Human", "Plant", "Animal"],
+      enum: ["🧑‍💼 Human", "🌳 Plant", "🐕 Animal"],
       required: true,
     },
     duration: {

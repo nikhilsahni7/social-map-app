@@ -7,21 +7,28 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import CommentSection from "@/components/Comments";
 
+import "react-vertical-timeline-component/style.min.css";
+import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa"
 import {
   Target,
   Calendar,
   Award,
   Briefcase,
   Heart,
-  MessageSquare,
-  ChevronRight,
   MapPin,
   Clock,
   Package,
-  Share2,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 interface ProjectData {
@@ -48,27 +55,23 @@ interface ProjectData {
   };
 }
 
-interface RelatedProject {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  progress: number;
-}
+
 
 export default function ProjectDetails({ params }: { params: { id: string } }) {
+
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSupporting, setIsSupporting] = useState(false);
+  const [supportItems, setSupportItems] = useState<Record<string, number>>({});
+  const [totalSupport, setTotalSupport] = useState(0);
 
   const relatedProjects = [
     {
       id: "1",
       title: "Digital Literacy Program",
       description: "Empowering communities through technology education",
-      image: "/digital.jpg",
+      image: "/digital-literacy.jpg",
       category: "Education",
       progress: 60,
     },
@@ -76,7 +79,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       id: "2",
       title: "Youth Mentorship Initiative",
       description: "Connecting students with professional mentors",
-      image: "/mentorship.png",
+      image: "/youth-mentorship.jpg",
       category: "Human Development",
       progress: 45,
     },
@@ -100,6 +103,42 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
     fetchProjectData();
   }, [params.id]);
+
+  const updateItemQuantity = (item: string, delta: number) => {
+    setSupportItems((prev) => {
+      const currentQty = prev[item] || 0;
+      const newQty = Math.max(0, Math.min(4, currentQty + delta));
+
+      if (newQty === 0) {
+        const { [item]: _, ...rest } = prev;
+        setTotalSupport(Object.values(rest).reduce((sum, qty) => sum + qty, 0));
+        return rest;
+      }
+
+      const newItems = { ...prev, [item]: newQty };
+      setTotalSupport(Object.values(newItems).reduce((sum, qty) => sum + qty, 0));
+      return newItems;
+    });
+  };
+
+  const getSupportSummary = () => {
+    if (totalSupport === 0) return "Select items to support";
+    const items = Object.entries(supportItems)
+      .filter(([_, qty]) => qty > 0)
+      .map(([item, qty]) => `${qty}x ${item}`)
+      .join(", ");
+    return `Supporting: ${items}`;
+  };
+
+  const handleSupport = () => {
+    setIsSupporting(true);
+    // Add support logic here
+    setTimeout(() => {
+      setIsSupporting(false);
+      setSupportItems({});
+      setTotalSupport(0);
+    }, 1000);
+  };
 
   if (loading) {
     return (
@@ -132,72 +171,78 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     );
   }
 
-  const handleSupport = () => {
-    setIsSupporting(true);
-    // Add support logic here
-    setTimeout(() => setIsSupporting(false), 1000);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <div className="relative">
-        <div className="h-40 lg:h-56 overflow-hidden">
-          <div className="absolute inset-0 bg-blue-600 mix-blend-multiply opacity-10"></div>
+        <div className="h-[50vh] overflow-hidden">
           <Image
             width={1920}
-            height={200}
-            src="/api/placeholder/1920/500"
+            height={600}
+            src="/digital.jpg"
             alt="Project Banner"
             className="w-full h-full object-cover"
             priority
           />
         </div>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative -mt-32">
-            <div className="bg-white rounded-xl shadow-lg p-8">
-              <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                <Avatar className="w-32 h-32 border-4 border-white shadow-xl">
-                  <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                    {projectData.firstName[0]}
-                    {projectData.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
 
-                <div className="flex-1 space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {/* <Badge variant="secondary" className="bg-blue-50 text-blue-600 hover:bg-blue-100">
-                      {projectData.category}
-                    </Badge> */}
-                  </div>
 
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                      {projectData.firstName} {projectData.lastName}
-                    </h1>
-                    <p className="text-xl text-blue-600 font-medium mt-1">
-                      {projectData.title}
-                    </p>
-                  </div>
+
+
+
+      <div className="w-full">
+        <div className="relative -mt-28">
+          <div className="bg-white rounded-b-2xl shadow-lg p-8 backdrop-blur-lg bg-white/90">
+            <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-xl ring-4 ring-blue-500/20">
+                <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                  {projectData.firstName[0]}
+                  {projectData.lastName[0]}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="flex-1 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1">
+                    {projectData.category}
+                  </Badge>
+                </div>
+
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {projectData.firstName} {projectData.lastName}
+                  </h1>
+                  <p className="text-xl text-blue-600 font-medium mt-1">
+                    {projectData.title}
+                  </p>
                 </div>
               </div>
+              <div className="flex justify-end items-center">
+                <h1 className="text-5xl font-bold tracking-tight text-center mt-2">
+                  Do Your <span className="text-red-500">Bit</span>
+                </h1>
+              </div>
             </div>
+
+
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         {/* Project Details */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
             <CardContent className="p-6 space-y-8">
+              {/* Project Objective */}
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <Target className="w-5 h-5 text-blue-600" />
+                  <FaFlag className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
-                  <Label className="text-sm font-medium text-blue-600">
+                  <Label className="text-md font-medium text-blue-600">
                     Project Objective
                   </Label>
                   <p className="mt-2 text-gray-700 leading-relaxed">
@@ -206,33 +251,13 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
+              {/* Project Description */}
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+                  <FaProjectDiagram className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
-                  <Label className="text-sm font-medium text-blue-600">
-                    Timeline
-                  </Label>
-                  <div className="mt-2 space-y-2">
-                    <p className="text-gray-700">
-                      <span className="font-medium">Starts:</span>{" "}
-                      {projectData.duration.startDate}
-                    </p>
-                    <p className="text-gray-700">
-                      <span className="font-medium">Ends:</span>{" "}
-                      {projectData.duration.endDate}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <Award className="w-5 h-5 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-blue-600">
+                  <Label className="text-md font-medium text-blue-600">
                     Project Description
                   </Label>
                   <p className="mt-2 text-gray-700 leading-relaxed">
@@ -240,10 +265,39 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   </p>
                 </div>
               </div>
+
+              {/* Timeline */}
+              <div className="w-full mt-8 px-4">
+
+                <div className="flex items-center justify-between">
+                  {/* Start Date Section */}
+                  <div className="flex flex-col items-center">
+                    <div className="text-sm text-gray-500 mb-2">Start</div>
+                    <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
+                      {"2/02/2024"}
+                    </div>
+                  </div>
+
+                  {/* Dotted Line Timeline */}
+                  <div className="flex-1 mx-6 items-center mt-7">
+                    <div className="w-full h-1 border-t-2 border-dotted border-blue-300 relative"></div>
+                  </div>
+
+                  {/* End Date Section */}
+                  <div className="flex flex-col items-center">
+                    <div className="text-sm text-gray-500 mb-2">End</div>
+                    <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
+                      {"2/12/2024"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
             <CardContent className="p-6">
               <Label className="text-lg font-semibold text-gray-900 block mb-4">
                 Project Vision
@@ -254,18 +308,25 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   height={400}
                   src={
                     projectData.pictureOfSuccess?.url ||
-                    "/api/placeholder/600/400"
+                    "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800"
                   }
                   alt="Project Success Vision"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
             </CardContent>
           </Card>
         </div>
 
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+          {/* Project Details */}
+
+        </div>
+
+
         {/* Support Section */}
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
@@ -280,29 +341,51 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 <Label className="text-sm font-medium text-blue-600 block">
                   DO YOUR BIT BY SUPPORTING THIS PROJECT
                 </Label>
-                <Button
-                  size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
-                  onClick={handleSupport}
-                  disabled={isSupporting}
-                >
-                  Support Project
-                </Button>
+                <HoverCard openDelay={0} closeDelay={0}>
+                  <HoverCardTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto group relative overflow-hidden"
+                      onClick={handleSupport}
+                      disabled={isSupporting || totalSupport === 0}
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        <Heart className="w-5 h-5" />
+                        Support Project
+                      </span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                    </Button>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 p-2" align="end">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Your Support Summary</h4>
+                      <p className="text-sm text-gray-600">{getSupportSummary()}</p>
+                      {totalSupport > 0 && (
+                        <div className="pt-2 border-t">
+                          <p className="text-xs text-gray-500">
+                            Click to confirm your support for these items
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-medium text-gray-700">
+              <div className="grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-medium text-gray-700">
                 <div>Items</div>
                 <div>Quantity</div>
                 <div>Needed By</div>
                 <div>Drop Location</div>
+                <div>Support</div>
               </div>
 
               {projectData.supportItems.map((item, index) => (
                 <div
                   key={index}
-                  className="grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-blue-600" />
@@ -319,6 +402,31 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <MapPin className="w-4 h-4 text-gray-400" />
                     <span>{item.dropLocation}</span>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => updateItemQuantity(item.item, -1)}
+                      disabled={!supportItems[item.item]}
+                      className={supportItems[item.item] ? "text-red-500" : ""}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-12 text-center font-medium">
+                      {supportItems[item.item] || 0}
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => updateItemQuantity(item.item, 1)}
+                      disabled={supportItems[item.item] >= 4}
+                      className={
+                        supportItems[item.item] < 4 ? "text-green-500" : "text-gray-400"
+                      }
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -334,11 +442,13 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
 
+        <CommentSection slug="your-post-slug" />
+
         {/* Related Projects */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-gray-900">
-              Other related Projects
+              Other Related Projects
             </h2>
           </div>
 
@@ -346,16 +456,16 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             {relatedProjects.map((project) => (
               <Card
                 key={project.id}
-                className="overflow-hidden hover:shadow-lg transition-shadow"
+                className="overflow-hidden hover:shadow-lg transition-all duration-300 group"
               >
                 <CardContent className="p-0">
-                  <div className="relative h-48">
+                  <div className="relative h-48 overflow-hidden">
                     <Image
                       width={400}
                       height={200}
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-white/90 text-blue-600 hover:bg-white">
@@ -373,16 +483,16 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         {project.description}
                       </p>
                     </div>
+
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-          
         </div>
-        <CommentSection slug="your-post-slug" />
+
 
       </div>
-    </div>
+    </div >
   );
 }
