@@ -228,7 +228,9 @@ export default function ProjectDetailsForm() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50">
+    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center"
+      style={{ backgroundImage: 'url("/digital.jpg")' }}>
+
       <div className="space-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">

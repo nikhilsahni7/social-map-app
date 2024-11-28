@@ -430,15 +430,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   return (
     <div className="h-screen w-full relative bg-gray-900">
+
+
+
       <GoogleMap
         mapContainerStyle={{ width: "100%", height: "100%" }}
         zoom={10}
         onLoad={onLoad}
         options={mapOptions}
       >
+
         {filteredProjects.map((project) => (
+
           <React.Fragment key={project._id}>
             {project.location?.coordinates && (
+
               <Marker
                 position={{
                   lat: project.location.coordinates[1],
@@ -449,17 +455,20 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 onMouseOut={() => setHoveredProject(null)}
                 icon={{
                   url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
-                      <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
-                      <circle cx="20" cy="18" r="14" fill="white" />
-                      <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">${getCategoryEmoji(project.category)}</text>
-                    </svg>
-                  `)}`,
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
+            <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
+            <circle cx="20" cy="18" r="14" fill="white" />
+            <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">${getCategoryEmoji(project.category)}</text>
+          </svg>
+        `)}`,
                   scaledSize: new google.maps.Size(40, 60),
                   anchor: new google.maps.Point(20, 60),
                 }}
               />
+
             )}
+
+
 
             {hoveredProject === project && (
               <OverlayView
@@ -531,7 +540,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
           {/* Total Projects Section */}
           <div className="sm:ml-4">
-            <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full shadow-md">
+            <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full" style={{ boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.1)' }}>
               Total Projects: <CountUp
                 start={0}
                 end={filteredProjects.length}
@@ -541,6 +550,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               />
             </div>
           </div>
+
         </div>
       </div>
 
@@ -637,10 +647,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           )}
 
           {/* Button Section (Mobile) */}
-          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-2 mb-2">
+          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-2 mb-1">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="w-full py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center">
+              <Button className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
                 <Plus className="h-6 w-7 mr-2" />
                 Create Project
               </Button>
@@ -648,7 +658,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="py-6 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center"
+              className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen)
                 setIsProjectPanelOpen(false)
@@ -665,15 +675,18 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="flex space-x-4">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center">
-                <Plus className="h-6 w-6 mr-2" />
-                Create Project
+              <Button className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
+
+                <Plus className="h-6 w-6 mr-2 relative z-10" />
+                <span className="relative z-10">Create Project</span>
               </Button>
+
+
+
             </Link>
 
             {/* Search Button */}
-            <Button
-              className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center"
+            <Button className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen)
                 setIsProjectPanelOpen(false)

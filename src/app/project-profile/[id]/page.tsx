@@ -15,7 +15,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import CommentSection from "@/components/Comments";
-
+import { Loader2 } from 'lucide-react'
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa"
 import {
@@ -142,10 +142,11 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="space-y-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600">Loading project details...</p>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-16 h-16 text-white animate-spin mx-auto" />
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Loading...</h2>
+          <p className="text-lg text-blue-300">Make an impact by doing your bit</p>
         </div>
       </div>
     );
