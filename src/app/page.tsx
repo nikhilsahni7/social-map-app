@@ -247,7 +247,7 @@ const getCategoryEmoji = (category: string) => {
     case "plant":
       return "🌳";
     default:
-      return "📍";
+      return "🧑‍💼";
   }
 };
 
@@ -476,8 +476,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
             <circle cx="20" cy="18" r="14" fill="white" />
             <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">${getCategoryEmoji(
-              project.category
-            )}</text>
+                    project.category
+                  )}</text>
           </svg>
         `)}`,
                   scaledSize: new google.maps.Size(40, 60),
@@ -509,22 +509,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 text-sm mb-2">
+                    <p className="text-gray-700 text-sm mb-2 line-clamp-3">
                       {project.description}
                     </p>
                     <p className="text-gray-600 text-xs">
                       {project.location.address}
                     </p>
                   </CardContent>
-                  <CardFooter className="bg-gray-50 p-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-blue-600 hover:bg-blue-50"
-                    >
-                      View Details
-                    </Button>
-                  </CardFooter>
+
                 </Card>
               </OverlayView>
             )}
@@ -532,39 +524,38 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         ))}
       </GoogleMap>
 
+
       {/* Category Filters */}
       <div className="absolute top-20 left-0 right-0 z-10 w-full px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-center">
-          <div className="inline-flex items-center justify-center space-x-2 bg-white rounded-full shadow-md px-4 py-2">
-            {organizationTypes.map((type) => (
-              <Button
-                key={type.value}
-                variant={selectedType === type.value ? "default" : "ghost"}
-                size="sm"
-                className={`rounded-full transition-all duration-300 ${
-                  selectedType === type.value
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+          {/* Organization Types Buttons */}
+          <div className="flex-grow flex items-center justify-center">
+            <div className="inline-flex items-center justify-center space-x-2 bg-white rounded-full shadow-md px-4 py-2">
+              {organizationTypes.map((type) => (
+                <Button
+                  key={type.value}
+                  variant={selectedType === type.value ? "default" : "ghost"}
+                  size="sm"
+                  className={`rounded-full transition-all duration-300 ${selectedType === type.value
                     ? "bg-blue-600 text-white"
                     : "text-blue-600 hover:bg-blue-50"
-                }`}
-                onClick={() =>
-                  setSelectedType(
-                    selectedType === type.value ? null : type.value
-                  )
-                }
-              >
-                {type.label}
-              </Button>
-            ))}
+                    }`}
+                  onClick={() =>
+                    setSelectedType(
+                      selectedType === type.value ? null : type.value
+                    )
+                  }
+                >
+                  {type.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {/* Total Projects Section */}
           <div className="sm:ml-4">
-            <div
-              className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
-              style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
-            >
-              Total Projects:{" "}
-              <CountUp
+            <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full" style={{ boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.1)' }}>
+              Total Projects: <CountUp
                 start={0}
                 end={filteredProjects.length}
                 duration={2}
@@ -573,6 +564,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               />
             </div>
           </div>
+
         </div>
       </div>
 
@@ -672,7 +664,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           )}
 
           {/* Button Section (Mobile) */}
-          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-2 mb-1">
+          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-3 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
               <Button className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
@@ -907,11 +899,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden -translate-y-2"
+                className="fixed top-36 right-4 bg-white shadow-lg hide-scrollbar z-20 rounded-3xl overflow-hidden -translate-y-2"
                 style={{
-                  maxWidth: "400px",
+                  maxWidth: "350px",
                   height: "calc(100% - 14rem)",
-                  scrollbarWidth: "thin",
+
                 }}
               >
                 <Button
@@ -923,7 +915,12 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-6 w-6" />
                 </Button>
 
+
                 <div className="p-6 h-full overflow-y-auto">
+
+
+
+
                   <h2 className="text-2xl font-bold mb-4">
                     {selectedProject.title}
                   </h2>
@@ -940,9 +937,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     {selectedProject.location.address}
                   </p>
                   <div className="flex space-x-4 mt-6">
-                    <Link
-                      href={`/creator-profile/${selectedProject.creator._id}`}
-                    >
+                    <Link href={`/creator-profile/${selectedProject._id}`}>
                       <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
                         <FaUserCircle className="mr-2" />
                         View Profile
@@ -970,7 +965,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
                   maxWidth: "600px",
-                  width: "35%",
+                  width: "33%",
                   height: "calc(100% - 15rem)",
                   scrollbarWidth: "thin",
                 }}
@@ -1067,21 +1062,36 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 msOverflowStyle: "none", // IE and Edge
               }}
             >
-              {projects.slice(0, 5).map((project) => (
+              {projects.slice(0, 10).map((project) => (
                 <Card
                   key={project._id}
                   className="m-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
                   onClick={() => handleMarkerClick(project)}
                 >
+
                   <CardHeader className="p-4">
+
+
+                    <Image
+                      src={project.pictureOfSuccess.url}
+                      alt="Digital"
+                      width={500}
+                      height={30}
+                      style={{ objectFit: 'contain' }}
+                      className="rounded-2xl"
+                    ></Image>
+
+
+
                     <CardTitle className="text-sm font-semibold">
                       {project.title}
                     </CardTitle>
-                    <Badge className="mt-1 w-4/12">{project.category}</Badge>
+                    <Badge className="mt-1 w-[86px]">{project.category}</Badge>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <p className="text-xs text-gray-600">
-                      {project.description.substring(0, 50)}...
+                      {project.description.substring(0, 100)}{project.description.length > 100 ? "..." : ""}
+
                     </p>
                   </CardContent>
                 </Card>
@@ -1103,8 +1113,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden -translate-y-2"
                 style={{
-                  maxWidth: "400px",
-                  height: "calc(100% - 18rem)",
+                  maxWidth: "420px",
+                  height: "calc(100% - 19rem)",
                   scrollbarWidth: "thin",
                 }}
               >
@@ -1163,7 +1173,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 style={{
                   maxWidth: "600px",
                   width: "90%",
-                  height: "calc(100% - 18rem)",
+                  height: "calc(100% - 19rem)",
                   scrollbarWidth: "thin",
                 }}
               >
@@ -1234,5 +1244,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         </div>
       )}
     </div>
+
   );
 }

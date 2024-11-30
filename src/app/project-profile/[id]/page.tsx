@@ -14,7 +14,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import CommentSection from "@/components/Comments";
+import { CommentSection } from "@/components/Comments";
 import { Loader2 } from "lucide-react";
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
@@ -460,7 +460,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
 
-        <CommentSection slug="your-post-slug" />
+        <CommentSection slug={params.id} />
 
         {/* Related Projects */}
         <div className="space-y-6">

@@ -228,8 +228,7 @@ export default function ProjectDetailsForm() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center"
-      style={{ backgroundImage: 'url("/digital.jpg")' }}>
+    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center">
 
       <div className="space-y-8">
         <div className="text-center space-y-2">
