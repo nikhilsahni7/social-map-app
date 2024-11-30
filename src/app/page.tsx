@@ -52,6 +52,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { useRouter } from 'next/router';
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -251,6 +252,8 @@ const getCategoryEmoji = (category: string) => {
   }
 };
 
+
+
 export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -264,12 +267,33 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
+
+
+
+  useEffect(() => {
+    const loadGoogleApi = () => {
+      if (window.google) {
+        // Your logic using the google object
+      } else {
+        console.error("Google API not loaded");
+      }
+    };
+
+    window.addEventListener("load", loadGoogleApi);
+    return () => window.removeEventListener("load", loadGoogleApi);
+  }, []);
+
 
   // Fetch projects from backend (unchanged)
   useEffect(() => {
@@ -408,6 +432,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     if (map) map.setZoom(map.getZoom()! + 1);
   };
 
+
   const handleZoomOut = () => {
     if (map) map.setZoom(map.getZoom()! - 1);
   };
@@ -424,6 +449,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       map.fitBounds(bounds);
     }
   };
+
 
   if (loadError) {
     return (
@@ -453,76 +479,73 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   return (
     <div className="h-screen w-full relative bg-gray-900">
-      <GoogleMap
-        mapContainerStyle={{ width: "100%", height: "100%" }}
-        zoom={10}
-        onLoad={onLoad}
-        options={mapOptions}
-      >
-        {filteredProjects.map((project) => (
-          <React.Fragment key={project._id}>
-            {project.location?.coordinates && (
-              <Marker
-                position={{
-                  lat: project.location.coordinates[1],
-                  lng: project.location.coordinates[0],
-                }}
-                onClick={() => handleMarkerClick(project)}
-                onMouseOver={() => setHoveredProject(project)}
-                onMouseOut={() => setHoveredProject(null)}
-                icon={{
-                  url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
-            <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
-            <circle cx="20" cy="18" r="14" fill="white" />
-            <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">${getCategoryEmoji(
-                    project.category
-                  )}</text>
-          </svg>
-        `)}`,
-                  scaledSize: new google.maps.Size(40, 60),
-                  anchor: new google.maps.Point(20, 60),
-                }}
-              />
-            )}
+      {isClient && (
+        <GoogleMap
+          mapContainerStyle={{ width: '100%', height: '100%' }}
+          zoom={10}
+          onLoad={onLoad}
+          options={mapOptions}
+        >
+          {filteredProjects.map((project) => (
+            <React.Fragment key={project._id}>
+              {project.location?.coordinates && (
+                <Marker
+                  position={{
+                    lat: project.location.coordinates[1],
+                    lng: project.location.coordinates[0],
+                  }}
+                  onClick={() => handleMarkerClick(project)}
+                  onMouseOver={() => setHoveredProject(project)}
+                  onMouseOut={() => setHoveredProject(null)}
+                  icon={
+                    isLoaded
+                      ? {
+                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
+                            <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
+                            <circle cx="20" cy="18" r="14" fill="white" />
+                            <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">
+                              ${getCategoryEmoji(project.category)}
+                            </text>
+                          </svg>
+                        `)}`,
+                        scaledSize: new google.maps.Size(40, 60), 
+                        anchor: new google.maps.Point(20, 60),
+                      }
+                      : undefined 
+                  }
+                />
+              )}
 
-            {hoveredProject === project && (
-              <OverlayView
-                position={{
-                  lat: project.location.coordinates[1],
-                  lng: project.location.coordinates[0],
-                }}
-                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-              >
-                <Card className="w-64 bg-white shadow-lg">
-                  <CardHeader className="p-4">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg text-black">
-                        {project.title}
-                      </CardTitle>
-                      <Badge variant="outline" className="text-lg">
-                        {getCategoryEmoji(project.category)}
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-blue-600 mt-2">
-                      {project.category}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 text-sm mb-2 line-clamp-3">
-                      {project.description}
-                    </p>
-                    <p className="text-gray-600 text-xs">
-                      {project.location.address}
-                    </p>
-                  </CardContent>
-
-                </Card>
-              </OverlayView>
-            )}
-          </React.Fragment>
-        ))}
-      </GoogleMap>
+              {hoveredProject === project && (
+                <OverlayView
+                  position={{
+                    lat: project.location.coordinates[1],
+                    lng: project.location.coordinates[0],
+                  }}
+                  mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                >
+                  <Card className="w-64 bg-white shadow-lg">
+                    <CardHeader className="p-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg text-black">{project.title}</CardTitle>
+                        <Badge variant="outline" className="text-lg">
+                          {getCategoryEmoji(project.category)}
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-blue-600 mt-2">{project.category}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700 text-sm mb-2 line-clamp-3">{project.description}</p>
+                      <p className="text-gray-600 text-xs">{project.location.address}</p>
+                    </CardContent>
+                  </Card>
+                </OverlayView>
+              )}
+            </React.Fragment>
+          ))}
+        </GoogleMap>
+      )}
 
 
       {/* Category Filters */}
