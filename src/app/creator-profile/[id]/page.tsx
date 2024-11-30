@@ -1,7 +1,7 @@
 // app/creator/profile/[id]/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,6 +48,7 @@ interface PersonData {
     twitter: string;
   };
   connectionStatus?: string;
+
 }
 
 export default function PersonProfile() {
@@ -57,7 +58,7 @@ export default function PersonProfile() {
   const [notifications, setNotifications] = useState([]);
   const currentUser = getAuthUser();
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch(`/api/users/${params.id}`, {
         headers: {
@@ -79,8 +80,7 @@ export default function PersonProfile() {
           connections: data.user.connectionsCount || 0,
           profileViews: data.user.profileViews,
           projects:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data.projects?.map((p: any) => ({
+            data.projects?.map((p: { _id: string; title: string; objective: string; category: string; pictureOfSuccess?: { url: string } }) => ({
               id: p._id,
               title: p.title,
               description: p.objective,
@@ -99,7 +99,12 @@ export default function PersonProfile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]); // Ensure `params.id` is included as a dependency
+
+  // Use the fetchProfile function in useEffect
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const fetchNotifications = async () => {
     try {
@@ -130,9 +135,9 @@ export default function PersonProfile() {
         setPersonData((prev) =>
           prev
             ? {
-                ...prev,
-                connectionStatus: "pending",
-              }
+              ...prev,
+              connectionStatus: "pending",
+            }
             : null
         );
       }
@@ -168,7 +173,7 @@ export default function PersonProfile() {
     if (currentUser) {
       fetchNotifications();
     }
-  }, [params.id]);
+  }, [params.id, currentUser, fetchProfile]);
 
   if (loading) {
     return (

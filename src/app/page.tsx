@@ -104,7 +104,7 @@ interface Project {
     coordinates: [number, number];
     address: string;
   };
-  pictureOfSuccess?: {
+  pictureOfSuccess: {
     url: string;
   };
   creator: {
@@ -650,16 +650,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 Open Search
               </button>
 
-              {/* Search Dialog
-              <CustomDialogMobile
-                isOpen={isSearchOpen}
-                onClose={() => setIsSearchOpen(false)}
-                tags={tags}
-                searchQuery={searchQuery}
-                handleSearch={handleSearch}
-                filteredSuggestions={filteredSuggestions}
-                handleSelectSuggestion={handleSelectSuggestion}
-              /> */}
+
             </div>
           )}
 
