@@ -229,7 +229,6 @@ export default function ProjectDetailsForm() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center">
-
       <div className="space-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">
@@ -247,7 +246,9 @@ export default function ProjectDetailsForm() {
                   <CardHeader className="p-0">
                     <CardTitle className="flex items-center space-x-2 text-red-600">
                       <User className="h-5 w-5 text-2xl font-bold" />
-                      <span className="text-2xl font-bold">Personal Information</span>
+                      <span className="text-2xl font-bold">
+                        Personal Information
+                      </span>
                     </CardTitle>
                   </CardHeader>
 
@@ -277,25 +278,22 @@ export default function ProjectDetailsForm() {
                       />
                     </div>
                   </div>
-
-
                 </div>
 
                 {/* Project Details */}
                 <div className="space-y-6">
-
                   <CardHeader className="p-0">
                     <CardTitle className="flex items-center space-x-2 text-red-600">
                       <FileText className="h-5 w-5" />
-                      <span className="text-2xl font-bold">Project Details</span>
+                      <span className="text-2xl font-bold">
+                        Project Details
+                      </span>
                     </CardTitle>
                   </CardHeader>
                   {/* Category Selection */}
                   <div className="">
                     <CardHeader className="p-0">
                       <CardTitle className="flex items-center text-red-600">
-
-
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Category
                         </label>
@@ -308,7 +306,9 @@ export default function ProjectDetailsForm() {
                           type="button"
                           onClick={() => handleCategorySelect(category)}
                           variant={
-                            formData.category === category ? "default" : "outline"
+                            formData.category === category
+                              ? "default"
+                              : "outline"
                           }
                         >
                           {category}
@@ -355,14 +355,13 @@ export default function ProjectDetailsForm() {
                             ? `${formData.firstName} wants to ${formData.objective}`
                             : "Mr. Aakash wants to donate 500 blankets."}
                         </p>
-                        <p className="text-gray-700 text-xs">(This is how it will appear on website)</p>
-
+                        <p className="text-gray-700 text-xs">
+                          (This is how it will appear on website)
+                        </p>
                       </CardContent>
                     </Card>
                   </div>
                 </div>
-
-
 
                 {/* Duration */}
                 <div className="space-y-4">
@@ -385,7 +384,6 @@ export default function ProjectDetailsForm() {
                           onChange={handleFormInputChange}
                           className="md:w-w-40"
                         />
-
                       </div>
                     </div>
                     <div>
@@ -400,7 +398,6 @@ export default function ProjectDetailsForm() {
                           onChange={handleFormInputChange}
                           className="md:w-w-40"
                         />
-
                       </div>
                     </div>
                   </div>
@@ -437,10 +434,11 @@ export default function ProjectDetailsForm() {
                       Picture Of Success ~ Help People See What You Have In Mind
                     </h3>
                     <div
-                      className={`relative h-48 border-2 border-dashed rounded-xl transition-all ${isDragActive
-                        ? "border-red-500 bg-red-50"
-                        : "border-gray-300 hover:border-red-400"
-                        }`}
+                      className={`relative h-48 border-2 border-dashed rounded-xl transition-all ${
+                        isDragActive
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300 hover:border-red-400"
+                      }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
@@ -650,12 +648,34 @@ export default function ProjectDetailsForm() {
                 </div>
 
                 {/* Submit Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6"> <Button type="button" variant="outline" disabled={isLoading}> Preview </Button> <Button type="submit" disabled={isLoading} className="bg-red-600 hover:bg-red-700 text-white" > {isLoading ? (<> <Loader2 className="animate-spin mr-2 h-4 w-4" /> Creating Project... </>) : ("Submit Project")} </Button> </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                  {" "}
+                  <Button type="button" variant="outline" disabled={isLoading}>
+                    {" "}
+                    Preview{" "}
+                  </Button>{" "}
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {" "}
+                    {isLoading ? (
+                      <>
+                        {" "}
+                        <Loader2 className="animate-spin mr-2 h-4 w-4" />{" "}
+                        Creating Project...{" "}
+                      </>
+                    ) : (
+                      "Submit Project"
+                    )}{" "}
+                  </Button>{" "}
+                </div>
               </CardContent>
             </ScrollArea>
           </Card>
         </form>
       </div>
-    </div >
+    </div>
   );
 }
