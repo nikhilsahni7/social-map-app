@@ -7,6 +7,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -20,20 +21,35 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    aboutme: "",
+    city: "",
+    state: "",
+    occupation: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const router = useRouter();
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       setIsLoading(false);
       return;
@@ -43,7 +59,15 @@ export default function SignupPage() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          aboutme: formData.aboutme,
+          city: formData.city,
+          state: formData.state,
+          occupation: formData.occupation,
+        }),
       });
 
       const data = await response.json();
@@ -71,7 +95,7 @@ export default function SignupPage() {
       const response = await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: formData.email }),
       });
 
       const data = await response.json();
@@ -114,9 +138,10 @@ export default function SignupPage() {
                     <Label htmlFor="name">Full Name</Label>
                     <Input
                       id="name"
+                      name="name"
                       placeholder="John Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={formData.name}
+                      onChange={handleChange}
                       required
                     />
                   </div>
@@ -124,10 +149,11 @@ export default function SignupPage() {
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
                       placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={formData.email}
+                      onChange={handleChange}
                       required
                     />
                   </div>
@@ -136,10 +162,11 @@ export default function SignupPage() {
                     <div className="relative">
                       <Input
                         id="password"
+                        name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={formData.password}
+                        onChange={handleChange}
                         required
                       />
                       <Button
@@ -161,11 +188,54 @@ export default function SignupPage() {
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <Input
                       id="confirmPassword"
+                      name="confirmPassword"
                       type="password"
                       placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
                       required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="aboutme">About Me</Label>
+                    <Textarea
+                      id="aboutme"
+                      name="aboutme"
+                      placeholder="Tell us about yourself"
+                      value={formData.aboutme}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        placeholder="Your city"
+                        value={formData.city}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        id="state"
+                        name="state"
+                        placeholder="Your state"
+                        value={formData.state}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="occupation">Occupation</Label>
+                    <Input
+                      id="occupation"
+                      name="occupation"
+                      placeholder="Your occupation"
+                      value={formData.occupation}
+                      onChange={handleChange}
                     />
                   </div>
                   <div className="flex items-center space-x-2">
@@ -202,7 +272,9 @@ export default function SignupPage() {
                 </h3>
                 <p className="text-sm text-gray-600">
                   We sent a verification link to{" "}
-                  <span className="font-medium text-gray-900">{email}</span>
+                  <span className="font-medium text-gray-900">
+                    {formData.email}
+                  </span>
                 </p>
                 <p className="text-sm text-gray-500">
                   Click the link in the email to verify your account.

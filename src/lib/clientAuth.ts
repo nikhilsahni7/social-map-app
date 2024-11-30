@@ -7,6 +7,8 @@ export const getAuthToken = () => {
 export const getAuthUser = () => {
   if (typeof window === "undefined") return null;
   const user = localStorage.getItem("user");
+
+  console.log("user", user);
   return user ? JSON.parse(user) : null;
 };
 

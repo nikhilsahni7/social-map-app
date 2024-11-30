@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { verifyToken } from "./jwt";
-import { User } from "./models/user.model";
+import User from "./models/user.model";
 import { connectDB } from "./db";
 
 export async function auth(req: NextRequest) {

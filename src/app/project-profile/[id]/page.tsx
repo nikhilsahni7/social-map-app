@@ -15,9 +15,9 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import CommentSection from "@/components/Comments";
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from "lucide-react";
 import "react-vertical-timeline-component/style.min.css";
-import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa"
+import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
 import {
   Target,
   Calendar,
@@ -55,10 +55,7 @@ interface ProjectData {
   };
 }
 
-
-
 export default function ProjectDetails({ params }: { params: { id: string } }) {
-
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,7 +113,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       }
 
       const newItems = { ...prev, [item]: newQty };
-      setTotalSupport(Object.values(newItems).reduce((sum, qty) => sum + qty, 0));
+      setTotalSupport(
+        Object.values(newItems).reduce((sum, qty) => sum + qty, 0)
+      );
       return newItems;
     });
   };
@@ -130,14 +129,37 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     return `Supporting: ${items}`;
   };
 
-  const handleSupport = () => {
+  // Inside ProjectDetails component
+
+  const handleSupport = async () => {
     setIsSupporting(true);
-    // Add support logic here
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/projects/${params.id}/support`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ supportItems }),
+      });
+
+      if (response.ok) {
+        // Reset support items
+        setSupportItems({});
+        setTotalSupport(0);
+        // Optionally, display a success message or notification
+        alert("Support sent successfully!");
+      } else {
+        const data = await response.json();
+        alert(data.error || "Failed to send support");
+      }
+    } catch (error) {
+      console.error("Error sending support:", error);
+      alert("An error occurred while sending support.");
+    } finally {
       setIsSupporting(false);
-      setSupportItems({});
-      setTotalSupport(0);
-    }, 1000);
+    }
   };
 
   if (loading) {
@@ -145,8 +167,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
         <div className="text-center space-y-4">
           <Loader2 className="w-16 h-16 text-white animate-spin mx-auto" />
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Loading...</h2>
-          <p className="text-lg text-blue-300">Make an impact by doing your bit</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">
+            Loading...
+          </h2>
+          <p className="text-lg text-blue-300">
+            Make an impact by doing your bit
+          </p>
         </div>
       </div>
     );
@@ -188,11 +214,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-
-
-
-
-
       <div className="w-full">
         <div className="relative -mt-28">
           <div className="bg-white rounded-b-2xl shadow-lg p-8 backdrop-blur-lg bg-white/90">
@@ -226,8 +247,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 </h1>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -269,7 +288,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
               {/* Timeline */}
               <div className="w-full mt-8 px-4">
-
                 <div className="flex items-center justify-between">
                   {/* Start Date Section */}
                   <div className="flex flex-col items-center">
@@ -293,8 +311,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
-
-
             </CardContent>
           </Card>
 
@@ -319,12 +335,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           </Card>
         </div>
 
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
           {/* Project Details */}
-
         </div>
-
 
         {/* Support Section */}
         <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
@@ -360,7 +373,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   <HoverCardContent className="w-80 p-2" align="end">
                     <div className="space-y-2">
                       <h4 className="font-semibold">Your Support Summary</h4>
-                      <p className="text-sm text-gray-600">{getSupportSummary()}</p>
+                      <p className="text-sm text-gray-600">
+                        {getSupportSummary()}
+                      </p>
                       {totalSupport > 0 && (
                         <div className="pt-2 border-t">
                           <p className="text-xs text-gray-500">
@@ -422,7 +437,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                       onClick={() => updateItemQuantity(item.item, 1)}
                       disabled={supportItems[item.item] >= 4}
                       className={
-                        supportItems[item.item] < 4 ? "text-green-500" : "text-gray-400"
+                        supportItems[item.item] < 4
+                          ? "text-green-500"
+                          : "text-gray-400"
                       }
                     >
                       <Plus className="h-4 w-4" />
@@ -484,16 +501,13 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         {project.description}
                       </p>
                     </div>
-
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
-
-
       </div>
-    </div >
+    </div>
   );
 }

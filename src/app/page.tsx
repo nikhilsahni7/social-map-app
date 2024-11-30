@@ -107,6 +107,9 @@ interface Project {
   pictureOfSuccess?: {
     url: string;
   };
+  creator: {
+    _id: string;
+  };
 }
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
@@ -937,7 +940,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     {selectedProject.location.address}
                   </p>
                   <div className="flex space-x-4 mt-6">
-                    <Link href={`/creator-profile/${selectedProject._id}`}>
+                    <Link
+                      href={`/creator-profile/${selectedProject.creator._id}`}
+                    >
                       <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
                         <FaUserCircle className="mr-2" />
                         View Profile
