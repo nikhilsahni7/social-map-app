@@ -107,7 +107,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const updateItemQuantity = (item: string, delta: number) => {
     setSupportItems((prev) => {
       const currentQty = prev[item] || 0;
-      const newQty = Math.max(0, Math.min(4, currentQty + delta));
+      const newQty = Math.max(0, Math.min(currentQty + delta));
 
       if (newQty === 0) {
         const { [item]: _, ...rest } = prev;
@@ -441,9 +441,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                                 size="icon"
                                 variant="outline"
                                 onClick={() => updateItemQuantity(item.item, 1)}
-                                disabled={supportItems[item.item] >= 4}
+                                disabled={Number(supportItems[item.item]) >= Number(item.quantity)}
                                 className={
-                                  supportItems[item.item] < 4
+                                  supportItems[item.item] < Number(item.quantity)
                                     ? "text-green-500"
                                     : "text-gray-400"
                                 }

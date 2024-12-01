@@ -130,9 +130,9 @@ export default function PersonProfile() {
         setPersonData((prev) =>
           prev
             ? {
-                ...prev,
-                connectionStatus: "pending",
-              }
+              ...prev,
+              connectionStatus: "pending",
+            }
             : null
         );
       }
@@ -168,7 +168,7 @@ export default function PersonProfile() {
     if (currentUser) {
       fetchNotifications();
     }
-  }, [params.id]);
+  });
 
   if (loading) {
     return (

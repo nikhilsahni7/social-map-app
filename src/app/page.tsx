@@ -498,8 +498,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
-                            <text x="20" y="24" font-family="Arial" font-size="18" text-anchor="middle" dominant-baseline="middle">
-                              ${getCategoryEmoji(project.category)}
+                            <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
+                              ${getCategoryEmoji(project.category)}                            
                             </text>
                           </svg>
                         `)}`,

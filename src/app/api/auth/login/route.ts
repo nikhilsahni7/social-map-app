@@ -59,6 +59,9 @@ export async function POST(req: NextRequest) {
         isVerified: user.isVerified,
       },
     });
+
+
+    
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
@@ -67,3 +70,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

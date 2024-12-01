@@ -105,6 +105,8 @@ interface CommentItemProps {
     submitting: boolean;
 }
 
+
+
 const CommentItem: React.FC<CommentItemProps> = ({
     comment,
     depth = 0,
@@ -113,9 +115,22 @@ const CommentItem: React.FC<CommentItemProps> = ({
     onReply,
     submitting
 }) => {
+    const [username, setUsername] = useState<string>("")
     const [showReplyBox, setShowReplyBox] = useState(false);
     const [replyText, setReplyText] = useState('');
     const replyInputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        const storedUserName = localStorage.getItem('username');
+        if (storedUserName) {
+            setUsername(storedUserName);
+            console.log(storedUserName);
+
+        } else {
+            console.log('No user name found in localStorage');
+        }
+    }, []);
+
 
     const handleReply = () => {
         onReply(comment._id, replyText);
@@ -134,7 +149,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className="flex flex-col sm:flex-row sm:space-x-4">
                 <Avatar className="h-8 w-8 mt-1">
                     <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                        {projectInitials}
+                        {username[1]}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">

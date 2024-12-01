@@ -49,7 +49,12 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("token", data.token);
+
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("username", JSON.stringify(data.user.name));
+
+
+
 
       toast.success("Welcome back!");
       router.push("/");
