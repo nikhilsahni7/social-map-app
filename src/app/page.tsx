@@ -519,17 +519,17 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   }}
                   mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                  <Card className="w-64 bg-white shadow-lg">
+                  <Card className="relative w-64 bg-white shadow-lg border-[5px] border-blue-700 border-opacity-60 backdrop-blur-md hover:scale-105 transition-all duration-300 rounded-lg">
                     <CardHeader className="p-4">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg text-black">
+                        <CardTitle className="text-lg text-black ml-2 font-semibold">
                           {project.title}
                         </CardTitle>
                         <Badge variant="outline" className="text-lg">
                           {getCategoryEmoji(project.category)}
                         </Badge>
                       </div>
-                      <CardDescription className="text-blue-600 mt-2">
+                      <CardDescription className="text-blue-600 mt-2 ml-2 text-sm font-medium">
                         {project.category}
                       </CardDescription>
                     </CardHeader>
@@ -537,13 +537,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <p className="text-gray-700 text-sm mb-2 line-clamp-3">
                         {project.description}
                       </p>
-                      <p className="text-gray-600 text-xs">
+                      <p className="text-gray-600 text-xs italic">
                         {project.location.address}
                       </p>
                     </CardContent>
                   </Card>
                 </OverlayView>
               )}
+
             </React.Fragment>
           ))}
         </GoogleMap>
@@ -775,7 +776,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <Home className="mr-3 h-5 w-5 font-semibold" />
                           Home
@@ -786,7 +787,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/login">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <LogIn className="mr-3 h-5 w-5" />
                           Login
@@ -797,7 +798,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/signup">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <UserPlus className="mr-3 h-5 w-5" />
                           Sign Up
@@ -817,7 +818,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <Info className="mr-3 h-5 w-5" />
                           About Us
@@ -828,7 +829,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/contact">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <Mail className="mr-3 h-5 w-5" />
                           Contact Us
@@ -848,7 +849,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
                         >
                           <HelpCircle className="mr-3 h-5 w-5" />
                           Help & FAQ
