@@ -561,8 +561,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   variant={selectedType === type.value ? "default" : "ghost"}
                   size="sm"
                   className={`rounded-full transition-all duration-300 ${selectedType === type.value
-                      ? "bg-blue-600 text-white"
-                      : "text-blue-600 hover:bg-blue-50"
+                    ? "bg-blue-600 text-white"
+                    : "text-blue-600 hover:bg-blue-50"
                     }`}
                   onClick={() =>
                     setSelectedType(
@@ -902,7 +902,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 </Button>
 
                 <div className="p-6 h-full overflow-y-auto">
-                  <h2 className="text-2xl font-bold mb-4">
+                  <Image
+                    src={selectedProject.pictureOfSuccess.url}
+                    alt=""
+                    width={280}
+                    height={30}
+                    style={{ objectFit: 'contain' }}
+                    className="rounded-2xl"
+                  ></Image>
+                  <h2 className="text-2xl mt-4 font-bold mb-2">
                     {selectedProject.title}
                   </h2>
                   <Badge className="mb-3">{selectedProject.category}</Badge>
