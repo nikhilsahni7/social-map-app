@@ -168,7 +168,7 @@ export default function PersonProfile() {
     if (currentUser) {
       fetchNotifications();
     }
-  });
+  }, [params.id]);
 
   if (loading) {
     return (
@@ -203,9 +203,7 @@ export default function PersonProfile() {
 
   return (
     <div
-      className="min-h-screen bg-gray-100"
-      style={{ backgroundImage: 'url("/digital.jpg")' }}
-    >
+      className="min-h-screen bg-gray-100">
       <main>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
@@ -223,12 +221,12 @@ export default function PersonProfile() {
                   <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white/90 to-transparent"></div>
                 </div>
                 <div className="relative px-8 pb-8">
-                  <Avatar className="w-40 h-40 border-4 border-white rounded-full absolute -top-20 left-8 shadow-lg">
+                  <Avatar className="w-40 h-40 border-4 border-blue-500 rounded-full bg-gradient-to-b from-blue-500 to-blue-700 shadow-xl absolute -top-20 left-8">
                     <AvatarImage
                       src={personData.avatar}
                       alt={`${personData.firstName} ${personData.lastName}`}
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="flex items-center justify-center w-full h-full text-5xl font-semibold text-white bg-blue-600 rounded-full">
                       {personData.firstName[0]}
                       {personData.lastName[0]}
                     </AvatarFallback>
@@ -252,7 +250,7 @@ export default function PersonProfile() {
                           </div>
                           <div className="flex items-center">
                             <Eye className="w-4 h-4 mr-1" />
-                            <span>{personData.profileViews} profile views</span>
+                            <span>{((personData.profileViews) / 2)} profile views</span>
                           </div>
                         </div>
 
