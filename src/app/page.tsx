@@ -52,7 +52,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -252,8 +252,6 @@ const getCategoryEmoji = (category: string) => {
   }
 };
 
-
-
 export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -279,8 +277,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     libraries: ["places"],
   });
 
-
-
   useEffect(() => {
     const loadGoogleApi = () => {
       if (window.google) {
@@ -293,7 +289,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     window.addEventListener("load", loadGoogleApi);
     return () => window.removeEventListener("load", loadGoogleApi);
   }, []);
-
 
   // Fetch projects from backend (unchanged)
   useEffect(() => {
@@ -432,7 +427,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     if (map) map.setZoom(map.getZoom()! + 1);
   };
 
-
   const handleZoomOut = () => {
     if (map) map.setZoom(map.getZoom()! - 1);
   };
@@ -449,7 +443,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       map.fitBounds(bounds);
     }
   };
-
 
   if (loadError) {
     return (
@@ -482,7 +475,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
       {isClient && (
         <GoogleMap
-          mapContainerStyle={{ width: '100%', height: '100%' }}
+          mapContainerStyle={{ width: "100%", height: "100%" }}
           zoom={10}
           onLoad={onLoad}
           options={mapOptions}
@@ -529,16 +522,24 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <Card className="w-64 bg-white shadow-lg">
                     <CardHeader className="p-4">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg text-black">{project.title}</CardTitle>
+                        <CardTitle className="text-lg text-black">
+                          {project.title}
+                        </CardTitle>
                         <Badge variant="outline" className="text-lg">
                           {getCategoryEmoji(project.category)}
                         </Badge>
                       </div>
-                      <CardDescription className="text-blue-600 mt-2">{project.category}</CardDescription>
+                      <CardDescription className="text-blue-600 mt-2">
+                        {project.category}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-gray-700 text-sm mb-2 line-clamp-3">{project.description}</p>
-                      <p className="text-gray-600 text-xs">{project.location.address}</p>
+                      <p className="text-gray-700 text-sm mb-2 line-clamp-3">
+                        {project.description}
+                      </p>
+                      <p className="text-gray-600 text-xs">
+                        {project.location.address}
+                      </p>
                     </CardContent>
                   </Card>
                 </OverlayView>
@@ -547,7 +548,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           ))}
         </GoogleMap>
       )}
-
 
       {/* Category Filters */}
       <div className="absolute top-20 left-0 right-0 z-10 w-full px-4">
@@ -561,8 +561,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   variant={selectedType === type.value ? "default" : "ghost"}
                   size="sm"
                   className={`rounded-full transition-all duration-300 ${selectedType === type.value
-                    ? "bg-blue-600 text-white"
-                    : "text-blue-600 hover:bg-blue-50"
+                      ? "bg-blue-600 text-white"
+                      : "text-blue-600 hover:bg-blue-50"
                     }`}
                   onClick={() =>
                     setSelectedType(
@@ -578,8 +578,12 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
           {/* Total Projects Section */}
           <div className="sm:ml-4">
-            <div className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full" style={{ boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.1)' }}>
-              Total Projects: <CountUp
+            <div
+              className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
+              style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
+            >
+              Total Projects:{" "}
+              <CountUp
                 start={0}
                 end={filteredProjects.length}
                 duration={2}
@@ -588,7 +592,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               />
             </div>
           </div>
-
         </div>
       </div>
 
@@ -673,8 +676,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               >
                 Open Search
               </button>
-
-
             </div>
           )}
 
@@ -889,7 +890,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 style={{
                   maxWidth: "350px",
                   height: "calc(100% - 14rem)",
-
                 }}
               >
                 <Button
@@ -901,21 +901,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-6 w-6" />
                 </Button>
 
-
-
                 <div className="p-6 h-full overflow-y-auto">
-
-                  <Image
-                    src={selectedProject.pictureOfSuccess.url}
-                    alt=""
-                    width={280}
-                    height={30}
-                    style={{ objectFit: 'contain' }}
-                    className="rounded-2xl"
-                  ></Image>
-
-
-                  <h2 className="mt-4 text-2xl font-bold mb-2">
+                  <h2 className="text-2xl font-bold mb-4">
                     {selectedProject.title}
                   </h2>
                   <Badge className="mb-3">{selectedProject.category}</Badge>
@@ -931,7 +918,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     {selectedProject.location.address}
                   </p>
                   <div className="flex space-x-4 mt-6">
-                    <Link href={`/creator-profile/${selectedProject._id}`}>
+                    <Link
+                      href={`/creator-profile/${selectedProject.creator._id}`}
+                    >
                       <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
                         <FaUserCircle className="mr-2" />
                         View Profile
@@ -1062,20 +1051,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   className="m-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
                   onClick={() => handleMarkerClick(project)}
                 >
-
                   <CardHeader className="p-4">
-
-
                     <Image
                       src={project.pictureOfSuccess.url}
                       alt=""
                       width={500}
                       height={30}
-                      style={{ objectFit: 'contain' }}
+                      style={{ objectFit: "contain" }}
                       className="rounded-2xl"
                     ></Image>
-
-
 
                     <CardTitle className="text-sm font-semibold">
                       {project.title}
@@ -1084,8 +1068,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <p className="text-xs text-gray-600">
-                      {project.description.substring(0, 100)}{project.description.length > 100 ? "..." : ""}
-
+                      {project.description.substring(0, 100)}
+                      {project.description.length > 100 ? "..." : ""}
                     </p>
                   </CardContent>
                 </Card>
@@ -1246,6 +1230,5 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         </div>
       )}
     </div>
-
   );
 }
