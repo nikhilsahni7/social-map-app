@@ -63,7 +63,7 @@ export default function ProjectDetailsForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const Router = useRouter();
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -164,7 +164,7 @@ export default function ProjectDetailsForm() {
 
     if (!token) {
       hotToast.error("Please login to create a project");
-      Router.push("/login");
+      router.push("/login");
       return;
     }
 
@@ -201,25 +201,28 @@ export default function ProjectDetailsForm() {
       const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Project created successfully!",
-        });
-        // Reset form or redirect
+        hotToast.success("Project created successfully")
+        setFormData({
+          firstName: "",
+          lastName: "",
+          title: "",
+          objective: "",
+          description: "",
+          category: "Human",
+          startDate: "",
+          endDate: "",
+          pictureOfSuccess: null,
+          otherSupport: "",
+          address: "",
+          coordinates: null,
+        })
+        router.push("/");
       } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to create project",
-          variant: "destructive",
-        });
+        hotToast.error(data.error || "Failed to create project");
       }
     } catch (error) {
       console.error("Error creating project:", error);
-      toast({
-        title: "Error",
-        description: "An error occurred while creating the project",
-        variant: "destructive",
-      });
+      hotToast.error("An unexpected error occurred while creating project. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -526,7 +529,7 @@ export default function ProjectDetailsForm() {
                                 e.target.value
                               )
                             }
-                            placeholder="Qty"
+                            placeholder="0"
                           />
                         </div>
                         <div className="col-span-3">
