@@ -18,30 +18,6 @@ interface Comment {
     dislikes: number;
 }
 
-interface ProjectData {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    title: string;
-    objective: string;
-    category: string;
-    duration: {
-        startDate: string;
-        endDate: string;
-    };
-    description: string;
-    supportItems: Array<{
-        item: string;
-        quantity: string;
-        byWhen: string;
-        dropLocation: string;
-    }>;
-    otherSupport: string;
-    pictureOfSuccess?: {
-        url: string;
-    };
-}
-
 interface CommentInputProps {
     onSubmit: () => void;
     value: string;
@@ -62,24 +38,25 @@ const CommentInput = ({
     projectInitials,
     onCancel,
     inputRef,
-}: {
-    onSubmit: () => void;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder: string;
-    submitting: boolean;
-    projectInitials: string;
-    onCancel?: () => void;
-    inputRef?: React.RefObject<HTMLTextAreaElement>;
-}) => (
+}: CommentInputProps) => (
     <div className="flex flex-col space-y-2">
-        <Textarea
-            ref={inputRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            className="min-h-[40px] resize-none focus:min-h-[80px] w-full"
-        />
+        <div className="flex items-center space-x-2">
+            <Avatar className="h-16 w-16 mt-1 border-2 border-black-700">
+                <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    {projectInitials.split(' ').length > 1 ?
+                        projectInitials.split(' ')[0][1] + projectInitials.split(' ')[1][0] :
+                        projectInitials.split(' ')[0][0] + projectInitials.split(' ')[0][1]}
+
+                </AvatarFallback>
+            </Avatar>
+            <Textarea
+                ref={inputRef}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="min-h-[40px] resize-none focus:min-h-[80px] w-full"
+            />
+        </div>
         <div className="flex justify-end space-x-2">
             <Button variant="outline" size="sm" onClick={onCancel}>
                 Cancel
@@ -105,8 +82,6 @@ interface CommentItemProps {
     submitting: boolean;
 }
 
-
-
 const CommentItem: React.FC<CommentItemProps> = ({
     comment,
     depth = 0,
@@ -115,7 +90,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     onReply,
     submitting
 }) => {
-    const [username, setUsername] = useState<string>("")
+    const [username, setUsername] = useState<string>("");
     const [showReplyBox, setShowReplyBox] = useState(false);
     const [replyText, setReplyText] = useState('');
     const replyInputRef = useRef<HTMLTextAreaElement>(null);
@@ -123,14 +98,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
     useEffect(() => {
         const storedUserName = localStorage.getItem('username');
         if (storedUserName) {
+            const nameParts = storedUserName.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts[nameParts.length - 1];
             setUsername(storedUserName);
-            console.log(storedUserName);
-
         } else {
             console.log('No user name found in localStorage');
         }
     }, []);
-
 
     const handleReply = () => {
         onReply(comment._id, replyText);
@@ -146,15 +121,19 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
     return (
         <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
+            <div className="flex flex-row md:flex-row space-x-4 ml-6">
                 <Avatar className="h-8 w-8 mt-1">
                     <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                        {username[1]}
+                        {comment.author.split(' ').length > 1 ?
+                            comment.author.split(' ')[0][1] + comment.author.split(' ')[1][0] :
+                            comment.author.split(' ')[0][0]}
+
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-sm">{comment.author}</span>
+                        <span className="font-semibold text-sm">{comment.author.replace(/^"|"$/g, '').trim()}</span>
+
                         <span className="text-xs text-muted-foreground">
                             {comment.createdAt && !isNaN(new Date(comment.createdAt).getTime())
                                 ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
@@ -198,7 +177,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 onSubmit={handleReply}
                                 placeholder="Add a reply..."
                                 submitting={submitting}
-                                projectInitials={projectInitials}
+                                projectInitials={username}
                                 onCancel={() => setShowReplyBox(false)}
                                 inputRef={replyInputRef}
                             />
@@ -213,7 +192,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             key={reply._id}
                             comment={reply}
                             depth={depth + 1}
-                            projectInitials={projectInitials}
+                            projectInitials={username}
                             onLike={onLike}
                             onReply={onReply}
                             submitting={submitting}
@@ -235,8 +214,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
-    const [projectData, setProjectData] = useState<ProjectData | null>(null);
-    const mainCommentInputRef = useRef<HTMLTextAreaElement>(null);
+    const [username, setUsername] = useState<string>('');
+    const [showAllComments, setShowAllComments] = useState(false); // State to toggle comment display
 
     const fetchComments = useCallback(async () => {
         setLoading(true);
@@ -252,22 +231,17 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
     }, [slug]);
 
     useEffect(() => {
-        const fetchProjectData = async () => {
-            try {
-                const response = await fetch(`/api/projects/${slug}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch project data");
-                }
-                const data = await response.json();
-                setProjectData(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An error occurred");
-            }
-        };
-
-        fetchProjectData();
         fetchComments();
-    }, [slug, fetchComments]);
+    }, [fetchComments]);
+
+    useEffect(() => {
+        const storedUserName = localStorage.getItem('username');
+        if (storedUserName) {
+            setUsername(storedUserName);
+        } else {
+            console.log('No user name found in localStorage');
+        }
+    }, []);
 
     const handleAddComment = async (text: string, parentId?: string) => {
         if (text?.trim()) {
@@ -275,12 +249,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
             try {
                 await axios.post(`/api/comments/${slug}`, {
                     text,
-                    author: 'Anonymous',
+                    author: username,
                     postId: slug,
                     parentId,
                 });
+                fetchComments(); // Refresh comments after adding a new one
                 setNewComment('');
-                fetchComments();
             } catch (err) {
                 setError('Failed to add comment');
             } finally {
@@ -291,55 +265,79 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
 
     const handleLike = async (commentId: string, action: 'like' | 'dislike') => {
         try {
-            await axios.post(`/api/comments/${slug}/${action}`, { commentId });
-            fetchComments();
+            await axios.post(`/api/comments/like/${commentId}`, { action });
+            fetchComments(); // Refresh comments after liking/disliking
         } catch (err) {
-            setError(`Failed to ${action} comment`);
+            console.error('Failed to like/dislike the comment');
         }
     };
 
-    const projectInitials = `${projectData?.firstName?.[0] ?? ""}${projectData?.lastName?.[0] ?? ""}`;
+    const handleReply = (commentId: string, text: string) => {
+        handleAddComment(text, commentId);
+    };
+
+    const handleShowAllComments = () => {
+        setShowAllComments(true);
+    };
 
     return (
-        <div className="w-full px-4 py-8">
-            <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    Comments ({comments.length})
-                </h2>
-                <CommentInput
-                    value={newComment}
-                    onChange={setNewComment}
-                    onSubmit={() => handleAddComment(newComment)}
-                    placeholder="Add a comment..."
-                    submitting={submitting}
-                    projectInitials={projectInitials}
-                    inputRef={mainCommentInputRef}
-                />
-            </div>
+        <div className="space-y-4">
+            {loading ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+            ) : (
+                <>
+                    <CommentInput
+                        value={newComment}
+                        onChange={setNewComment}
+                        onSubmit={() => handleAddComment(newComment)}
+                        placeholder="Add a comment..."
+                        submitting={submitting}
+                        projectInitials={username}
+                    />
+                    <div className="space-y-4">
+                        {comments.slice(0, showAllComments ? comments.length : 16).map((comment) => (
+                            <CommentItem
+                                key={comment._id}
+                                comment={comment}
+                                projectInitials={username}
+                                onLike={handleLike}
+                                onReply={handleReply}
+                                submitting={submitting}
+                            />
+                        ))}
+                    </div>
 
-            {loading && (
-                <div className="flex justify-center py-4">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
+                    {comments.length > 16 && !showAllComments && (
+                        <button
+                        className="flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-300 font-semibold"
+                        onClick={handleShowAllComments}
+                    >
+                        <span>Read More Comments</span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 ml-2 transition-transform duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            aria-hidden="true"
+                            style={{
+                                transform: showAllComments ? 'rotate(180deg)' : 'rotate(0deg)',
+                            }}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M19 9l-7 7-7-7"
+                            />
+                        </svg>
+                    </button>
+                    
+                    )}
+                </>
             )}
-            {error && (
-                <div className="text-red-500 text-center py-4">
-                    <span>{error}</span>
-                </div>
-            )}
-            {comments.map((comment) => (
-                <CommentItem
-                    key={comment._id}
-                    comment={comment}
-                    projectInitials={projectInitials}
-                    onLike={handleLike}
-                    onReply={(commentId, text) => handleAddComment(text, commentId)}
-                    submitting={submitting}
-                />
-            ))}
+            {error && <div className="text-red-500">{error}</div>}
         </div>
     );
 };
 
-export default CommentSection;
