@@ -479,6 +479,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   return (
     <div className="h-screen w-full relative bg-gray-900">
+      <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
       {isClient && (
         <GoogleMap
           mapContainerStyle={{ width: '100%', height: '100%' }}
@@ -509,10 +510,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             </text>
                           </svg>
                         `)}`,
-                        scaledSize: new google.maps.Size(40, 60), 
+                        scaledSize: new google.maps.Size(40, 60),
                         anchor: new google.maps.Point(20, 60),
                       }
-                      : undefined 
+                      : undefined
                   }
                 />
               )}
@@ -730,7 +731,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         </div>
       )}
 
-      {/* Side Menu */}
+      {/* Side Menu*/}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -748,7 +749,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-white hover:bg-blue-700 transition-colors"
+                    className="text-white hover:bg-blue-700 transition-colors hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
                   >
                     <X className="h-6 w-6" />
                   </Button>
@@ -773,9 +774,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
-                          <Home className="mr-3 h-5 w-5" />
+                          <Home className="mr-3 h-5 w-5 font-semibold" />
                           Home
                         </Button>
                       </Link>
@@ -784,7 +785,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/login">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
                           <LogIn className="mr-3 h-5 w-5" />
                           Login
@@ -795,7 +796,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/signup">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
                           <UserPlus className="mr-3 h-5 w-5" />
                           Sign Up
@@ -815,7 +816,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
                           <Info className="mr-3 h-5 w-5" />
                           About Us
@@ -826,7 +827,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/contact">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
                           <Mail className="mr-3 h-5 w-5" />
                           Contact Us
@@ -846,7 +847,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-blue-600 font-semibold hover:bg-blue-100 transition-all"
                         >
                           <HelpCircle className="mr-3 h-5 w-5" />
                           Help & FAQ
@@ -859,36 +860,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
               {/* Footer */}
               <div className="p-6 bg-gray-50">
-                <div className="flex justify-center space-x-4 mb-6">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-blue-600 hover:bg-blue-100"
-                  >
-                    <Facebook className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-blue-600 hover:bg-blue-100"
-                  >
-                    <Twitter className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-blue-600 hover:bg-blue-100"
-                  >
-                    <Instagram className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-blue-600 hover:bg-blue-100"
-                  >
-                    <Linkedin className="h-5 w-5" />
-                  </Button>
-                </div>
+
                 <div className="text-center">
                   <p className="text-sm text-gray-600">
                     © 2024 Did My Bit. All rights reserved.
@@ -923,31 +895,39 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2"
+                  className="absolute top-2 right-2 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
                   onClick={() => setIsProjectPanelOpen(false)}
                 >
                   <X className="h-6 w-6" />
                 </Button>
 
 
+
                 <div className="p-6 h-full overflow-y-auto">
 
+                  <Image
+                    src={selectedProject.pictureOfSuccess.url}
+                    alt=""
+                    width={280}
+                    height={30}
+                    style={{ objectFit: 'contain' }}
+                    className="rounded-2xl"
+                  ></Image>
 
 
-
-                  <h2 className="text-2xl font-bold mb-4">
+                  <h2 className="mt-4 text-2xl font-bold mb-2">
                     {selectedProject.title}
                   </h2>
-                  <Badge className="mb-4">{selectedProject.category}</Badge>
-                  <p className="text-gray-600 mb-4 line-clamp-3">
+                  <Badge className="mb-3">{selectedProject.category}</Badge>
+                  <p className="text-gray-600 mb-2 line-clamp-3">
                     {selectedProject.description}
                   </p>
-                  <p className="font-semibold mb-2">Objective:</p>
-                  <p className="text-gray-600 mb-4">
+                  <p className="font-semibold mb-1">Objective:</p>
+                  <p className="text-gray-600 mb-2">
                     {selectedProject.objective}
                   </p>
-                  <p className="font-semibold mb-2">Location:</p>
-                  <p className="text-gray-600 mb-4">
+                  <p className="font-semibold mb-1">Location:</p>
+                  <p className="text-gray-600 mb-2">
                     {selectedProject.location.address}
                   </p>
                   <div className="flex space-x-4 mt-6">
@@ -992,7 +972,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-gray-200"
+                    className="text-white hover:bg-gray-200 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
                     <X className="h-6 w-6" />
@@ -1088,7 +1068,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                     <Image
                       src={project.pictureOfSuccess.url}
-                      alt="Digital"
+                      alt=""
                       width={500}
                       height={30}
                       style={{ objectFit: 'contain' }}
@@ -1135,26 +1115,34 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2"
+                  className="absolute top-2 right-2 ml-4 hover:bg-transparent focus:ring-0 focus:outline-none"
                   onClick={() => setIsProjectPanelOpen(false)}
                 >
                   <X className="h-6 w-6" />
                 </Button>
 
                 <div className="p-6 h-full overflow-y-auto">
-                  <h2 className="text-2xl font-bold mb-4">
+                  <Image
+                    src={selectedProject.pictureOfSuccess.url}
+                    alt=""
+                    width={280}
+                    height={30}
+                    style={{ objectFit: 'contain' }}
+                    className="rounded-2xl"
+                  ></Image>
+                  <h2 className="text-2xl mt-4 font-bold mb-2">
                     {selectedProject.title}
                   </h2>
-                  <Badge className="mb-4">{selectedProject.category}</Badge>
-                  <p className="text-gray-600 mb-4 line-clamp-3">
+                  <Badge className="mb-3">{selectedProject.category}</Badge>
+                  <p className="text-gray-600 mb-2 line-clamp-3">
                     {selectedProject.description}
                   </p>
-                  <p className="font-semibold mb-2">Objective:</p>
-                  <p className="text-gray-600 mb-4">
+                  <p className="font-semibold mb-1">Objective:</p>
+                  <p className="text-gray-600 mb-2">
                     {selectedProject.objective}
                   </p>
-                  <p className="font-semibold mb-2">Location:</p>
-                  <p className="text-gray-600 mb-4">
+                  <p className="font-semibold mb-1">Location:</p>
+                  <p className="text-gray-600 mb-2">
                     {selectedProject.location.address}
                   </p>
                   <div className="flex space-x-4 mt-6">
@@ -1199,7 +1187,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-gray-200"
+                    className="text-white hover:bg-gray-200 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
                     <X className="h-6 w-6" />

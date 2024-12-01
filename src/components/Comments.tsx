@@ -3,10 +3,9 @@ import { MessageSquare, ThumbsUp, ThumbsDown, Loader2, Send } from 'lucide-react
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { AvatarFallback } from "@/components/ui/avatar";
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
-import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 
 interface Comment {
@@ -18,11 +17,6 @@ interface Comment {
     likes: number;
     dislikes: number;
 }
-
-interface CommentSectionProps {
-    slug: string;
-}
-
 
 interface ProjectData {
     _id: string;
@@ -47,16 +41,187 @@ interface ProjectData {
         url: string;
     };
 }
+
+interface CommentInputProps {
+    onSubmit: () => void;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+    submitting: boolean;
+    projectInitials: string;
+    onCancel?: () => void;
+    inputRef?: React.RefObject<HTMLTextAreaElement>;
+}
+
+const CommentInput = ({
+    onSubmit,
+    value,
+    onChange,
+    placeholder,
+    submitting,
+    projectInitials,
+    onCancel,
+    inputRef,
+}: {
+    onSubmit: () => void;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+    submitting: boolean;
+    projectInitials: string;
+    onCancel?: () => void;
+    inputRef?: React.RefObject<HTMLTextAreaElement>;
+}) => (
+    <div className="flex flex-col space-y-2">
+        <Textarea
+            ref={inputRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="min-h-[40px] resize-none focus:min-h-[80px] w-full"
+        />
+        <div className="flex justify-end space-x-2">
+            <Button variant="outline" size="sm" onClick={onCancel}>
+                Cancel
+            </Button>
+            <Button
+                size="sm"
+                onClick={onSubmit}
+                disabled={!value.trim() || submitting}
+                className="min-w-[80px]"
+            >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Comment"}
+            </Button>
+        </div>
+    </div>
+);
+
+interface CommentItemProps {
+    comment: Comment;
+    depth?: number;
+    projectInitials: string;
+    onLike: (commentId: string, action: 'like' | 'dislike') => void;
+    onReply: (commentId: string, text: string) => void;
+    submitting: boolean;
+}
+
+const CommentItem: React.FC<CommentItemProps> = ({
+    comment,
+    depth = 0,
+    projectInitials,
+    onLike,
+    onReply,
+    submitting
+}) => {
+    const [showReplyBox, setShowReplyBox] = useState(false);
+    const [replyText, setReplyText] = useState('');
+    const replyInputRef = useRef<HTMLTextAreaElement>(null);
+
+    const handleReply = () => {
+        onReply(comment._id, replyText);
+        setReplyText('');
+        setShowReplyBox(false);
+    };
+
+    useEffect(() => {
+        if (showReplyBox && replyInputRef.current) {
+            replyInputRef.current.focus();
+        }
+    }, [showReplyBox]);
+
+    return (
+        <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+                <Avatar className="h-8 w-8 mt-1">
+                    <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                        {projectInitials}
+                    </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                        <span className="font-semibold text-sm">{comment.author}</span>
+                        <span className="text-xs text-muted-foreground">
+                            {comment.createdAt && !isNaN(new Date(comment.createdAt).getTime())
+                                ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
+                                : 'Invalid date'}
+                        </span>
+                    </div>
+                    <p className="mt-1 text-sm">{comment.text}</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => onLike(comment._id, 'like')}
+                        >
+                            <ThumbsUp className="h-4 w-4 mr-1" />
+                            <span className="text-xs">{comment.likes}</span>
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => onLike(comment._id, 'dislike')}
+                        >
+                            <ThumbsDown className="h-4 w-4 mr-1" />
+                            <span className="text-xs">{comment.dislikes}</span>
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowReplyBox(!showReplyBox)}
+                        >
+                            Reply
+                        </Button>
+                    </div>
+                    {showReplyBox && (
+                        <div className="mt-4">
+                            <CommentInput
+                                value={replyText}
+                                onChange={setReplyText}
+                                onSubmit={handleReply}
+                                placeholder="Add a reply..."
+                                submitting={submitting}
+                                projectInitials={projectInitials}
+                                onCancel={() => setShowReplyBox(false)}
+                                inputRef={replyInputRef}
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
+            {comment.replies?.length > 0 && (
+                <div className="mt-4 pl-2 sm:pl-12">
+                    {comment.replies.map((reply) => (
+                        <CommentItem
+                            key={reply._id}
+                            comment={reply}
+                            depth={depth + 1}
+                            projectInitials={projectInitials}
+                            onLike={onLike}
+                            onReply={onReply}
+                            submitting={submitting}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+interface CommentSectionProps {
+    slug: string;
+}
+
 export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
-    const [replyText, setReplyText] = useState<Record<string, string>>({});
-    const [showReplyBox, setShowReplyBox] = useState<Record<string, boolean>>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
-    const commentInputRef = useRef<HTMLTextAreaElement>(null);
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
+    const mainCommentInputRef = useRef<HTMLTextAreaElement>(null);
 
     const fetchComments = useCallback(async () => {
         setLoading(true);
@@ -82,16 +247,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 setProjectData(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchProjectData();
-    }, [slug]);
+        fetchComments();
+    }, [slug, fetchComments]);
 
-    const handleAddComment = async (parentId?: string) => {
-        const text = parentId ? replyText[parentId] : newComment;
+    const handleAddComment = async (text: string, parentId?: string) => {
         if (text?.trim()) {
             setSubmitting(true);
             try {
@@ -101,12 +264,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                     postId: slug,
                     parentId,
                 });
-                if (parentId) {
-                    setReplyText(prev => ({ ...prev, [parentId]: '' }));
-                    setShowReplyBox(prev => ({ ...prev, [parentId]: false }));
-                } else {
-                    setNewComment('');
-                }
+                setNewComment('');
                 fetchComments();
             } catch (err) {
                 setError('Failed to add comment');
@@ -125,141 +283,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
         }
     };
 
-    const CommentInput = ({
-        onSubmit,
-        value,
-        onChange,
-        placeholder,
-        autoFocus = false,
-    }: {
-        onSubmit: () => void;
-        value: string;
-        onChange: (value: string) => void;
-        placeholder: string;
-        autoFocus?: boolean;
-    }) => (
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-4 sm:space-y-0">
-            <Avatar className="h-8 w-8 mt-1">
-                <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                    {projectData?.firstName?.[0] ?? ""}
-                    {projectData?.lastName?.[0] ?? ""}
-                </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-                <Textarea
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    className="min-h-[40px] resize-none focus:min-h-[80px] transition-all duration-200 w-full"
-                    autoFocus={autoFocus}
-                />
-                <div className="flex justify-end mt-2 space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onChange('')}
-                        disabled={!value.trim() || submitting}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={onSubmit}
-                        disabled={!value.trim() || submitting}
-                        className="min-w-[80px]"
-                    >
-                        {submitting ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <>
-                                <Send className="h-4 w-4 mr-2" />
-                                Comment
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
-        </div>
-    );
-
-    const CommentComponent = ({ comment, depth = 0 }: { comment: Comment; depth?: number }) => (
-        <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
-                <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                        {projectData?.firstName?.[0] ?? ""}
-                        {projectData?.lastName?.[0] ?? ""}
-                    </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-sm">{comment.author}</span>
-                        <span className="text-xs text-muted-foreground">
-                            {comment.createdAt && !isNaN(new Date(comment.createdAt).getTime())
-                                ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
-                                : 'Invalid date'}
-                        </span>
-                    </div>
-                    <p className="mt-1 text-sm">{comment.text}</p>
-                    <div className="flex items-center space-x-4 mt-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                            onClick={() => handleLike(comment._id, 'like')}
-                        >
-                            <ThumbsUp className="h-4 w-4 mr-1" />
-                            <span className="text-xs">{comment.likes}</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                            onClick={() => handleLike(comment._id, 'dislike')}
-                        >
-                            <ThumbsDown className="h-4 w-4 mr-1" />
-                            <span className="text-xs">{comment.dislikes}</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                            onClick={() => {
-                                setShowReplyBox(prev => ({
-                                    ...prev,
-                                    [comment._id]: !prev[comment._id],
-                                }));
-                            }}
-                        >
-                            Reply
-                        </Button>
-                    </div>
-                    {showReplyBox[comment._id] && (
-                        <div className="mt-4">
-                            <CommentInput
-                                value={replyText[comment._id] || ''}
-                                onChange={(value) => setReplyText(prev => ({ ...prev, [comment._id]: value }))}
-                                onSubmit={() => handleAddComment(comment._id)}
-                                placeholder="Add a reply..."
-                                autoFocus
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-            {comment.replies?.length > 0 && (
-                <div className="mt-4 pl-2 sm:pl-12">
-                    {comment.replies.map((reply) => (
-                        <CommentComponent key={reply._id} comment={reply} depth={depth + 1} />
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-
-    useEffect(() => {
-        fetchComments();
-    }, [fetchComments]);
+    const projectInitials = `${projectData?.firstName?.[0] ?? ""}${projectData?.lastName?.[0] ?? ""}`;
 
     return (
         <div className="w-full px-4 py-8">
@@ -271,8 +295,11 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 <CommentInput
                     value={newComment}
                     onChange={setNewComment}
-                    onSubmit={() => handleAddComment()}
+                    onSubmit={() => handleAddComment(newComment)}
                     placeholder="Add a comment..."
+                    submitting={submitting}
+                    projectInitials={projectInitials}
+                    inputRef={mainCommentInputRef}
                 />
             </div>
 
@@ -287,7 +314,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 </div>
             )}
             {comments.map((comment) => (
-                <CommentComponent key={comment._id} comment={comment} />
+                <CommentItem
+                    key={comment._id}
+                    comment={comment}
+                    projectInitials={projectInitials}
+                    onLike={handleLike}
+                    onReply={(commentId, text) => handleAddComment(text, commentId)}
+                    submitting={submitting}
+                />
             ))}
         </div>
     );

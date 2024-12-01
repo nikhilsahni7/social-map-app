@@ -15,7 +15,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { CommentSection } from "@/components/Comments";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
 import {
@@ -30,6 +30,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProjectData {
   _id: string;
@@ -53,6 +54,7 @@ interface ProjectData {
   pictureOfSuccess?: {
     url: string;
   };
+  timestamps: string;
 }
 
 export default function ProjectDetails({ params }: { params: { id: string } }) {
@@ -62,6 +64,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [isSupporting, setIsSupporting] = useState(false);
   const [supportItems, setSupportItems] = useState<Record<string, number>>({});
   const [totalSupport, setTotalSupport] = useState(0);
+  const [showSupportSection, setShowSupportSection] = useState(false);
 
   const relatedProjects = [
     {
@@ -129,8 +132,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     return `Supporting: ${items}`;
   };
 
-  // Inside ProjectDetails component
-
   const handleSupport = async () => {
     setIsSupporting(true);
     try {
@@ -145,10 +146,8 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
       });
 
       if (response.ok) {
-        // Reset support items
         setSupportItems({});
         setTotalSupport(0);
-        // Optionally, display a success message or notification
         alert("Support sent successfully!");
       } else {
         const data = await response.json();
@@ -160,6 +159,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     } finally {
       setIsSupporting(false);
     }
+  };
+
+  const toggleSupportSection = () => {
+    setShowSupportSection(!showSupportSection);
   };
 
   if (loading) {
@@ -293,7 +296,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   <div className="flex flex-col items-center">
                     <div className="text-sm text-gray-500 mb-2">Start</div>
                     <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
-                      {"2/02/2024"}
+                      {projectData.duration.startDate}
                     </div>
                   </div>
 
@@ -306,7 +309,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   <div className="flex flex-col items-center">
                     <div className="text-sm text-gray-500 mb-2">End</div>
                     <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
-                      {"2/12/2024"}
+                      {projectData.duration.endDate}
                     </div>
                   </div>
                 </div>
@@ -341,6 +344,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
         {/* Support Section */}
         <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
@@ -355,99 +359,186 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 <Label className="text-sm font-medium text-blue-600 block">
                   DO YOUR BIT BY SUPPORTING THIS PROJECT
                 </Label>
-                <HoverCard openDelay={0} closeDelay={0}>
-                  <HoverCardTrigger asChild>
-                    <Button
-                      size="lg"
-                      className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto group relative overflow-hidden"
-                      onClick={handleSupport}
-                      disabled={isSupporting || totalSupport === 0}
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        <Heart className="w-5 h-5" />
-                        Support Project
-                      </span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                    </Button>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-80 p-2" align="end">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold">Your Support Summary</h4>
-                      <p className="text-sm text-gray-600">
-                        {getSupportSummary()}
-                      </p>
-                      {totalSupport > 0 && (
-                        <div className="pt-2 border-t">
-                          <p className="text-xs text-gray-500">
-                            Click to confirm your support for these items
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-medium text-gray-700">
-                <div>Items</div>
-                <div>Quantity</div>
-                <div>Needed By</div>
-                <div>Drop Location</div>
-                <div>Support</div>
-              </div>
-
-              {projectData.supportItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto group relative overflow-hidden"
+                  onClick={toggleSupportSection}
                 >
-                  <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-blue-600" />
-                    <span>{item.item}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>{item.quantity}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span>{item.byWhen}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span>{item.dropLocation}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => updateItemQuantity(item.item, -1)}
-                      disabled={!supportItems[item.item]}
-                      className={supportItems[item.item] ? "text-red-500" : ""}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="w-12 text-center font-medium">
-                      {supportItems[item.item] || 0}
-                    </span>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => updateItemQuantity(item.item, 1)}
-                      disabled={supportItems[item.item] >= 4}
-                      className={
-                        supportItems[item.item] < 4
-                          ? "text-green-500"
-                          : "text-gray-400"
-                      }
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Heart className="w-5 h-5" />
+                    {showSupportSection ? "Support Project" : "Support Project"}
+                  </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </Button>
+              </div>
             </div>
+            {showSupportSection && (
+              <div>
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 rounded-lg text-xl">
+                        ❤️
+                      </div>
+                      <h2 className="text-2xl font-semibold text-gray-900">
+                        Your Support Section
+                      </h2>
+                    </div>
+
+                  </div>
+
+                  <AnimatePresence>
+
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.8 }}
+                    >
+                      <div className="space-y-4">
+                        <div className="grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                          <div>Items</div>
+                          <div>Quantity</div>
+                          <div>Needed By</div>
+                          <div>Drop Location</div>
+                          <div>Support</div>
+                        </div>
+
+                        {projectData.supportItems.map((item, index) => (
+                          <div
+                            key={index}
+                            className="grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Package className="w-4 h-4 text-blue-600" />
+                              <span>{item.item}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span>{item.quantity}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-gray-400" />
+                              <span>{item.byWhen}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-gray-400" />
+                              <span>{item.dropLocation}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => updateItemQuantity(item.item, -1)}
+                                disabled={!supportItems[item.item]}
+                                className={supportItems[item.item] ? "text-red-500" : ""}
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
+                              <span className="w-12 text-center font-medium">
+                                {supportItems[item.item] || 0}
+                              </span>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => updateItemQuantity(item.item, 1)}
+                                disabled={supportItems[item.item] >= 4}
+                                className={
+                                  supportItems[item.item] < 4
+                                    ? "text-green-500"
+                                    : "text-gray-400"
+                                }
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+
+                        <div className="flex justify-end mt-4">
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <Button
+                                size="lg"
+                                className="bg-blue-600 hover:bg-blue-700"
+                                onClick={handleSupport}
+                                disabled={isSupporting || totalSupport === 0}
+                              >
+                                {isSupporting ? (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Heart className="w-4 h-4 mr-2" />
+                                )}
+                                Confirm Support
+                              </Button>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80">
+                              <h4 className="font-semibold mb-2">Your Support Summary</h4>
+                              <p className="text-sm text-gray-600">{getSupportSummary()}</p>
+                            </HoverCardContent>
+                          </HoverCard>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                  </AnimatePresence>
+
+                  <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+                    <Label className="text-sm font-medium text-blue-600 block mb-2">
+                      Additional Support Needed
+                    </Label>
+                    <p className="text-gray-700 leading-relaxed">
+                      {"Yha pe input lena hai"}
+                    </p>
+                  </div>
+                </CardContent>
+              </div>)}
+
+            <AnimatePresence>
+
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                    <div>Items</div>
+                    <div>Quantity</div>
+                    <div>Needed By</div>
+                    <div>Drop Location</div>
+
+                  </div>
+
+                  {projectData.supportItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Package className="w-4 h-4 text-blue-600" />
+                        <span>{item.item}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>{item.quantity}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span>{item.byWhen}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span>{item.dropLocation}</span>
+                      </div>
+
+                    </div>
+                  ))}
+
+
+                </div>
+              </motion.div>
+
+            </AnimatePresence>
 
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
               <Label className="text-sm font-medium text-blue-600 block mb-2">
@@ -458,6 +549,8 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </p>
             </div>
           </CardContent>
+
+
         </Card>
 
         <CommentSection slug={params.id} />
