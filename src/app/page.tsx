@@ -197,6 +197,9 @@ const CustomDialogMobile: React.FC<CustomDialogMobileProps> = ({
   return (
     <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white w-[90%] sm:w-[500px] md:w-[600px] lg:w-[700px] h-[60vh] sm:h-[40vh] rounded-xl shadow-lg relative">
+
+
+
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -473,6 +476,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   return (
     <div className="h-screen w-full relative bg-gray-900">
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
       {isClient && (
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "100%" }}
@@ -519,25 +523,28 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   }}
                   mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                  <Card className="relative w-64 bg-white shadow-lg border-[5px] border-blue-700 border-opacity-60 backdrop-blur-md hover:scale-105 transition-all duration-300 rounded-lg">
-                    <CardHeader className="p-4">
+                  <Card className="relative w-48 bg-white border-[3px] border-blue-600 border-opacity-50 backdrop-blur-sm hover:scale-105 transition-transform duration-300 ease-in-out rounded-md">
+                    <CardHeader className="p-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg text-black ml-2 font-semibold">
+                        <CardTitle className="text-sm text-black font-semibold line-clamp-2">
                           {project.title}
                         </CardTitle>
-                        <Badge variant="outline" className="text-lg">
+                        <Badge
+                          variant="outline"
+                          className="text-sm p-1 bg-blue-100 text-blue-600 rounded-md"
+                        >
                           {getCategoryEmoji(project.category)}
                         </Badge>
                       </div>
-                      <CardDescription className="text-blue-600 mt-2 ml-2 text-sm font-medium">
+                      <CardDescription className="text-blue-500 text-xs font-medium line-clamp-1">
                         {project.category}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700 text-sm mb-2 line-clamp-3">
+                    <CardContent className="p-3">
+                      <p className="text-gray-700 text-xs mb-1 line-clamp-2">
                         {project.description}
                       </p>
-                      <p className="text-gray-600 text-xs italic">
+                      <p className="text-gray-500 text-xs italic line-clamp-2">
                         {project.location.address}
                       </p>
                     </CardContent>
@@ -545,40 +552,42 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 </OverlayView>
               )}
 
+
             </React.Fragment>
           ))}
         </GoogleMap>
       )}
 
+
       {/* Category Filters */}
-      <div className="absolute top-20 left-0 right-0 z-10 w-full px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+      <div className="absolute top-16 left-0 right-0 z-10 w-full px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
           {/* Organization Types Buttons */}
-          <div className="flex-grow flex items-center justify-center">
-            <div className="inline-flex items-center justify-center space-x-2 bg-white rounded-full shadow-md px-4 py-2">
-              {organizationTypes.map((type) => (
-                <Button
-                  key={type.value}
-                  variant={selectedType === type.value ? "default" : "ghost"}
-                  size="sm"
-                  className={`rounded-full transition-all duration-300 ${selectedType === type.value
-                    ? "bg-blue-600 text-white"
-                    : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  onClick={() =>
-                    setSelectedType(
-                      selectedType === type.value ? null : type.value
-                    )
-                  }
-                >
-                  {type.label}
-                </Button>
-              ))}
-            </div>
-          </div>
+          <div className="flex-grow flex items-center justify-center py-4">
+  <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full shadow-lg px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
+    {organizationTypes.map((type) => (
+      <Button
+        key={type.value}
+        variant={selectedType === type.value ? "default" : "ghost"}
+        size="sm"
+        className={`rounded-full transition-transform duration-300 font-medium${
+          selectedType === type.value
+            ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+            : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+        } px-3 py-2`}
+        onClick={() =>
+          setSelectedType(selectedType === type.value ? null : type.value)
+        }
+      >
+        {type.label}
+      </Button>
+    ))}
+  </div>
+</div>
+
 
           {/* Total Projects Section */}
-          <div className="sm:ml-4">
+          <div className="sm:ml-4 mb-2">
             <div
               className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
               style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
@@ -776,18 +785,19 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
                           <Home className="mr-3 h-5 w-5 font-semibold" />
                           Home
                         </Button>
+
                       </Link>
                     </li>
                     <li>
                       <Link href="/login">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
                           <LogIn className="mr-3 h-5 w-5" />
                           Login
@@ -798,10 +808,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/signup">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
                           <UserPlus className="mr-3 h-5 w-5" />
                           Sign Up
+                        </Button>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/logout">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-white font-semibold bg-red-600 hover:text-white hover:bg-red-700 rounded-lg transition-all duration-200"
+                        >
+                          <LogIn className="mr-3 h-5 w-5" />
+                          Logout
                         </Button>
                       </Link>
                     </li>
@@ -818,7 +839,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
                           <Info className="mr-3 h-5 w-5" />
                           About Us
@@ -829,7 +850,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/contact">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
                           <Mail className="mr-3 h-5 w-5" />
                           Contact Us
@@ -849,8 +870,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-blue-600 font-semibold border-2 hover:bg-blue-100 transition-all"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
+
                           <HelpCircle className="mr-3 h-5 w-5" />
                           Help & FAQ
                         </Button>
@@ -1238,6 +1260,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           </AnimatePresence>
         </div>
       )}
+
+
     </div>
   );
 }
