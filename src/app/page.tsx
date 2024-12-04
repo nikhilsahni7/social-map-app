@@ -16,6 +16,8 @@ import {
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaThumbsUp, FaHandsHelping, FaUserCircle } from "react-icons/fa";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Filter } from 'lucide-react'
 import { Input } from "@/components/ui/input";
 import {
   Home,
@@ -269,6 +271,32 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [location, setLocation] = useState('')
+
+  const handleFilterApply = () => {
+    const value = location;
+    setSearchQuery(value);
+
+    const filtered = projects.filter(
+      (project) =>
+
+        project.location?.address?.toLowerCase().includes(value.toLowerCase())
+
+
+    );
+
+    setFilteredProjects(filtered);
+
+    const suggestions = filtered.map((project) => project.title);
+    setFilteredSuggestions(suggestions);
+    setIsOpen(false)
+  }
+
+  const handleClearFilter = () => {
+    setLocation('')
+    setIsOpen(false)
+  }
 
   useEffect(() => {
     setIsClient(true);
@@ -359,7 +387,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       (project) =>
         project.title.toLowerCase().includes(value.toLowerCase()) ||
         project.category.toLowerCase().includes(value.toLowerCase()) ||
-        project.description?.toLowerCase().includes(value.toLowerCase())
+        project.description?.toLowerCase().includes(value.toLowerCase()) ||
+        project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
 
     setFilteredProjects(filtered);
@@ -373,7 +402,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     if (selectedType) {
       const filtered = projects.filter(
         (project) =>
-          project.category.toLowerCase() === selectedType.toLowerCase()
+          project.category?.toLowerCase() === selectedType.toLowerCase()
       );
       setFilteredProjects(filtered);
     } else {
@@ -384,10 +413,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const handleSelectSuggestion = (value: string) => {
     setSearchQuery(value);
     const filtered = projects.filter((project) =>
-      project.title.toLowerCase().includes(value.toLowerCase())
+      project.title.toLowerCase().includes(value.toLowerCase()) ||
+      project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredProjects(filtered);
   };
+
+  const truncateText = (text: string, wordLimit: number): string => {
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + " ...";
+    }
+    return text;
+  };
+
+
 
   // Mobile detection (unchanged)
   useEffect(() => {
@@ -476,7 +516,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   return (
     <div className="h-screen w-full relative bg-gray-900">
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
-      <div className="absolute bottom-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
+      <div className="absolute bottom-0 z-10 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
       {isClient && (
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "100%" }}
@@ -564,26 +604,25 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
           {/* Organization Types Buttons */}
           <div className="flex-grow flex items-center justify-center py-4">
-  <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full shadow-lg px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
-    {organizationTypes.map((type) => (
-      <Button
-        key={type.value}
-        variant={selectedType === type.value ? "default" : "ghost"}
-        size="sm"
-        className={`rounded-full transition-transform duration-300 font-medium${
-          selectedType === type.value
-            ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-            : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
-        } px-3 py-2`}
-        onClick={() =>
-          setSelectedType(selectedType === type.value ? null : type.value)
-        }
-      >
-        {type.label}
-      </Button>
-    ))}
-  </div>
-</div>
+            <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
+              {organizationTypes.map((type) => (
+                <Button
+                  key={type.value}
+                  variant={selectedType === type.value ? "default" : "ghost"}
+                  size="sm"
+                  className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
+                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+                    : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                    } px-3 py-2`}
+                  onClick={() =>
+                    setSelectedType(selectedType === type.value ? null : type.value)
+                  }
+                >
+                  {type.label}
+                </Button>
+              ))}
+            </div>
+          </div>
 
 
           {/* Total Projects Section */}
@@ -660,10 +699,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         </div>
       )}
 
+
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-4 right-4 bg-white hover:bg-gray-100 p-4 rounded-full shadow-lg z-20"
+        className="absolute top-4 right-4 bg-white hover:bg-gray-100 p-4 rounded-full shadow-lg z-30"
         onClick={() => {
           setIsMenuOpen(!isMenuOpen);
           setIsSearchOpen(false);
@@ -714,7 +754,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           </div>
         </div>
       ) : (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className="flex space-x-4">
             {/* Create Project Button */}
             <Link href="/create-project">
@@ -1014,7 +1054,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </div>
 
                   {/* Search Results */}
-                  <ScrollArea className="mt-6 h-[50vh] px-2">
+                  <ScrollArea className="mt-6 px-2">
                     {filteredProjects.length === 0 ? (
                       <p className="text-center text-gray-500 py-4">
                         No results found.
@@ -1025,7 +1065,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           <li key={project._id}>
                             <Button
                               variant="ghost"
-                              className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                              className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
                               onClick={() =>
                                 handleSelectSuggestion(project.title)
                               }
@@ -1034,9 +1074,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                                 <p className="font-medium text-blue-600">
                                   {project.title}
                                 </p>
-                                <p className="text-sm text-gray-500">
-                                  {project.category}
+
+                                <p className="text-sm text-gray-500">{project.category}</p>
+                                <p className="text-sm text-black truncate">
+                                  {truncateText(project.location.address, 7)}
                                 </p>
+
+
+
                               </div>
                             </Button>
                           </li>
@@ -1107,7 +1152,57 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               ))}
             </div>
           </div>
+
+
+          <div className="absolute bottom-8 right-44 flex space-x-3 justify-end rounded-full z-30">
+            <Popover open={isOpen} onOpenChange={setIsOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
+                >
+                  <Filter className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div className="flex flex-row items-center">
+                    <h4 className="font-medium text-lg">Filter by Location</h4>
+
+                    <button className="ml-auto" onClick={() => { setIsOpen(false) }} ><X className="h-4 w-4 ml-auto" /></button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Enter Location</Label>
+                    <Input
+                      id="location"
+                      placeholder="e.g. New York, London"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <Button
+                      onClick={handleClearFilter}
+                      variant="outline"
+                      className="flex items-center"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Clear
+                    </Button>
+                    <Button
+                      onClick={handleFilterApply}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Apply Filter
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+
+            </Popover>
+          </div>
         </div>
+
+
       )}
 
       {isMobile && (
@@ -1235,7 +1330,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           <li key={project._id}>
                             <Button
                               variant="ghost"
-                              className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                              className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
                               onClick={() =>
                                 handleSelectSuggestion(project.title)
                               }
@@ -1244,9 +1339,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                                 <p className="font-medium text-blue-600">
                                   {project.title}
                                 </p>
-                                <p className="text-sm text-gray-500">
-                                  {project.category}
+
+                                <p className="text-sm text-gray-500">{project.category}</p>
+                                <p className="text-sm text-black truncate">
+                                  {truncateText(project.location.address, 7)}
                                 </p>
+
+
+
                               </div>
                             </Button>
                           </li>
@@ -1258,7 +1358,57 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               </motion.div>
             )}
           </AnimatePresence>
+
+          <div className="absolute bottom-8 right-6 flex space-x-3 justify-end rounded-full z-30">
+            <Popover open={isOpen} onOpenChange={setIsOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
+                >
+                  <Filter className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div className="flex flex-row items-center">
+                    <h4 className="font-medium text-lg">Filter by Location</h4>
+
+                    <button className="ml-auto" onClick={() => { setIsOpen(false) }} ><X className="h-4 w-4 ml-auto" /></button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Enter Location</Label>
+                    <Input
+                      id="location"
+                      placeholder="e.g. New York, London"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <Button
+                      onClick={handleClearFilter}
+                      variant="outline"
+                      className="flex items-center"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Clear
+                    </Button>
+                    <Button
+                      onClick={handleFilterApply}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Apply Filter
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+
+            </Popover>
+          </div>
         </div>
+
+
       )}
 
 
