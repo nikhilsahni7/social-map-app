@@ -1,7 +1,7 @@
 // components/SupportNotifications.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAuthUser } from "@/lib/clientAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,7 +36,7 @@ export default function SupportNotifications({
   const [loading, setLoading] = useState(true);
   const currentUser = getAuthUser();
 
-  const fetchSupportNotifications = useCallback(async () => {
+  const fetchSupportNotifications = async () => {
     try {
       const res = await fetch(`/api/users/${userId}/support/notifications`, {
         headers: {
@@ -53,18 +53,12 @@ export default function SupportNotifications({
     } finally {
       setLoading(false);
     }
-  }, [userId]); // Add userId as a dependency
-
-  // Call the function inside useEffect
+  };
   useEffect(() => {
-    fetchSupportNotifications();
-  }, [fetchSupportNotifications]);
-
-  useEffect(() => {
-    if (currentUser && currentUser.id === userId) {
+    if (currentUser?.id === userId) {
       fetchSupportNotifications();
     }
-  }, [userId, currentUser, fetchSupportNotifications]);
+  }, [userId, currentUser?.id]);
 
   if (loading) {
     return (

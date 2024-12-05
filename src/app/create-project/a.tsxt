@@ -1,397 +1,140 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import User from "@/lib/models/user.model";
-import { createToken } from "@/lib/jwt";
-import { sendVerificationEmail } from "@/lib/email";
-import { z } from "zod";
-import crypto from "crypto";
+// components/SideMenu.tsx
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { X, Home, LogIn, UserPlus, Settings, LogOut, Info } from 'lucide-react'
+import { getAuthToken, getAuthUser, logout } from '@/lib/clientAuth'
 
-const signupSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
-  aboutme: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  occupation: z.string().optional(),
-});
-
-export async function POST(req: NextRequest) {
-  try {
-    await connectDB();
-    const body = await req.json();
-    const validation = signupSchema.safeParse(body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: "Invalid input", details: validation.error.issues },
-        { status: 400 }
-      );
-    }
-
-    const { name, email, password, aboutme, city, state, occupation } =
-      validation.data;
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "Email already registered" },
-        { status: 400 }
-      );
-    }
-
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-    const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      password,
-      aboutme,
-      city,
-      state,
-      occupation,
-      verificationToken,
-      verificationTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    });
-
-    await sendVerificationEmail(email, name, verificationToken);
-
-    const token = createToken(user._id);
-
-    return NextResponse.json({
-      message:
-        "User created successfully. Please check your email to verify your account.",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified,
-        avatar: user.avatar,
-      },
-    });
-  } catch (error) {
-    console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "An unexpected error occurred" },
-      { status: 500 }
-    );
-  }
+interface SideMenuProps {
+  isMenuOpen: boolean
+  setIsMenuOpen: (open: boolean) => void
 }
-"use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Loader2, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "react-hot-toast";
+export default function SideMenu({ isMenuOpen, setIsMenuOpen }: SideMenuProps) {
+  const [token, setToken] = useState<string | null>(null)
+  const [user, setUser] = useState<any>(null)
 
-export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    aboutme: "",
-    city: "",
-    state: "",
-    occupation: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isEmailSent, setIsEmailSent] = useState(false);
-  const router = useRouter();
+  useEffect(() => {
+    setToken(getAuthToken())
+    setUser(getAuthUser())
+  }, [])
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          aboutme: formData.aboutme,
-          city: formData.city,
-          state: formData.state,
-          occupation: formData.occupation,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Signup failed");
-      }
-
-      setIsEmailSent(true);
-      toast.success(
-        "Account created successfully! Please check your email to verify your account."
-      );
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not create account"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendVerification = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/auth/resend-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to resend verification email");
-      }
-
-      toast.success("A new verification email has been sent to your inbox");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to resend verification"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleLogout = () => {
+    logout()
+    setToken(null)
+    setUser(null)
+    setIsMenuOpen(false)
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="w-full max-w-md">
-          {!isEmailSent ? (
-            <>
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-center text-blue-700">
-                  Create an Account
-                </CardTitle>
-                <CardDescription className="text-center text-gray-600">
-                  Join us and start your journey
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="aboutme">About Me</Label>
-                    <Textarea
-                      id="aboutme"
-                      name="aboutme"
-                      placeholder="Tell us about yourself"
-                      value={formData.aboutme}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="city">City</Label>
-                      <Input
-                        id="city"
-                        name="city"
-                        placeholder="Your city"
-                        value={formData.city}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="state">State</Label>
-                      <Input
-                        id="state"
-                        name="state"
-                        placeholder="Your state"
-                        value={formData.state}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="occupation">Occupation</Label>
-                    <Input
-                      id="occupation"
-                      name="occupation"
-                      placeholder="Your occupation"
-                      value={formData.occupation}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" required />
-                    <Label htmlFor="terms" className="text-sm text-gray-600">
-                      I agree to the{" "}
-                      <a href="#" className="text-blue-600 hover:underline">
-                        Terms of Service
-                      </a>{" "}
-                      and{" "}
-                      <a href="#" className="text-blue-600 hover:underline">
-                        Privacy Policy
-                      </a>
-                    </Label>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating Account...
-                      </>
-                    ) : (
-                      "Create Account"
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </>
-          ) : (
-            <CardContent className="space-y-4 py-6">
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Check Your Email
-                </h3>
-                <p className="text-sm text-gray-600">
-                  We sent a verification link to{" "}
-                  <span className="font-medium text-gray-900">
-                    {formData.email}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-500">
-                  Click the link in the email to verify your account.
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleResendVerification}
-                disabled={isLoading}
-              >
-                Resend Verification Email
-              </Button>
-              <p className="text-center text-sm text-gray-500">
-                Already verified?{" "}
-                <a
-                  href="/login"
-                  className="font-medium text-blue-600 hover:underline"
+    <AnimatePresence>
+      {isMenuOpen && (
+        <motion.div
+          initial={{ x: 300 }}
+          animate={{ x: 0 }}
+          exit={{ x: 300 }}
+          className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 overflow-y-auto"
+        >
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="p-6 bg-blue-600 text-white">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Menu</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-white hover:bg-blue-700 transition-colors"
                 >
-                  Sign in
-                </a>
-              </p>
-            </CardContent>
-          )}
-          <Separator className="my-4" />
-          <CardFooter className="flex flex-col space-y-4">
-            <p className="text-center text-sm text-gray-600">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="font-medium text-blue-600 hover:underline"
-              >
-                Log in
-              </a>
-            </p>
-          </CardFooter>
-        </Card>
-      </motion.div>
-    </div>
-  );
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Did My Bit</h3>
+                <p className="text-sm text-blue-100">Make an impact, one bit at a time</p>
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <nav className="flex-grow p-6 space-y-6">
+              <div>
+                <h4 className="text-sm font-semibold text-gray-500 mb-4">MAIN MENU</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <Link href="/">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Home className="mr-3 h-5 w-5" />
+                        Home
+                      </Button>
+                    </Link>
+                  </li>
+
+                  {token && user ? (
+                    <>
+                      <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p className="text-lg font-semibold text-gray-800">
+                          {user.name}
+                        </p>
+                        <p className="text-sm text-gray-600 mb-3">
+                          {user.email}
+                        </p>
+                        <Link href={`/edit-profile/${user.id}`}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-white font-semibold bg-green-600 hover:bg-green-700"
+                          >
+                            <Settings className="mr-3 h-5 w-5" />
+                            Edit Profile
+                          </Button>
+                        </Link>
+                      </div>
+                      <li>
+                        <Button
+                          variant="outline"
+                          onClick={handleLogout}
+                          className="w-full justify-start text-white font-semibold bg-red-600 hover:bg-red-700"
+                        >
+                          <LogOut className="mr-3 h-5 w-5" />
+                          Logout
+                        </Button>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li>
+                        <Link href="/login">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                          >
+                            <LogIn className="mr-3 h-5 w-5" />
+                            Login
+                          </Button>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/signup">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                          >
+                            <UserPlus className="mr-3 h-5 w-5" />
+                            Sign Up
+                          </Button>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
 }

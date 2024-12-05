@@ -1,50 +1,27 @@
 "use client";
 
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  ChangeEvent,
-} from "react";
+import React, { useState, useCallback, useEffect, ChangeEvent } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
   Marker,
-  InfoWindow,
   OverlayView,
 } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaThumbsUp, FaHandsHelping, FaUserCircle } from "react-icons/fa";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Filter } from 'lucide-react'
+import { FaHandsHelping, FaUserCircle } from "react-icons/fa";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Filter, LogOut, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Home,
-  LogIn,
-  UserPlus,
-  Info,
-  Mail,
-  Settings,
-  HelpCircle,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-} from "lucide-react";
-import {
-  Search,
-  X,
-  Menu,
-  Heart,
-  Plus,
-  ZoomIn,
-  ZoomOut,
-  Compass,
-} from "lucide-react";
+import { Home, LogIn, UserPlus, Info, Mail, HelpCircle } from "lucide-react";
+import { Search, X, Menu, Plus, ZoomIn, ZoomOut, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CountUp from "react-countup";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -54,7 +31,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/router";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -63,23 +40,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Search as SearchIcon } from "react-feather";
-import { Label } from "recharts";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getAuthToken, getAuthUser, logout } from "@/lib/clientAuth";
+import { Label } from "recharts";
 
 // Map styles
 const mapStyles = [
@@ -122,8 +86,6 @@ const organizationTypes = [
   { label: "🌳 Plant", value: "Plant" },
 ];
 
-
-
 const getCategoryEmoji = (category: string) => {
   switch (category.toLowerCase()) {
     case "human":
@@ -151,32 +113,32 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [isOpen, setIsOpen] = useState(false)
-  const [location, setLocation] = useState('')
+  const [isOpen, setIsOpen] = useState(false);
+  const [location, setLocation] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
   const handleFilterApply = () => {
     const value = location;
     setSearchQuery(value);
 
-    const filtered = projects.filter(
-      (project) =>
-
-        project.location?.address?.toLowerCase().includes(value.toLowerCase())
-
-
+    const filtered = projects.filter((project) =>
+      project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
 
     setFilteredProjects(filtered);
 
     const suggestions = filtered.map((project) => project.title);
     setFilteredSuggestions(suggestions);
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   const handleClearFilter = () => {
-    fetchProjects()
-    setIsOpen(false)
-  }
+    fetchProjects();
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -187,6 +149,18 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ["places"],
   });
+
+  useEffect(() => {
+    setToken(getAuthToken());
+    setUser(getAuthUser());
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setToken(null);
+    setUser(null);
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
     const loadGoogleApi = () => {
@@ -225,7 +199,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     };
     fetchProjects();
   }, []);
-
 
   const fetchProjects = async () => {
     try {
@@ -285,7 +258,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     const value = e.target.value;
     setSearchQuery(value);
 
-
     const filtered = projects.filter(
       (project) =>
         project.title.toLowerCase().includes(value.toLowerCase()) ||
@@ -294,30 +266,22 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
 
-
-
     setFilteredProjects(filtered);
 
     const suggestions = filtered.map((project) => project.title);
     setFilteredSuggestions(suggestions);
-
   };
 
   const handleFilterOrgType = (type: string | null) => {
     if (type) {
-      const filtered = projects.filter(
-        (project) =>
-          project.category.toLowerCase().includes(type.toLowerCase())
+      const filtered = projects.filter((project) =>
+        project.category.toLowerCase().includes(type.toLowerCase())
       );
       setFilteredProjects(filtered);
     } else {
       setFilteredProjects(projects);
     }
-
-
-
-
-  }
+  };
 
   // Handle category filter (unchanged)
   useEffect(() => {
@@ -327,24 +291,17 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           project.category?.toLowerCase() === selectedType.toLowerCase()
       );
       setFilteredProjects(filtered);
-
-
-
     } else {
       setFilteredProjects(projects);
-
-
     }
   }, [selectedType, projects]);
 
-
-
-
   const handleSelectSuggestion = (value: string) => {
     setSearchQuery(value);
-    const filtered = projects.filter((project) =>
-      project.title.toLowerCase().includes(value.toLowerCase()) ||
-      project.location?.address?.toLowerCase().includes(value.toLowerCase())
+    const filtered = projects.filter(
+      (project) =>
+        project.title.toLowerCase().includes(value.toLowerCase()) ||
+        project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredProjects(filtered);
   };
@@ -356,8 +313,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     }
     return text;
   };
-
-
 
   // Mobile detection (unchanged)
   useEffect(() => {
@@ -468,18 +423,20 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   icon={
                     isLoaded
                       ? {
-                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                          url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
-                              ${getCategoryEmoji(project.category)}                            
+                              ${getCategoryEmoji(
+                                project.category
+                              )}                            
                             </text>
                           </svg>
                         `)}`,
-                        scaledSize: new google.maps.Size(40, 60),
-                        anchor: new google.maps.Point(20, 60),
-                      }
+                          scaledSize: new google.maps.Size(40, 60),
+                          anchor: new google.maps.Point(20, 60),
+                        }
                       : undefined
                   }
                 />
@@ -521,13 +478,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </Card>
                 </OverlayView>
               )}
-
-
             </React.Fragment>
           ))}
         </GoogleMap>
       )}
-
 
       {/* Category Filters */}
       <div className="absolute top-16 left-0 right-0 z-10 w-full px-4">
@@ -540,14 +494,17 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   key={type.value}
                   variant={selectedType === type.value ? "default" : "ghost"}
                   size="sm"
-                  className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
-                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-                    : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
-                    } px-3 py-2`}
+                  className={`rounded-full transition-transform duration-300 font-medium${
+                    selectedType === type.value
+                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+                      : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                  } px-3 py-2`}
                   onClick={() => {
-                    setSelectedType(selectedType === type.value ? null : type.value)
-                    if (selectedType) handleFilterOrgType(selectedType)
-                    console.log(selectedType)
+                    setSelectedType(
+                      selectedType === type.value ? null : type.value
+                    );
+                    if (selectedType) handleFilterOrgType(selectedType);
+                    console.log(selectedType);
                   }}
                 >
                   {type.label}
@@ -555,7 +512,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               ))}
             </div>
           </div>
-
 
           {/* Total Projects Section */}
           <div className="sm:ml-4 mb-2">
@@ -630,7 +586,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           </TooltipProvider>
         </div>
       )}
-
 
       <Button
         variant="ghost"
@@ -732,7 +687,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-white hover:bg-blue-700 transition-colors hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
+                    className="text-white hover:bg-blue-700 transition-colors"
                   >
                     <X className="h-6 w-6" />
                   </Button>
@@ -747,57 +702,91 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
               {/* Menu Items */}
               <nav className="flex-grow p-6 space-y-6">
-                {/* Main Menu */}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-2">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-4">
                     MAIN MENU
                   </h4>
-                  <ul className="space-y-4">
+                  <ul className="space-y-3">
                     <li>
                       <Link href="/">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
                         >
-                          <Home className="mr-3 h-5 w-5 font-semibold" />
+                          <Home className="mr-3 h-5 w-5" />
                           Home
                         </Button>
+                      </Link>
+                    </li>
 
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/login">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
-                        >
-                          <LogIn className="mr-3 h-5 w-5" />
-                          Login
-                        </Button>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/signup">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
-                        >
-                          <UserPlus className="mr-3 h-5 w-5" />
-                          Sign Up
-                        </Button>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/logout">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-red-600 hover:text-white hover:bg-red-700 rounded-lg transition-all duration-200"
-                        >
-                          <LogIn className="mr-3 h-5 w-5" />
-                          Logout
-                        </Button>
-                      </Link>
-                    </li>
+                    {token && user ? (
+                      <>
+                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                          <p className="text-lg font-semibold text-gray-800">
+                            {user.name}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {user.email}
+                          </p>
+                          <Link href={`/edit-profile/${user.id}`}>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-white font-semibold bg-green-600 hover:bg-green-700"
+                            >
+                              <Settings className="mr-3 h-5 w-5" />
+                              Edit Profile
+                            </Button>
+                          </Link>
+                        </div>
+                        <li>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              router.push(`/creator-profile/${user.id}`);
+                            }}
+                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                          >
+                            <FaUserCircle className="mr-3 h-5 w-5" />
+                            View Profile
+                          </Button>
+                        </li>
+                        <li>
+                          <Button
+                            variant="outline"
+                            onClick={handleLogout}
+                            className="w-full justify-start text-white font-semibold bg-red-600 hover:bg-red-700"
+                          >
+                            <LogOut className="mr-3 h-5 w-5" />
+                            Logout
+                          </Button>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li>
+                          <Link href="/login">
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                            >
+                              <LogIn className="mr-3 h-5 w-5" />
+                              Login
+                            </Button>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/signup">
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                            >
+                              <UserPlus className="mr-3 h-5 w-5" />
+                              Sign Up
+                            </Button>
+                          </Link>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
 
@@ -844,7 +833,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           variant="outline"
                           className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
                         >
-
                           <HelpCircle className="mr-3 h-5 w-5" />
                           Help & FAQ
                         </Button>
@@ -856,7 +844,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
               {/* Footer */}
               <div className="p-6 bg-gray-50">
-
                 <div className="text-center">
                   <p className="text-sm text-gray-600">
                     © 2024 Did My Bit. All rights reserved.
@@ -902,7 +889,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     alt=""
                     width={280}
                     height={30}
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: "contain" }}
                     className="rounded-2xl"
                   ></Image>
                   <h2 className="text-2xl mt-4 font-bold mb-2">
@@ -989,12 +976,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
                       onClick={() => {
                         setSearchQuery("");
-                        fetchProjects()
+                        fetchProjects();
                       }}
                     >
                       <X className="h-6 w-6" />
                     </Button>
-
                   </div>
 
                   {/* Search Results */}
@@ -1011,29 +997,26 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                               variant="ghost"
                               className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
                               onClick={() => {
-                                handleSelectSuggestion(project.title)
-                                handleMarkerClick(project)
-                              }
-                              }
+                                handleSelectSuggestion(project.title);
+                                handleMarkerClick(project);
+                              }}
                             >
                               <div>
                                 <p className="font-medium text-blue-600">
                                   {project.title}
                                 </p>
 
-                                <p className="text-sm text-gray-500">{project.category}</p>
+                                <p className="text-sm text-gray-500">
+                                  {project.category}
+                                </p>
                                 <p className="text-sm text-black truncate">
                                   {truncateText(project.location.address, 7)}
                                 </p>
-
-
-
                               </div>
                             </Button>
                           </li>
                         ))}
                       </ul>
-
                     )}
                   </ScrollArea>
                 </div>
@@ -1100,13 +1083,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             </div>
           </div>
 
-
           <div className="absolute bottom-8 right-44 flex space-x-3 justify-end rounded-full z-30">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
-                >
+                <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
                   <Filter className="h-5 w-5" />
                 </Button>
               </PopoverTrigger>
@@ -1115,7 +1095,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <div className="flex flex-row items-center">
                     <h4 className="font-medium text-lg">Filter by Location</h4>
 
-                    <button className="ml-auto" onClick={() => { setIsOpen(false) }} ><X className="h-4 w-4 ml-auto" /></button>
+                    <button
+                      className="ml-auto"
+                      onClick={() => {
+                        setIsOpen(false);
+                      }}
+                    >
+                      <X className="h-4 w-4 ml-auto" />
+                    </button>
                   </div>
                   <div className="space-y-2">
                     <Label>Enter Location</Label>
@@ -1144,12 +1131,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </div>
                 </div>
               </PopoverContent>
-
             </Popover>
           </div>
         </div>
-
-
       )}
 
       {isMobile && (
@@ -1184,7 +1168,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     alt=""
                     width={280}
                     height={30}
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: "contain" }}
                     className="rounded-2xl"
                   ></Image>
                   <h2 className="text-2xl mt-4 font-bold mb-2">
@@ -1269,16 +1253,12 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
                       onClick={() => {
                         setSearchQuery("");
-                        fetchProjects()
+                        fetchProjects();
                       }}
-
                     >
                       <X className="h-6 w-6" />
                     </Button>
-
-
                   </div>
-
 
                   {/* Search Results */}
                   <ScrollArea className="mt-6 h-[50vh] px-2">
@@ -1297,20 +1277,18 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                                 handleSelectSuggestion(project.title);
                                 handleMarkerClick(project);
                               }}
-
                             >
                               <div>
                                 <p className="font-medium text-blue-600">
                                   {project.title}
                                 </p>
 
-                                <p className="text-sm text-gray-500">{project.category}</p>
+                                <p className="text-sm text-gray-500">
+                                  {project.category}
+                                </p>
                                 <p className="text-sm text-black truncate">
                                   {truncateText(project.location.address, 7)}
                                 </p>
-
-
-
                               </div>
                             </Button>
                           </li>
@@ -1326,9 +1304,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="absolute bottom-8 right-6 flex space-x-3 justify-end rounded-full z-30">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
-                >
+                <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
                   <Filter className="h-5 w-5" />
                 </Button>
               </PopoverTrigger>
@@ -1337,7 +1313,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <div className="flex flex-row items-center">
                     <h4 className="font-medium text-lg">Filter by Location</h4>
 
-                    <button className="ml-auto" onClick={() => { setIsOpen(false) }} ><X className="h-4 w-4 ml-auto" /></button>
+                    <button
+                      className="ml-auto"
+                      onClick={() => {
+                        setIsOpen(false);
+                      }}
+                    >
+                      <X className="h-4 w-4 ml-auto" />
+                    </button>
                   </div>
 
                   <div className="space-y-2">
@@ -1367,15 +1350,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </div>
                 </div>
               </PopoverContent>
-
             </Popover>
           </div>
         </div>
-
-
       )}
-
-
     </div>
   );
 }

@@ -64,3 +64,42 @@ export async function GET(
     );
   }
 }
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const currentUser = (await auth(req)) as { _id: string } | null;
+    await connectDB();
+    const { id } = params;
+
+    if (!currentUser || currentUser._id.toString() !== id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { name, aboutMe, city, state, occupation } = await req.json();
+
+    user.name = name;
+    user.aboutMe = aboutMe;
+    user.city = city;
+    user.state = state;
+    user.occupation = occupation;
+
+    await user.save();
+
+    return NextResponse.json({ message: "Profile updated" });
+  } catch (error) {
+    console.error("Update user profile error:", error);
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 }
+    );
+  }
+}
