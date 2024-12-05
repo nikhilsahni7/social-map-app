@@ -122,127 +122,7 @@ const organizationTypes = [
   { label: "🌳 Plant", value: "Plant" },
 ];
 
-interface CustomDialogProps {
-  tags: string[];
-  searchQuery: string;
-  handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
-  filteredSuggestions: string[];
-  handleSelectSuggestion: (suggestion: string) => void;
-}
 
-const CustomDialog: React.FC<CustomDialogProps> = ({
-  tags,
-  searchQuery,
-  handleSearch,
-  filteredSuggestions,
-  handleSelectSuggestion,
-}) => {
-  return (
-    <div className="fixed top-[57px] left-[240px] z-50 w-[500px] h-[45vh] bg-white border border-gray-300 shadow-lg rounded-xl">
-      <div className="p-4">
-        {/* Search Input */}
-        <div className="flex items-center space-x-2">
-          <input
-            type="text"
-            placeholder="Search Projects..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="w-full h-10 text-md border rounded-full px-4"
-          />
-        </div>
-      </div>
-
-      {/* Suggestions List */}
-      <div className="h-[calc(50vh-125px)] overflow-y-auto px-4">
-        {filteredSuggestions.length === 0 ? (
-          <p>No results found.</p>
-        ) : (
-          <ul>
-            {filteredSuggestions.map((suggestion) => (
-              <li
-                key={suggestion}
-                onClick={() => handleSelectSuggestion(suggestion)}
-                className="flex items-center cursor-pointer hover:bg-blue-100 py-2"
-              >
-                <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
-                <span className="flex-1">{suggestion}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-};
-
-interface CustomDialogMobileProps {
-  isOpen: boolean;
-  onClose: () => void;
-  tags: string[];
-  searchQuery: string;
-  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  filteredSuggestions: string[];
-  handleSelectSuggestion: (suggestion: string) => void;
-}
-
-const CustomDialogMobile: React.FC<CustomDialogMobileProps> = ({
-  isOpen,
-  onClose,
-  tags,
-  searchQuery,
-  handleSearch,
-  filteredSuggestions,
-  handleSelectSuggestion,
-}) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white w-[90%] sm:w-[500px] md:w-[600px] lg:w-[700px] h-[60vh] sm:h-[40vh] rounded-xl shadow-lg relative">
-
-
-
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        >
-          &times;
-        </button>
-
-        <div className="p-4">
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              placeholder="Search Projects..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="w-full h-10 text-md border rounded-full px-4"
-            />
-          </div>
-        </div>
-
-        <div className="h-[calc(100vh-170px)] overflow-y-auto px-4">
-          {filteredSuggestions.length === 0 ? (
-            <p>No results found.</p>
-          ) : (
-            <ul>
-              {filteredSuggestions.map((suggestion) => (
-                <li
-                  key={suggestion}
-                  onClick={() => handleSelectSuggestion(suggestion)}
-                  className="flex items-center cursor-pointer hover:bg-blue-100 py-2"
-                >
-                  <SearchIcon className="mr-2 h-4 w-4 text-gray-500" />
-                  <span className="flex-1">{suggestion}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const getCategoryEmoji = (category: string) => {
   switch (category.toLowerCase()) {
@@ -294,7 +174,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   }
 
   const handleClearFilter = () => {
-    setLocation('')
+    fetchProjects()
     setIsOpen(false)
   }
 
@@ -345,6 +225,26 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     };
     fetchProjects();
   }, []);
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("/api/projects");
+      const data = await response.json();
+      if (data.projects) {
+        // Validate coordinates before setting state
+        const validProjects = data.projects.filter(
+          (project: Project) =>
+            project.location?.coordinates?.[0] &&
+            project.location?.coordinates?.[1] &&
+            !isNaN(project.location.coordinates[0]) &&
+            !isNaN(project.location.coordinates[1])
+        );
+        setProjects(validProjects);
+        setFilteredProjects(validProjects);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
@@ -383,6 +283,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     const value = e.target.value;
     setSearchQuery(value);
 
+
     const filtered = projects.filter(
       (project) =>
         project.title.toLowerCase().includes(value.toLowerCase()) ||
@@ -391,11 +292,30 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         project.location?.address?.toLowerCase().includes(value.toLowerCase())
     );
 
+
+
     setFilteredProjects(filtered);
 
     const suggestions = filtered.map((project) => project.title);
     setFilteredSuggestions(suggestions);
+
   };
+
+  const handleFilterOrgType = (type: string | null) => {
+    if (type) {
+      const filtered = projects.filter(
+        (project) =>
+          project.category.toLowerCase().includes(type.toLowerCase())
+      );
+      setFilteredProjects(filtered);
+    } else {
+      setFilteredProjects(projects);
+    }
+
+
+
+
+  }
 
   // Handle category filter (unchanged)
   useEffect(() => {
@@ -405,10 +325,18 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           project.category?.toLowerCase() === selectedType.toLowerCase()
       );
       setFilteredProjects(filtered);
+
+
+
     } else {
       setFilteredProjects(projects);
+
+
     }
   }, [selectedType, projects]);
+
+
+
 
   const handleSelectSuggestion = (value: string) => {
     setSearchQuery(value);
@@ -614,9 +542,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
                     : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
                     } px-3 py-2`}
-                  onClick={() =>
+                  onClick={() => {
                     setSelectedType(selectedType === type.value ? null : type.value)
-                  }
+                    if (selectedType) handleFilterOrgType(selectedType)
+                    console.log(selectedType)
+                  }}
                 >
                   {type.label}
                 </Button>
@@ -1046,11 +976,20 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <Input
                       type="text"
-                      placeholder="Search projects..."
+                      placeholder="Search by Name or Location..."
                       value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl"
+                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl placeholder:text-sm"
                     />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 mb-4 right-2 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
+
+                    >
+                      <X className="h-6 w-6" />
+                    </Button>
+
                   </div>
 
                   {/* Search Results */}
@@ -1066,8 +1005,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             <Button
                               variant="ghost"
                               className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
-                              onClick={() =>
+                              onClick={() => {
                                 handleSelectSuggestion(project.title)
+                                handleMarkerClick(project)
+                              }
                               }
                             >
                               <div>
@@ -1087,6 +1028,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           </li>
                         ))}
                       </ul>
+
                     )}
                   </ScrollArea>
                 </div>
@@ -1311,10 +1253,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <Input
                       type="text"
-                      placeholder="Search projects..."
+                      placeholder="Search by Name or Location"
                       value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl"
+                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl placeholder:text-sm"
                     />
                   </div>
 
@@ -1331,9 +1273,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             <Button
                               variant="ghost"
                               className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
-                              onClick={() =>
-                                handleSelectSuggestion(project.title)
-                              }
+                              onClick={() => {
+                                handleSelectSuggestion(project.title);
+                                handleMarkerClick(project);
+                              }}
+
                             >
                               <div>
                                 <p className="font-medium text-blue-600">
