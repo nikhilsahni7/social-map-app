@@ -225,6 +225,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     };
     fetchProjects();
   }, []);
+
+
   const fetchProjects = async () => {
     try {
       const response = await fetch("/api/projects");
@@ -984,8 +986,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute top-2 mb-4 right-2 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
-
+                      className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
+                      onClick={() => {
+                        setSearchQuery("");
+                        fetchProjects()
+                      }}
                     >
                       <X className="h-6 w-6" />
                     </Button>
@@ -1258,7 +1263,22 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       onChange={handleSearch}
                       className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl placeholder:text-sm"
                     />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
+                      onClick={() => {
+                        setSearchQuery("");
+                        fetchProjects()
+                      }}
+
+                    >
+                      <X className="h-6 w-6" />
+                    </Button>
+                    
+
                   </div>
+                  
 
                   {/* Search Results */}
                   <ScrollArea className="mt-6 h-[50vh] px-2">
