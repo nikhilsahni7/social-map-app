@@ -421,7 +421,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-black">
         <p className="text-xl text-white font-medium">
-          Error loading map: {loadError.message}
+          Error loading map: Looks like a Network Issue
         </p>
       </div>
     );
@@ -1275,10 +1275,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     >
                       <X className="h-6 w-6" />
                     </Button>
-                    
+
 
                   </div>
-                  
+
 
                   {/* Search Results */}
                   <ScrollArea className="mt-6 h-[50vh] px-2">

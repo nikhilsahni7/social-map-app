@@ -57,6 +57,7 @@ export default function PersonProfile() {
   const [notifications, setNotifications] = useState([]);
   const currentUser = getAuthUser();
 
+
   const fetchProfile = async () => {
     try {
       const res = await fetch(`/api/users/${params.id}`, {
@@ -77,7 +78,7 @@ export default function PersonProfile() {
           avatar: data.user.avatar,
           banner: "/digital.jpg",
           connections: data.user.connectionsCount || 0,
-          profileViews: data.user.profileViews,
+          profileViews: (data.user.profileViews) / 2,
           projects:
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.projects?.map((p: any) => ({
@@ -100,6 +101,8 @@ export default function PersonProfile() {
       setLoading(false);
     }
   };
+
+
 
   const fetchNotifications = async () => {
     try {
@@ -168,7 +171,9 @@ export default function PersonProfile() {
     if (currentUser) {
       fetchNotifications();
     }
-  }, [params.id]);
+  }, [])
+
+
 
   if (loading) {
     return (
@@ -250,7 +255,8 @@ export default function PersonProfile() {
                           </div>
                           <div className="flex items-center">
                             <Eye className="w-4 h-4 mr-1" />
-                            <span>{((personData.profileViews) / 2)} profile views</span>
+                            <span>{Math.ceil(personData.profileViews)} profile views</span>
+
                           </div>
                         </div>
 
