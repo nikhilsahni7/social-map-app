@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import { getAuthUser, getAuthToken } from "@/lib/clientAuth";
 import { EditProfileForm } from "@/components/edit-profile";
-import { Loader } from "@/components/loader";
+import { Loader2 } from "lucide-react";
 
 interface UpdateProfileData {
   name?: string;
@@ -76,7 +76,7 @@ export default function EditProfilePage() {
       });
       if (res.ok) {
         toast.success("Profile updated successfully");
-        router.push("/");
+        router.push(`/creator-profile/${user.id}`);
       } else {
         const errorData = await res.json();
         toast.error(errorData.error || "Failed to update profile");
@@ -86,28 +86,40 @@ export default function EditProfilePage() {
     }
   };
 
+
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
-      <Toaster position="top-right" />
-      <motion.div
-        className="w-full max-w-3xl"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader size="lg" />
-          </div>
-        ) : (
-          userData && (
+    isLoading ? (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-16 h-16 text-white animate-spin mx-auto" />
+          <h2 className="text-2xl md:text-3xl font-bold text-white">
+            Loading...
+          </h2>
+          <p className="text-lg text-blue-300">
+            Make an impact by doing your bit
+          </p>
+        </div>
+      </div>
+    ) :
+      (<div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
+
+        <Toaster position="top-right" />
+        <motion.div
+          className="w-full max-w-3xl"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+
+          {userData && (
             <EditProfileForm
               userData={userData}
               onSubmit={handleUpdateProfile}
-            />
-          )
-        )}
-      </motion.div>
-    </div>
+            />)}
+
+
+        </motion.div>
+      </div>)
   );
 }

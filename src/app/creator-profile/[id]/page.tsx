@@ -297,6 +297,8 @@ export default function PersonProfile() {
                             <TwitterIcon className="w-5 h-5" />
                           </a>
                         </Button>
+                        {(currentUser?.id === params.id) && (<Link href={`/edit-profile/${params.id}`}>
+                          <Button className="ml-2">Edit Profile</Button></Link>)}
                       </div>
                     </div>
                   </div>

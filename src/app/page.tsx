@@ -423,20 +423,20 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   icon={
                     isLoaded
                       ? {
-                          url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
                               ${getCategoryEmoji(
-                                project.category
-                              )}                            
+                          project.category
+                        )}                            
                             </text>
                           </svg>
                         `)}`,
-                          scaledSize: new google.maps.Size(40, 60),
-                          anchor: new google.maps.Point(20, 60),
-                        }
+                        scaledSize: new google.maps.Size(40, 60),
+                        anchor: new google.maps.Point(20, 60),
+                      }
                       : undefined
                   }
                 />
@@ -494,11 +494,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   key={type.value}
                   variant={selectedType === type.value ? "default" : "ghost"}
                   size="sm"
-                  className={`rounded-full transition-transform duration-300 font-medium${
-                    selectedType === type.value
-                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-                      : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
-                  } px-3 py-2`}
+                  className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
+                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+                    : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                    } px-3 py-2`}
                   onClick={() => {
                     setSelectedType(
                       selectedType === type.value ? null : type.value
@@ -692,106 +691,88 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <X className="h-6 w-6" />
                   </Button>
                 </div>
-                <div>
+                {token && user ? (
+                  <div className="bg-gray-50 p-4 rounded-lg mb-2">
+                    <p className="text-lg font-semibold text-gray-800">
+                      {user.name}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {user.email}
+                    </p>
+                    <ul className="space-y-2">
+                      <li>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            router.push(`/creator-profile/${user.id}`);
+                          }}
+                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
+                        >
+                          <FaUserCircle className="mr-3 h-5 w-5" />
+                          View Profile
+                        </Button>
+                      </li>
+                      <li>
+                        <Button
+                          variant="outline"
+                          onClick={handleLogout}
+                          className="w-full justify-start text-white font-semibold bg-red-600 hover:text-white hover:bg-red-700"
+                        >
+                          <LogOut className="mr-3 h-5 w-5" />
+                          Logout
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (<><div>
                   <h3 className="font-semibold text-lg">Did My Bit</h3>
                   <p className="text-sm text-blue-100">
                     Make an impact, one bit at a time
                   </p>
-                </div>
+                </div></>)}
               </div>
 
               {/* Menu Items */}
-              <nav className="flex-grow p-6 space-y-6">
+              <nav className="flex-grow p-6 space-y-2">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-4">
-                    MAIN MENU
-                  </h4>
-                  <ul className="space-y-3">
-                    <li>
-                      <Link href="/">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
-                        >
-                          <Home className="mr-3 h-5 w-5" />
-                          Home
-                        </Button>
-                      </Link>
-                    </li>
+                  {token && user ? (
+                    <>
 
-                    {token && user ? (
-                      <>
-                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                          <p className="text-lg font-semibold text-gray-800">
-                            {user.name}
-                          </p>
-                          <p className="text-sm text-gray-600 mb-3">
-                            {user.email}
-                          </p>
-                          <Link href={`/edit-profile/${user.id}`}>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-white font-semibold bg-green-600 hover:bg-green-700"
-                            >
-                              <Settings className="mr-3 h-5 w-5" />
-                              Edit Profile
-                            </Button>
-                          </Link>
-                        </div>
-                        <li>
+
+
+                    </>
+                  ) : (
+                    <>
+                      <li>
+                        <Link href="/login">
                           <Button
                             variant="outline"
-                            onClick={() => {
-                              router.push(`/creator-profile/${user.id}`);
-                            }}
-                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
                           >
-                            <FaUserCircle className="mr-3 h-5 w-5" />
-                            View Profile
+                            <LogIn className="mr-3 h-5 w-5" />
+                            Login
                           </Button>
-                        </li>
-                        <li>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/signup">
                           <Button
                             variant="outline"
-                            onClick={handleLogout}
-                            className="w-full justify-start text-white font-semibold bg-red-600 hover:bg-red-700"
+                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
                           >
-                            <LogOut className="mr-3 h-5 w-5" />
-                            Logout
+                            <UserPlus className="mr-3 h-5 w-5" />
+                            Sign Up
                           </Button>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li>
-                          <Link href="/login">
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
-                            >
-                              <LogIn className="mr-3 h-5 w-5" />
-                              Login
-                            </Button>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="/signup">
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-white font-semibold bg-blue-600 hover:bg-blue-700"
-                            >
-                              <UserPlus className="mr-3 h-5 w-5" />
-                              Sign Up
-                            </Button>
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                  </ul>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+
                 </div>
 
                 {/* About Us */}
-                <div>
+                <div className="">
                   <h4 className="text-sm font-semibold text-gray-500 mb-2">
                     ABOUT US
                   </h4>
