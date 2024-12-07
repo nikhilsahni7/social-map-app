@@ -559,46 +559,11 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-gray-900">
-              Other Related Projects
+              See Other Projects of {projectData.firstName} {projectData.lastName}
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {relatedProjects.map((project) => (
-              <Card
-                key={project.id}
-                className="overflow-hidden hover:shadow-lg transition-all duration-300 group"
-              >
-                <CardContent className="p-0">
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      width={400}
-                      height={200}
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-white/90 text-blue-600 hover:bg-white">
-                        {project.category}
-                      </Badge>
-                    </div>
-                  </div>
 
-                  <div className="p-6 space-y-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {project.title}
-                      </h3>
-                      <p className="mt-2 text-gray-600">
-                        {project.description}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </div>
     </div>

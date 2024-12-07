@@ -81,8 +81,8 @@ interface Project {
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = [
-  { label: "🧑‍💼 Human", value: "Human" },
-  { label: "🐕 Animal", value: "Animal" },
+  { label: "🧑‍💼 Human", value: "🧑‍💼 Human" },
+  { label: "🐕 Animal", value: "🐕 Animal" },
   { label: "🌳 Plant", value: "Plant" },
 ];
 
@@ -277,9 +277,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       const filtered = projects.filter((project) =>
         project.category.toLowerCase().includes(type.toLowerCase())
       );
-      setFilteredProjects(filtered);
+
+      setProjects(filtered);
     } else {
-      setFilteredProjects(projects);
+      fetchProjects()
     }
   };
 
@@ -428,10 +429,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
-                              ${getCategoryEmoji(
-                          project.category
-                        )}                            
-                            </text>
+        ${project.category === "🧑‍💼 Human" ? "🧑‍💼" : ""}
+        ${project.category === "🌳 Plant" ? "🌳" : ""}
+        ${project.category === "🐕 Animal" ? "🐕" : ""}
+        
+      </text>
                           </svg>
                         `)}`,
                         scaledSize: new google.maps.Size(40, 60),
@@ -503,6 +505,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       selectedType === type.value ? null : type.value
                     );
                     if (selectedType) handleFilterOrgType(selectedType);
+
                     console.log(selectedType);
                   }}
                 >
@@ -859,7 +862,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
-                  onClick={() => setIsProjectPanelOpen(false)}
+                  onClick={() => {
+                    fetchProjects();
+                    setIsProjectPanelOpen(false);
+
+                  }}
                 >
                   <X className="h-6 w-6" />
                 </Button>
@@ -1138,7 +1145,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 ml-4 hover:bg-transparent focus:ring-0 focus:outline-none"
-                  onClick={() => setIsProjectPanelOpen(false)}
+                  onClick={() => {
+                    fetchProjects();
+                    setIsProjectPanelOpen(false);
+                  }}
                 >
                   <X className="h-6 w-6" />
                 </Button>
