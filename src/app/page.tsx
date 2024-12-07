@@ -81,8 +81,8 @@ interface Project {
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = [
-  { label: "🧑‍💼 Human", value: "🧑‍💼 Human" },
-  { label: "🐕 Animal", value: "🐕 Animal" },
+  { label: "🧑‍💼 Human", value: "Human" },
+  { label: "🐕 Animal", value: "Animal" },
   { label: "🌳 Plant", value: "Plant" },
 ];
 
