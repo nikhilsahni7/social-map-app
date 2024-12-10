@@ -81,9 +81,9 @@ interface Project {
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = [
-  { label: "🧑‍💼 Human", value: "Human" },
-  { label: "🐕 Animal", value: "Animal" },
-  { label: "🌳 Plant", value: "Plant" },
+  { label: "🧑‍💼 Human", value: "🧑‍💼 Human" },
+  { label: "🐕 Animal", value: "🐕 Animal" },
+  { label: "🌳 Plant", value: "🌳 Plant" },
 ];
 
 const getCategoryEmoji = (category: string) => {
@@ -271,31 +271,27 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     const suggestions = filtered.map((project) => project.title);
     setFilteredSuggestions(suggestions);
   };
+  const handleFilterOrgType = useCallback(
+    (type: string | null) => {
+      if (!type) {
+        setFilteredProjects(projects);
+        return;
+      }
 
-  const handleFilterOrgType = (type: string | null) => {
-    if (type) {
-      const filtered = projects.filter((project) =>
-        project.category.toLowerCase().includes(type.toLowerCase())
-      );
+      const filtered = projects.filter((project) => project.category === type);
 
-      setProjects(filtered);
-    } else {
-      fetchProjects()
-    }
-  };
+      setFilteredProjects(filtered);
+    },
+    [projects]
+  );
 
-  // Handle category filter (unchanged)
   useEffect(() => {
     if (selectedType) {
-      const filtered = projects.filter(
-        (project) =>
-          project.category?.toLowerCase() === selectedType.toLowerCase()
-      );
-      setFilteredProjects(filtered);
+      handleFilterOrgType(selectedType);
     } else {
       setFilteredProjects(projects);
     }
-  }, [selectedType, projects]);
+  }, [selectedType, projects, handleFilterOrgType]);
 
   const handleSelectSuggestion = (value: string) => {
     setSearchQuery(value);
@@ -424,7 +420,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   icon={
                     isLoaded
                       ? {
-                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                          url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
@@ -436,9 +432,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       </text>
                           </svg>
                         `)}`,
-                        scaledSize: new google.maps.Size(40, 60),
-                        anchor: new google.maps.Point(20, 60),
-                      }
+                          scaledSize: new google.maps.Size(40, 60),
+                          anchor: new google.maps.Point(20, 60),
+                        }
                       : undefined
                   }
                 />
@@ -496,10 +492,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   key={type.value}
                   variant={selectedType === type.value ? "default" : "ghost"}
                   size="sm"
-                  className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
-                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-                    : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
-                    } px-3 py-2`}
+                  className={`rounded-full transition-transform duration-300 font-medium${
+                    selectedType === type.value
+                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+                      : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                  } px-3 py-2`}
                   onClick={() => {
                     setSelectedType(
                       selectedType === type.value ? null : type.value
@@ -699,9 +696,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <p className="text-lg font-semibold text-gray-800">
                       {user.name}
                     </p>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {user.email}
-                    </p>
+                    <p className="text-sm text-gray-600 mb-3">{user.email}</p>
                     <ul className="space-y-2">
                       <li>
                         <Button
@@ -727,23 +722,23 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       </li>
                     </ul>
                   </div>
-                ) : (<><div>
-                  <h3 className="font-semibold text-lg">Did My Bit</h3>
-                  <p className="text-sm text-blue-100">
-                    Make an impact, one bit at a time
-                  </p>
-                </div></>)}
+                ) : (
+                  <>
+                    <div>
+                      <h3 className="font-semibold text-lg">Did My Bit</h3>
+                      <p className="text-sm text-blue-100">
+                        Make an impact, one bit at a time
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Menu Items */}
               <nav className="flex-grow p-6 space-y-2">
                 <div>
                   {token && user ? (
-                    <>
-
-
-
-                    </>
+                    <></>
                   ) : (
                     <>
                       <li>
@@ -770,8 +765,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       </li>
                     </>
                   )}
-
-
                 </div>
 
                 {/* About Us */}
@@ -865,7 +858,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   onClick={() => {
                     fetchProjects();
                     setIsProjectPanelOpen(false);
-
                   }}
                 >
                   <X className="h-6 w-6" />
@@ -873,7 +865,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                 <div className="p-6 h-full overflow-y-auto">
                   <Image
-                    src={selectedProject.pictureOfSuccess.url}
+                    src={selectedProject?.pictureOfSuccess?.url}
                     alt=""
                     width={280}
                     height={30}
@@ -1039,7 +1031,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 msOverflowStyle: "none", // IE and Edge
               }}
             >
-              {projects.slice(0, 10).map((project) => (
+              {filteredProjects.slice(0, 10).map((project) => (
                 <Card
                   key={project._id}
                   className="m-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
@@ -1047,30 +1039,30 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 >
                   <CardHeader className="p-4">
                     <Image
-                      src={project.pictureOfSuccess.url}
-                      alt=""
+                      src={
+                        project?.pictureOfSuccess?.url ||
+                        "/placeholder-image.jpg"
+                      }
+                      alt={project.title}
                       width={500}
                       height={30}
                       style={{ objectFit: "contain" }}
                       className="rounded-2xl"
-                    ></Image>
-
+                    />
                     <CardTitle className="text-sm font-semibold">
                       {project.title}
                     </CardTitle>
-                    <Badge className="mt-1 w-[86px]">{project.category}</Badge>
+                    <Badge className="mt-1">{project.category}</Badge>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <p className="text-xs text-gray-600">
-                      {project.description.substring(0, 100)}
-                      {project.description.length > 100 ? "..." : ""}
+                      {truncateText(project.description, 20)}
                     </p>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </div>
-
           <div className="absolute bottom-8 right-44 flex space-x-3 justify-end rounded-full z-20">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
@@ -1138,7 +1130,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 style={{
                   height: "calc(100% - 60vh)",
                   minHeight: "300px",
-                  maxHeight: "500px"
+                  maxHeight: "500px",
                 }}
               >
                 <Button
@@ -1162,38 +1154,41 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       height={100}
                       className="rounded-xl object-cover mb-2 sm:mb-0 sm:mr-4"
                     />
-                   <div>
+                    <div>
                       <h2 className="text-xl font-bold mb-1">
                         {selectedProject.title}
                       </h2>
                       <Badge>{selectedProject.category}</Badge>
                     </div>
 
-
-
-
                     <p className="text-black font-semibold line-clamp-2 mt-3">
                       {selectedProject.description}
                     </p>
                   </div>
 
-
                   <div className="text-sm -mt-2">
-
                     <div>
                       <p className="font-semibold">Location:</p>
-                      <p className="text-gray-600">{selectedProject.location.address}</p>
+                      <p className="text-gray-600">
+                        {selectedProject.location.address}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex space-x-2 mt-4">
-                    <Link href={`/creator-profile/${selectedProject._id}`} className="flex-1">
+                    <Link
+                      href={`/creator-profile/${selectedProject._id}`}
+                      className="flex-1"
+                    >
                       <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
                         <FaUserCircle className="mr-1 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
-                    <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
+                    <Link
+                      href={`/project-profile/${selectedProject._id}`}
+                      className="flex-1"
+                    >
                       <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
                         <FaHandsHelping className="mr-1 h-4 w-4" />
                         Support
@@ -1216,7 +1211,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 style={{
                   height: "calc(100% - 60vh)",
                   minHeight: "300px",
-                  maxHeight: "90vh"
+                  maxHeight: "90vh",
                 }}
               >
                 {/* Header Section */}
@@ -1250,8 +1245,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                         size="icon"
                         className="absolute top-1/2 right-2 transform -translate-y-1/2 hover:bg-transparent focus:ring-0 focus:outline-none"
                         onClick={() => {
-                          handleSearch({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
-                          fetchProjects()
+                          handleSearch({
+                            target: { value: "" },
+                          } as React.ChangeEvent<HTMLInputElement>);
+                          fetchProjects();
                         }}
                       >
                         <X className="h-4 w-4" />
@@ -1273,8 +1270,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                               variant="ghost"
                               className="w-full justify-start text-left hover:bg-blue-50 rounded-lg p-2"
                               onClick={() => {
-                                handleSelectSuggestion(project.title)
-                                handleMarkerClick(project)
+                                handleSelectSuggestion(project.title);
+                                handleMarkerClick(project);
                               }}
                             >
                               <div>
