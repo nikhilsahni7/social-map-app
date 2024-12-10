@@ -582,7 +582,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <p className="text-gray-600">{project.objective}</p>
 
                     <Image
-                      src={project?.pictureOfSuccess?.url || " "}
+                      src={project?.pictureOfSuccess?.url || "/digital.jpg"}
                       alt="Project"
                       width={600}
                       height={400}
