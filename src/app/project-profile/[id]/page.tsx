@@ -15,7 +15,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { CommentSection } from "@/components/Comments";
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
 import {
@@ -31,6 +31,7 @@ import {
   Minus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface ProjectData {
   _id: string;
@@ -65,25 +66,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [supportItems, setSupportItems] = useState<Record<string, number>>({});
   const [totalSupport, setTotalSupport] = useState(0);
   const [showSupportSection, setShowSupportSection] = useState(false);
+  const [relatedProjects, setRelatedProjects] = useState<ProjectData[]>([]);
 
-  const relatedProjects = [
-    {
-      id: "1",
-      title: "Digital Literacy Program",
-      description: "Empowering communities through technology education",
-      image: "/digital-literacy.jpg",
-      category: "Education",
-      progress: 60,
-    },
-    {
-      id: "2",
-      title: "Youth Mentorship Initiative",
-      description: "Connecting students with professional mentors",
-      image: "/youth-mentorship.jpg",
-      category: "Human Development",
-      progress: 45,
-    },
-  ];
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -103,6 +88,25 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
     fetchProjectData();
   }, [params.id]);
+
+  useEffect(() => {
+    if (projectData) {
+      const fetchRelatedProjects = async () => {
+        try {
+          const response = await fetch(`/api/projects/${params.id}/related`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch related projects");
+          }
+          const data = await response.json();
+          setRelatedProjects(data);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      fetchRelatedProjects();
+    }
+  }, [projectData, params.id]);
 
   const updateItemQuantity = (item: string, delta: number) => {
     setSupportItems((prev) => {
@@ -344,7 +348,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
         {/* Support Section */}
         <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
@@ -384,11 +387,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         Your Support Section
                       </h2>
                     </div>
-
                   </div>
 
                   <AnimatePresence>
-
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
@@ -428,9 +429,13 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                               <Button
                                 size="icon"
                                 variant="outline"
-                                onClick={() => updateItemQuantity(item.item, -1)}
+                                onClick={() =>
+                                  updateItemQuantity(item.item, -1)
+                                }
                                 disabled={!supportItems[item.item]}
-                                className={supportItems[item.item] ? "text-red-500" : ""}
+                                className={
+                                  supportItems[item.item] ? "text-red-500" : ""
+                                }
                               >
                                 <Minus className="h-4 w-4" />
                               </Button>
@@ -441,9 +446,13 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                                 size="icon"
                                 variant="outline"
                                 onClick={() => updateItemQuantity(item.item, 1)}
-                                disabled={Number(supportItems[item.item]) >= Number(item.quantity)}
+                                disabled={
+                                  Number(supportItems[item.item]) >=
+                                  Number(item.quantity)
+                                }
                                 className={
-                                  supportItems[item.item] < Number(item.quantity)
+                                  supportItems[item.item] <
+                                  Number(item.quantity)
                                     ? "text-green-500"
                                     : "text-gray-400"
                                 }
@@ -472,14 +481,17 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                               </Button>
                             </HoverCardTrigger>
                             <HoverCardContent className="w-80">
-                              <h4 className="font-semibold mb-2">Your Support Summary</h4>
-                              <p className="text-sm text-gray-600">{getSupportSummary()}</p>
+                              <h4 className="font-semibold mb-2">
+                                Your Support Summary
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {getSupportSummary()}
+                              </p>
                             </HoverCardContent>
                           </HoverCard>
                         </div>
                       </div>
                     </motion.div>
-
                   </AnimatePresence>
 
                   <div className="mt-8 p-4 bg-gray-50 rounded-lg">
@@ -491,10 +503,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     </p>
                   </div>
                 </CardContent>
-              </div>)}
+              </div>
+            )}
 
             <AnimatePresence>
-
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -507,7 +519,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <div>Quantity</div>
                     <div>Needed By</div>
                     <div>Drop Location</div>
-
                   </div>
 
                   {projectData.supportItems.map((item, index) => (
@@ -530,14 +541,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         <MapPin className="w-4 h-4 text-gray-400" />
                         <span>{item.dropLocation}</span>
                       </div>
-
                     </div>
                   ))}
-
-
                 </div>
               </motion.div>
-
             </AnimatePresence>
 
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
@@ -549,22 +556,54 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </p>
             </div>
           </CardContent>
-
-
         </Card>
 
         <CommentSection slug={params.id} />
 
         {/* Related Projects */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              See Other Projects of {projectData.firstName} {projectData.lastName}
-            </h2>
+        {relatedProjects.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                See Other Projects of {projectData.firstName}{" "}
+                {projectData.lastName}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedProjects.map((project) => (
+                <Card
+                  key={project._id}
+                  className="overflow-hidden hover:shadow-lg transition-all duration-300"
+                >
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-600">{project.objective}</p>
+
+                    <Image
+                      src={project?.pictureOfSuccess?.url || " "}
+                      alt="Project"
+                      width={600}
+                      height={400}
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+
+                    <Button
+                      variant="link"
+                      onClick={() =>
+                        router.push(`/project-profile/${project._id}`)
+                      }
+                    >
+                      {" "}
+                      View Project
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-
-
-        </div>
+        )}
       </div>
     </div>
   );
