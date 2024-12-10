@@ -812,7 +812,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </h4>
                   <ul className="space-y-4">
                     <li>
-                      <Link href="/about">
+                      <Link href="/faq">
                         <Button
                           variant="outline"
                           className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
@@ -1071,7 +1071,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="absolute bottom-8 right-44 flex space-x-3 justify-end rounded-full z-30">
+          <div className="absolute bottom-8 right-44 flex space-x-3 justify-end rounded-full z-20">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
                 <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
@@ -1130,21 +1130,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <AnimatePresence>
             {isProjectPanelOpen && selectedProject && (
               <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden -translate-y-2"
+                className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20 rounded-t-3xl overflow-hidden"
                 style={{
-                  maxWidth: "420px",
-                  height: "calc(100% - 19rem)",
-                  scrollbarWidth: "thin",
+                  height: "calc(100% - 60vh)",
+                  minHeight: "300px",
+                  maxHeight: "500px"
                 }}
               >
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 ml-4 hover:bg-transparent focus:ring-0 focus:outline-none"
+                  className="absolute top-2 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
                   onClick={() => {
                     fetchProjects();
                     setIsProjectPanelOpen(false);
@@ -1153,40 +1153,49 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-6 w-6" />
                 </Button>
 
-                <div className="p-6 h-full overflow-y-auto">
-                  <Image
-                    src={selectedProject.pictureOfSuccess.url}
-                    alt=""
-                    width={280}
-                    height={30}
-                    style={{ objectFit: "contain" }}
-                    className="rounded-2xl"
-                  ></Image>
-                  <h2 className="text-2xl mt-4 font-bold mb-2">
-                    {selectedProject.title}
-                  </h2>
-                  <Badge className="mb-3">{selectedProject.category}</Badge>
-                  <p className="text-gray-600 mb-2 line-clamp-3">
-                    {selectedProject.description}
-                  </p>
-                  <p className="font-semibold mb-1">Objective:</p>
-                  <p className="text-gray-600 mb-2">
-                    {selectedProject.objective}
-                  </p>
-                  <p className="font-semibold mb-1">Location:</p>
-                  <p className="text-gray-600 mb-2">
-                    {selectedProject.location.address}
-                  </p>
-                  <div className="flex space-x-4 mt-6">
-                    <Link href={`/creator-profile/${selectedProject._id}`}>
-                      <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
-                        <FaUserCircle className="mr-2" />
+                <div className="p-4 h-full overflow-y-auto">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4">
+                    <Image
+                      src={selectedProject.pictureOfSuccess.url}
+                      alt=""
+                      width={100}
+                      height={100}
+                      className="rounded-xl object-cover mb-2 sm:mb-0 sm:mr-4"
+                    />
+                   <div>
+                      <h2 className="text-xl font-bold mb-1">
+                        {selectedProject.title}
+                      </h2>
+                      <Badge>{selectedProject.category}</Badge>
+                    </div>
+
+
+
+
+                    <p className="text-black font-semibold line-clamp-2 mt-3">
+                      {selectedProject.description}
+                    </p>
+                  </div>
+
+
+                  <div className="text-sm -mt-2">
+
+                    <div>
+                      <p className="font-semibold">Location:</p>
+                      <p className="text-gray-600">{selectedProject.location.address}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-2 mt-4">
+                    <Link href={`/creator-profile/${selectedProject._id}`} className="flex-1">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                        <FaUserCircle className="mr-1 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
-                    <Link href={`/project-profile/${selectedProject._id}`}>
-                      <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                        <FaHandsHelping className="mr-2" />
+                    <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
+                        <FaHandsHelping className="mr-1 h-4 w-4" />
                         Support
                       </Button>
                     </Link>
@@ -1199,86 +1208,84 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <AnimatePresence>
             {isSearchOpen && (
               <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+                className="fixed inset-x-0 bottom-0 bg-white shadow-lg z-20 rounded-t-3xl overflow-hidden"
                 style={{
-                  maxWidth: "600px",
-                  width: "90%",
-                  height: "calc(100% - 19rem)",
-                  scrollbarWidth: "thin",
+                  height: "calc(100% - 60vh)",
+                  minHeight: "300px",
+                  maxHeight: "90vh"
                 }}
               >
                 {/* Header Section */}
-                <div className="bg-blue-500 text-white flex items-center justify-between px-6 py-4">
-                  <div className="flex items-center space-x-3">
-                    <h2 className="text-lg font-semibold">Find all Projects</h2>
-                  </div>
+                <div className="bg-blue-500 text-white flex items-center justify-between px-4 py-3">
+                  <h2 className="text-lg font-semibold">Find all Projects</h2>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-gray-200 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
+                    className="text-white hover:bg-transparent focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
 
                 {/* Content Section */}
-                <div className="p-6 h-full w-full overflow-y-auto">
-                  <div className="relative">
+                <div className="p-4 h-full overflow-y-auto z-30">
+                  <div className="relative mb-4">
                     {/* Search Input */}
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       type="text"
                       placeholder="Search by Name or Location"
                       value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl placeholder:text-sm"
+                      className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-full"
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
-                      onClick={() => {
-                        setSearchQuery("");
-                        fetchProjects();
-                      }}
-                    >
-                      <X className="h-6 w-6" />
-                    </Button>
+                    {searchQuery && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-1/2 right-2 transform -translate-y-1/2 hover:bg-transparent focus:ring-0 focus:outline-none"
+                        onClick={() => {
+                          handleSearch({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
+                          fetchProjects()
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
 
                   {/* Search Results */}
-                  <ScrollArea className="mt-6 h-[50vh] px-2">
+                  <ScrollArea className="h-[calc(100%-3rem)]">
                     {filteredProjects.length === 0 ? (
                       <p className="text-center text-gray-500 py-4">
                         No results found.
                       </p>
                     ) : (
-                      <ul className="space-y-3">
+                      <ul className="space-y-2">
                         {filteredProjects.map((project) => (
                           <li key={project._id}>
                             <Button
                               variant="ghost"
-                              className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                              className="w-full justify-start text-left hover:bg-blue-50 rounded-lg p-2"
                               onClick={() => {
-                                handleSelectSuggestion(project.title);
-                                handleMarkerClick(project);
+                                handleSelectSuggestion(project.title)
+                                handleMarkerClick(project)
                               }}
                             >
                               <div>
-                                <p className="font-medium text-blue-600">
+                                <p className="font-medium text-blue-600 text-sm">
                                   {project.title}
                                 </p>
-
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                   {project.category}
                                 </p>
-                                <p className="text-sm text-black truncate">
-                                  {truncateText(project.location.address, 7)}
+                                <p className="text-xs text-black truncate">
+                                  {truncateText(project.location.address, 5)}
                                 </p>
                               </div>
                             </Button>
@@ -1292,7 +1299,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             )}
           </AnimatePresence>
 
-          <div className="absolute bottom-8 right-6 flex space-x-3 justify-end rounded-full z-30">
+          <div className="absolute bottom-8 right-6 flex space-x-3 justify-end rounded-full z-10">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
                 <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
