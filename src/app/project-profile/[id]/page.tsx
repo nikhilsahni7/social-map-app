@@ -14,8 +14,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
 import { CommentSection } from "@/components/Comments";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronRight, } from "lucide-react";
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
 import {
@@ -69,6 +70,19 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [relatedProjects, setRelatedProjects] = useState<ProjectData[]>([]);
 
   const router = useRouter();
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -168,6 +182,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const toggleSupportSection = () => {
     setShowSupportSection(!showSupportSection);
   };
+  const [additionalSupport, setAdditionalSupport] = useState("")
 
   if (loading) {
     return (
@@ -209,7 +224,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <div className="relative">
-        <div className="h-[50vh] overflow-hidden">
+        <div className="h-[40vh] md:h-[50vh] overflow-hidden">
           <Image
             width={1920}
             height={600}
@@ -225,35 +240,40 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         <div className="relative -mt-28">
           <div className="bg-white rounded-b-2xl shadow-lg p-8 backdrop-blur-lg bg-white/90">
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-xl ring-4 ring-blue-500/20">
-                <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                  {projectData.firstName[0]}
-                  {projectData.lastName[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div className="flex flex-row items-center gap-4">
+                <Avatar className="w-16 h-16 md:mb-0 mb-8 md:w-32 md:h-32 border-4 border-white shadow-xl ring-4 ring-blue-500/20">
+                  <AvatarFallback className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    {projectData.firstName[0]}
+                    {projectData.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="flex-1 space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1">
-                    {projectData.category}
-                  </Badge>
+                <div className="flex-1 space-y-4">
+                  {!isMobile && (<div className="flex flex-wrap gap-2">
+                    <Badge className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1">
+                      {projectData.category}
+                    </Badge>
+                  </div>
+                  )}
+
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {projectData.firstName} {projectData.lastName}
+                    </h1>
+                    <p className="text-xl text-blue-600 font-medium mt-1">
+                      {projectData.title}
+                    </p>
+
+
+                  </div>
+
                 </div>
 
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    {projectData.firstName} {projectData.lastName}
-                  </h1>
-                  <p className="text-xl text-blue-600 font-medium mt-1">
-                    {projectData.title}
-                  </p>
-                </div>
               </div>
-              <div className="flex justify-end items-center">
-                <h1 className="text-5xl font-bold tracking-tight text-center mt-2">
-                  Do Your <span className="text-red-500">Bit</span>
-                </h1>
-              </div>
+
+
             </div>
+
           </div>
         </div>
       </div>
@@ -294,30 +314,37 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </div>
 
               {/* Timeline */}
-              <div className="w-full mt-8 px-4">
-                <div className="flex items-center justify-between">
+              <div className="w-full mt-12 px-4">
+                <div className="flex flex-row items-center justify-between">
                   {/* Start Date Section */}
                   <div className="flex flex-col items-center">
                     <div className="text-sm text-gray-500 mb-2">Start</div>
-                    <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
-                      {projectData.duration.startDate}
+                    <div className="text-lg font-semibold text-blue-700 px-2 py-1 rounded-md shadow-sm">
+                      {new Date(projectData.duration.startDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
                     </div>
                   </div>
 
-                  {/* Dotted Line Timeline */}
-                  <div className="flex-1 mx-6 items-center mt-7">
-                    <div className="w-full h-1 border-t-2 border-dotted border-blue-300 relative"></div>
-                  </div>
+
 
                   {/* End Date Section */}
                   <div className="flex flex-col items-center">
                     <div className="text-sm text-gray-500 mb-2">End</div>
-                    <div className="text-lg font-semibold text-blue-700 px-3 py-1 rounded-md shadow-sm">
-                      {projectData.duration.endDate}
+                    <div className="text-lg font-semibold text-blue-700 px-2 py-1 rounded-md shadow-sm">
+                      {new Date(projectData.duration.endDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
                     </div>
                   </div>
                 </div>
               </div>
+
+
             </CardContent>
           </Card>
 
@@ -358,8 +385,8 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   Support Required
                 </h2>
               </div>
-              <div className="flex flex-row gap-4 items-center">
-                <Label className="text-sm font-medium text-blue-600 block">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <Label className="text-sm font-medium text-blue-600 block text-center md:text-left">
                   DO YOUR BIT BY SUPPORTING THIS PROJECT
                 </Label>
                 <Button
@@ -397,7 +424,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                       transition={{ duration: 0.8 }}
                     >
                       <div className="space-y-4">
-                        <div className="grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                        <div className="hidden md:grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
                           <div>Items</div>
                           <div>Quantity</div>
                           <div>Needed By</div>
@@ -408,24 +435,33 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         {projectData.supportItems.map((item, index) => (
                           <div
                             key={index}
-                            className="grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                            className="flex flex-col md:grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
                           >
                             <div className="flex items-center gap-2">
                               <Package className="w-4 h-4 text-blue-600" />
                               <span>{item.item}</span>
                             </div>
                             <div className="flex items-center gap-2">
+                              <span className="md:hidden font-medium">Quantity:</span>
                               <span>{item.quantity}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Clock className="w-4 h-4 text-gray-400" />
-                              <span>{item.byWhen}</span>
+                              <span className="md:hidden font-medium">Needed By:</span>
+                              <span>{new Date(item.byWhen).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                              })}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-gray-400" />
+                              <span className="md:hidden font-medium">Drop Location:</span>
                               <span>{item.dropLocation}</span>
+
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 mt-2 md:mt-0">
+                              <span className="md:hidden font-medium">Support:</span>
                               <Button
                                 size="icon"
                                 variant="outline"
@@ -452,7 +488,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                                 }
                                 className={
                                   supportItems[item.item] <
-                                  Number(item.quantity)
+                                    Number(item.quantity)
                                     ? "text-green-500"
                                     : "text-gray-400"
                                 }
@@ -498,9 +534,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <Label className="text-sm font-medium text-blue-600 block mb-2">
                       Additional Support Needed
                     </Label>
-                    <p className="text-gray-700 leading-relaxed">
-                      {"Yha pe input lena hai"}
-                    </p>
+                    <Input
+                      placeholder="Enter additional support details"
+                      value={additionalSupport}
+                      onChange={(e) => setAdditionalSupport(e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
                   </div>
                 </CardContent>
               </div>
@@ -514,7 +553,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 transition={{ duration: 0.8 }}
               >
                 <div className="space-y-4">
-                  <div className="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                  <div className="hidden md:grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
                     <div>Items</div>
                     <div>Quantity</div>
                     <div>Needed By</div>
@@ -524,21 +563,28 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   {projectData.supportItems.map((item, index) => (
                     <div
                       key={index}
-                      className="grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                      className="flex flex-col md:grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
                     >
                       <div className="flex items-center gap-2">
                         <Package className="w-4 h-4 text-blue-600" />
                         <span>{item.item}</span>
                       </div>
                       <div className="flex items-center gap-2">
+                        <span className="md:hidden font-medium">Quantity:</span>
                         <span>{item.quantity}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-gray-400" />
-                        <span>{item.byWhen}</span>
+                        <span className="md:hidden font-medium">Needed By:</span>
+                        <span>{new Date(item.byWhen).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="md:hidden font-medium">Drop Location:</span>
                         <span>{item.dropLocation}</span>
                       </div>
                     </div>
@@ -590,13 +636,14 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     />
 
                     <Button
-                      variant="link"
+                      variant="outline"
                       onClick={() =>
                         router.push(`/project-profile/${project._id}`)
                       }
                     >
                       {" "}
                       View Project
+                      <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>
                   </CardContent>
                 </Card>

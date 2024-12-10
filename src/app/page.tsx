@@ -1052,7 +1052,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <CardTitle className="text-sm font-semibold">
                       {project.title}
                     </CardTitle>
-                    <Badge className="mt-1">{project.category}</Badge>
+                    <Badge className="mt-1 w-[86px]">{project.category}</Badge>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <p className="text-xs text-gray-600">

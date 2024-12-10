@@ -50,6 +50,7 @@ export default function FAQPage() {
             opacity: 1,
             transition: {
                 staggerChildren: 0.2,
+                duration: 0.5,
             },
         },
     };
@@ -62,6 +63,7 @@ export default function FAQPage() {
             transition: {
                 type: "spring",
                 stiffness: 100,
+                duration: 0.5,
             },
         },
     };
