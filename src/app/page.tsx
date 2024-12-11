@@ -89,13 +89,13 @@ const organizationTypes = [
 const getCategoryEmoji = (category: string) => {
   switch (category.toLowerCase()) {
     case "human":
-      return "\uD83D\uDC68\u200D\uD83D\uDCBC";
+      return "🧑‍💼";
     case "animal":
       return "🐕";
     case "plant":
       return "🌳";
     default:
-      return "\uD83D\uDC68\u200D\uD83D\uDCBC";
+      return "🧑‍💼";
   }
 };
 
@@ -425,7 +425,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
-        ${project.category === "🧑‍💼 Human" ? "\uD83D\uDC68\u200D\uD83D\uDCBC" : ""}
+        ${project.category === "🧑‍💼 Human" ? "🧑‍💼" : ""}
         ${project.category === "🌳 Plant" ? "🌳" : ""}
         ${project.category === "🐕 Animal" ? "🐕" : ""}
         
@@ -1118,57 +1118,57 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       {isMobile && (
         <div>
           <div
-  className="fixed bottom-8 right-4 md:right-44 flex space-x-3 justify-end rounded-full z-10"
->
-  <Popover open={isOpen} onOpenChange={setIsOpen}>
-    <PopoverTrigger asChild>
-      <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
-        <Filter className="h-5 w-5" />
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent className="w-80">
-      <div className="space-y-4">
-        <div className="flex flex-row items-center">
-          <h4 className="font-medium text-lg">Filter by Location</h4>
+            className="fixed bottom-8 right-4 md:right-44 flex space-x-3 justify-end rounded-full z-10"
+          >
+            <Popover open={isOpen} onOpenChange={setIsOpen}>
+              <PopoverTrigger asChild>
+                <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
+                  <Filter className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div className="flex flex-row items-center">
+                    <h4 className="font-medium text-lg">Filter by Location</h4>
 
-          <button
-            className="ml-auto"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-          >
-            <X className="h-4 w-4 ml-auto" />
-          </button>
-        </div>
-        <div className="space-y-2">
-          <Label>Enter Location</Label>
-          <Input
-            id="location"
-            placeholder="e.g. New York, London"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
-        <div className="flex justify-between">
-          <Button
-            onClick={handleClearFilter}
-            variant="outline"
-            className="flex items-center"
-          >
-            <X className="h-4 w-4 mr-2" />
-            Clear
-          </Button>
-          <Button
-            onClick={handleFilterApply}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Apply Filter
-          </Button>
-        </div>
-      </div>
-    </PopoverContent>
-  </Popover>
-</div>
+                    <button
+                      className="ml-auto"
+                      onClick={() => {
+                        setIsOpen(false);
+                      }}
+                    >
+                      <X className="h-4 w-4 ml-auto" />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Enter Location</Label>
+                    <Input
+                      id="location"
+                      placeholder="e.g. New York, London"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <Button
+                      onClick={handleClearFilter}
+                      variant="outline"
+                      className="flex items-center"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Clear
+                    </Button>
+                    <Button
+                      onClick={handleFilterApply}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Apply Filter
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           {/* Project Details Panel for mobile */}
           <AnimatePresence>
@@ -1199,15 +1199,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                 <div className="p-4 h-full overflow-y-auto">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4">
-                  {selectedProject.pictureOfSuccess?.url && (
-  <Image
-    src={selectedProject.pictureOfSuccess.url}
-    alt=""
-    width={100}
-    height={100}
-    className="rounded-xl object-cover mb-2 sm:mb-0 sm:mr-4"
-  />
-)}
+                    {selectedProject.pictureOfSuccess?.url && (
+                      <Image
+                        src={selectedProject.pictureOfSuccess.url}
+                        alt=""
+                        width={100}
+                        height={100}
+                        className="rounded-xl object-cover mb-2 sm:mb-0 sm:mr-4"
+                      />
+                    )}
                     <div>
                       <h2 className="text-xl font-bold mb-1">
                         {selectedProject.title}
@@ -1350,7 +1350,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             )}
           </AnimatePresence>
 
-          
+
         </div>
       )}
     </div>
