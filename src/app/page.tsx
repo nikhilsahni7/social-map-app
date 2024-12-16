@@ -424,7 +424,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
-                            <text x="20" y="24" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
+                            <text x="20" y="20" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
         ${project.category === "🧑‍💼 Human" ? "🧑‍💼" : ""}
         ${project.category === "🌳 Plant" ? "🌳" : ""}
         ${project.category === "🐕 Animal" ? "🐕" : ""}
@@ -458,8 +458,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           variant="outline"
                           className="text-sm p-1 bg-blue-100 text-blue-600 rounded-md"
                         >
-                          {getCategoryEmoji(project.category)}
+                          {project.category === "🧑‍💼 Human" && "🧑‍💼"}
+                          {project.category === "🌳 Plant" && "🌳"}
+                          {project.category === "🐕 Animal" && "🐕"}
                         </Badge>
+
                       </div>
                       <CardDescription className="text-blue-500 text-xs font-medium line-clamp-1">
                         {project.category}
