@@ -301,7 +301,7 @@ export default function ProjectDetailsForm() {
                       </CardTitle>
                     </CardHeader>
                     <div className="flex flex-wrap gap-3">
-                      {["🧑‍💼 Human", "🌳 Plant", "🐕 Animal"].map((category) => (
+                      {["👨 Human", "🌳 Plant", "🐕 Animal"].map((category) => (
                         <Button
                           key={category}
                           type="button"

@@ -81,7 +81,7 @@ interface Project {
 
 const tags = ["Mumbai", "Delhi", "Bangalore", "Kolkata"];
 const organizationTypes = [
-  { label: "🧑‍💼 Human", value: "🧑‍💼 Human" },
+  { label: "👨 Human", value: "👨 Human" },
   { label: "🐕 Animal", value: "🐕 Animal" },
   { label: "🌳 Plant", value: "🌳 Plant" },
 ];
@@ -89,13 +89,13 @@ const organizationTypes = [
 const getCategoryEmoji = (category: string) => {
   switch (category.toLowerCase()) {
     case "human":
-      return "🧑‍💼";
+      return "👨";
     case "animal":
       return "🐕";
     case "plant":
       return "🌳";
     default:
-      return "🧑‍💼";
+      return "�";
   }
 };
 
@@ -425,7 +425,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                             <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="20" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
-        ${project.category === "🧑‍💼 Human" ? "🧑‍💼" : ""}
+        ${project.category === "👨 Human" ? "👨" : ""}
         ${project.category === "🌳 Plant" ? "🌳" : ""}
         ${project.category === "🐕 Animal" ? "🐕" : ""}
         
@@ -458,7 +458,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           variant="outline"
                           className="text-sm p-1 bg-blue-100 text-blue-600 rounded-md"
                         >
-                          {project.category === "🧑‍💼 Human" && "🧑‍💼"}
+                          {project.category === "👨 Human" && "👨"}
                           {project.category === "🌳 Plant" && "🌳"}
                           {project.category === "🐕 Animal" && "🐕"}
                         </Badge>
