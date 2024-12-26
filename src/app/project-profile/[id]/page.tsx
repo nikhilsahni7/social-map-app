@@ -282,7 +282,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         {/* Project Details */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6 space-y-8">
+            <CardContent className="p-6 space-y-16">
               {/* Project Objective */}
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg">
@@ -314,7 +314,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </div>
 
               {/* Timeline */}
-              <div className="w-full mt-12 px-4">
+              <div className="w-full px-4">
                 <div className="flex flex-row items-center justify-between">
                   {/* Start Date Section */}
                   <div className="flex flex-col items-center">

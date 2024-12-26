@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import React, { useState, useCallback, useEffect, ChangeEvent } from "react";
 import {
   GoogleMap,
@@ -99,6 +100,68 @@ const getCategoryEmoji = (category: string) => {
   }
 };
 
+interface CityStats {
+  city: string;
+  human: number;
+  animal: number;
+  plant: number;
+}
+
+const cityStats: CityStats[] = [
+  { city: "Mumbai", human: 15, animal: 8, plant: 12 },
+  { city: "Delhi", human: 20, animal: 10, plant: 15 },
+  { city: "Bangalore", human: 18, animal: 12, plant: 20 },
+  { city: "Kolkata", human: 12, animal: 6, plant: 8 },
+  { city: "Chennai", human: 10, animal: 8, plant: 10 },
+  { city: "Hyderabad", human: 14, animal: 9, plant: 11 },
+  { city: "Pune", human: 8, animal: 5, plant: 7 },
+  { city: "Ahmedabad", human: 9, animal: 7, plant: 9 },
+  // Add more cities as needed
+];
+
+const calculateCityStats = (projects: Project[]): CityStats[] => {
+  // Create a map to store counts for each city
+  const cityStatsMap = new Map<string, { human: number; animal: number; plant: number }>();
+
+  // Process each project
+  projects.forEach(project => {
+    // Extract city from address (assuming format includes city name)
+    const cityMatch = project.location.address.match(/(?:,\s*)?([^,]+?)(?:,|$)/);
+    const city = cityMatch ? cityMatch[1].trim() : 'Other';
+
+    // Initialize city stats if not exists
+    if (!cityStatsMap.has(city)) {
+      cityStatsMap.set(city, { human: 0, animal: 0, plant: 0 });
+    }
+
+    // Increment appropriate category counter
+    const stats = cityStatsMap.get(city)!;
+    switch (project.category) {
+      case "👨 Human":
+        stats.human++;
+        break;
+      case "🐕 Animal":
+        stats.animal++;
+        break;
+      case "🌳 Plant":
+        stats.plant++;
+        break;
+    }
+  });
+
+  // Convert map to array of CityStats
+  return Array.from(cityStatsMap.entries()).map(([city, stats]) => ({
+    city,
+    ...stats
+  }));
+};
+
+// Dynamically import GoogleMap component with no SSR
+const GoogleMapComponent = dynamic(
+  () => import('@react-google-maps/api').then(mod => mod.GoogleMap),
+  { ssr: false }
+);
+
 export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -119,6 +182,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const [cityStats, setCityStats] = useState<CityStats[]>([]);
 
   const handleFilterApply = () => {
     const value = location;
@@ -369,6 +433,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     }
   };
 
+  useEffect(() => {
+    setCityStats(calculateCityStats(projects));
+  }, [projects]);
+
   if (loadError) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-black">
@@ -400,7 +468,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
       <div className="absolute bottom-0 z-10 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
       {isClient && (
-        <GoogleMap
+        <GoogleMapComponent
           mapContainerStyle={{ width: "100%", height: "100%" }}
           zoom={10}
           onLoad={onLoad}
@@ -481,7 +549,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               )}
             </React.Fragment>
           ))}
-        </GoogleMap>
+        </GoogleMapComponent>
       )}
 
       {/* Category Filters */}
@@ -1008,63 +1076,47 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
           {/* Left Sidebar */}
           <div
-            className="absolute top-20 left-4 bottom-24 w-72 bg-white shadow-lg rounded-2xl z-10"
+            className="absolute top-20 left-4 bottom-24 w-72 bg-white shadow-lg rounded-2xl z-10 overflow-hidden"
             style={{ height: "80%" }}
           >
             {/* Header */}
             <div className="flex flex-row p-4 items-center bg-blue-600 text-white rounded-t-2xl">
-              <h2 className="text-xl font-bold flex-grow">Top Projects</h2>
-              <div className="ml-auto">
-                <CountUp
-                  start={0}
-                  end={filteredProjects.length}
-                  duration={2}
-                  separator=","
-                  enableScrollSpy={true}
-                />
-              </div>
+              <h2 className="text-xl font-bold flex-grow">Projects of your City</h2>
             </div>
 
-            {/* Scrollable Section */}
-            <div
-              className="overflow-y-auto h-[calc(100%-4rem)]"
-              style={{
-                scrollbarWidth: "none", // Firefox
-                msOverflowStyle: "none", // IE and Edge
-              }}
-            >
-              {filteredProjects.slice(0, 10).map((project) => (
-                <Card
-                  key={project._id}
-                  className="m-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
-                  onClick={() => handleMarkerClick(project)}
-                >
-                  <CardHeader className="p-4">
-                    <Image
-                      src={
-                        project?.pictureOfSuccess?.url ||
-                        "/placeholder-image.jpg"
-                      }
-                      alt={project.title}
-                      width={500}
-                      height={30}
-                      style={{ objectFit: "contain" }}
-                      className="rounded-2xl"
-                    />
-                    <CardTitle className="text-sm font-semibold">
-                      {project.title}
-                    </CardTitle>
-                    <Badge className="mt-1 w-[88px]">{project.category}</Badge>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <p className="text-xs text-gray-600">
-                      {truncateText(project.description, 20)}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+            {/* Table Header */}
+            <div className="grid grid-cols-4 gap-2 px-4 py-3 bg-gray-100 border-b font-semibold text-sm">
+              <div>City</div>
+              <div className="text-center">👨</div>
+              <div className="text-center">🐕</div>
+              <div className="text-center">🌳</div>
+            </div>
+
+            {/* Scrolling Content */}
+            <div className="overflow-hidden" style={{ height: "calc(100% - 8rem)" }}>
+              <div
+                className="animate-scroll"
+                style={{
+                  paddingBottom: "2rem",
+                  display: "flex",
+                  flexDirection: "column"
+                }}
+              >
+                {[...cityStats, ...cityStats].map((stat, index) => (
+                  <div
+                    key={`${stat.city}-${index}`}
+                    className="grid grid-cols-4 gap-2 px-4 py-3 border-b hover:bg-blue-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium">{stat.city}</div>
+                    <div className="text-center text-sm">{stat.human}</div>
+                    <div className="text-center text-sm">{stat.animal}</div>
+                    <div className="text-center text-sm">{stat.plant}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+
           <div className="fixed bottom-8 right-44 flex space-x-3 justify-end rounded-full z-10">
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>

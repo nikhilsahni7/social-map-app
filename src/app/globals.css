@@ -78,3 +78,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+/* Add hover pause functionality */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
