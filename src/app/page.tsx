@@ -915,68 +915,78 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg hide-scrollbar z-20 rounded-3xl overflow-hidden -translate-y-2"
+                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
-                  maxWidth: "350px",
-                  height: "calc(100% - 14rem)",
+                  width: "300px",
                 }}
               >
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
+                  className="absolute scale-75 right-2 bg-white rounded-full hover:bg-white mr-1 focus:ring-0 focus:outline-none z-10"
                   onClick={() => {
                     fetchProjects();
                     setIsProjectPanelOpen(false);
                   }}
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-10 w-10 scale-110" />
                 </Button>
 
-                <div className="p-6 h-full overflow-y-auto">
-                  <Image
-                    src={selectedProject?.pictureOfSuccess?.url}
-                    alt=""
-                    width={280}
-                    height={30}
-                    style={{ objectFit: "contain" }}
-                    className="rounded-2xl"
-                  ></Image>
-                  <h2 className="text-2xl mt-4 font-bold mb-2">
-                    {selectedProject.title}
-                  </h2>
-                  <Badge className="mb-3">{selectedProject.category}</Badge>
-                  <p className="text-gray-600 mb-2 line-clamp-3">
-                    {selectedProject.description}
-                  </p>
-                  <p className="font-semibold mb-1">Objective:</p>
-                  <p className="text-gray-600 mb-2">
-                    {selectedProject.objective}
-                  </p>
-                  <p className="font-semibold mb-1">Location:</p>
-                  <p className="text-gray-600 mb-2">
-                    {selectedProject.location.address}
-                  </p>
-                  <div className="flex space-x-4 mt-6">
-                    <Link
-                      href={`/creator-profile/${selectedProject.creator._id}`}
-                    >
-                      <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
-                        <FaUserCircle className="mr-2" />
-                        View Profile
-                      </Button>
-                    </Link>
-                    <Link href={`/project-profile/${selectedProject._id}`}>
-                      <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                        <FaHandsHelping className="mr-2" />
-                        Support
-                      </Button>
-                    </Link>
+                <div className="flex flex-col p-4">
+
+                  <div className="relative w-full h-28 mb-3">
+
+                    <Image
+                      src={selectedProject?.pictureOfSuccess?.url}
+                      alt=""
+                      fill
+                      style={{ objectFit: "cover" }}
+                      className="rounded-2xl"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-bold line-clamp-2">
+                      {selectedProject.title}
+                    </h2>
+
+
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Creator</p>
+                      <p className="text-sm truncate">{selectedProject.firstName} {selectedProject.lastName}</p>
+                    </div>
+
+
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Objective</p>
+                      <p className="text-sm truncate">{selectedProject.objective}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Location</p>
+                      <p className="text-sm line-clamp-2">{selectedProject.location.address}</p>
+                    </div>
+
+                    <div className="flex space-x-2 pt-1">
+                      <Link href={`/creator-profile/${selectedProject.creator._id}`} className="flex-1">
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                          <FaUserCircle className="mr-2 h-4 w-4" />
+                          View Profile
+                        </Button>
+                      </Link>
+                      <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
+                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
+                          <FaHandsHelping className="mr-2 h-4 w-4" />
+                          Support
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
           {/*Search Menu*/}
           <AnimatePresence>
             {isSearchOpen && (
@@ -1235,11 +1245,13 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20 rounded-t-3xl overflow-hidden"
                 style={{
-                  height: "calc(100% - 60vh)",
-                  minHeight: "300px",
-                  maxHeight: "500px",
+                  height: "calc(100% - 65vh)",
+                  minHeight: "280px",
                 }}
               >
+                {/* Drag Handle */}
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3" />
+
                 <Button
                   variant="ghost"
                   size="icon"
@@ -1249,48 +1261,70 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     setIsProjectPanelOpen(false);
                   }}
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 text-gray-500" />
                 </Button>
 
-                <div className="p-4 h-full overflow-y-auto">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4">
+                <div className="px-4 pt-2">
+                  {/* Image and Title Section */}
+                  <div className="flex items-start space-x-3">
                     {selectedProject.pictureOfSuccess?.url && (
-                      <Image
-                        src={selectedProject.pictureOfSuccess.url}
-                        alt=""
-                        width={100}
-                        height={100}
-                        className="rounded-xl object-cover mb-2 sm:mb-0 sm:mr-4"
-                      />
+                      <div className="relative w-20 h-20 flex-shrink-0">
+                        <Image
+                          src={selectedProject.pictureOfSuccess.url}
+                          alt=""
+                          fill
+                          className="rounded-lg object-cover"
+                        />
+                      </div>
                     )}
-                    <div>
-                      <h2 className="text-xl font-bold mb-1">
+                    <div className="flex-1 mt-4">
+                      <h2 className="text-base font-bold mb-1 line-clamp-2">
                         {selectedProject.title}
                       </h2>
-                      <Badge>{selectedProject.category}</Badge>
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {selectedProject.description}
+                      </p>
                     </div>
+                  </div>
 
-                    <p className="text-black font-semibold line-clamp-2 mt-3">
-                      {selectedProject.description}
+                  {/* Objective Section */}
+
+                  <div className="mt-4 ml-2">
+                    <p className="text-xs font-semibold text-blue-600 mb-1">Objective</p>
+                    <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                      {selectedProject.objective || selectedProject.description}
                     </p>
                   </div>
 
-                  <div className="text-sm -mt-2">
-                    <div>
-                      <p className="font-semibold">Location:</p>
-                      <p className="text-gray-600">
+
+                  {/* Info Grid */}
+                  <div className="mt-1 grid grid-cols-2 gap-2">
+                    <div className="bg-gray-50 rounded-lg p-2.5">
+                      <p className="text-xs font-semibold text-blue-600">Creator</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {selectedProject.firstName} {selectedProject.lastName}
+                      </p>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-2.5">
+                      <p className="text-xs font-semibold text-blue-600">Location</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">
                         {selectedProject.location.address}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex space-x-2 mt-4">
+
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2 mt-2">
                     <Link
-                      href={`/creator-profile/${selectedProject._id}`}
+                      href={`/creator-profile/${selectedProject.creator._id}`}
                       className="flex-1"
                     >
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
-                        <FaUserCircle className="mr-1 h-4 w-4" />
+                      <Button
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm h-10"
+                      >
+                        <FaUserCircle className="mr-2 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
@@ -1298,8 +1332,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       href={`/project-profile/${selectedProject._id}`}
                       className="flex-1"
                     >
-                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
-                        <FaHandsHelping className="mr-1 h-4 w-4" />
+                      <Button
+                        className="w-full bg-green-600 hover:bg-green-700 text-white text-sm h-10"
+                      >
+                        <FaHandsHelping className="mr-2 h-4 w-4" />
                         Support
                       </Button>
                     </Link>
