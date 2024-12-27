@@ -465,15 +465,98 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   return (
     <div className="h-screen w-full relative bg-gray-900">
-      <div className="absolute top-2 left-4 z-40 flex items-center gap-2 bg-white rounded-xl">
-        <Image
-          src="/logo.png"
-          alt="logo"
-          width={65}
-          height={80}
-          className="object-contain"
-        />
+      <div className="absolute top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-0.5">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+              />
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-16">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+
+
+            {/* Auth Buttons and Menu */}
+            <div className="flex items-center gap-3">
+              {/* Search Bar - Hidden on Mobile */}
+              <div className="hidden md:flex items-center">
+                <Button
+                  onClick={() => setIsSearchOpen(true)}
+                  variant="outline"
+                  className="w-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm hover:shadow text-gray-600 hover:text-blue-600 transition-all duration-300 rounded-full h-10 flex items-center justify-between px-4 group mr-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <Search className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
+                    <span className="text-sm font-medium">Search projects...</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-gray-400">
+                    <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-50 px-1.5 font-mono text-[10px] font-medium opacity-100">
+                      <span className="text-xs">⌘</span>K
+                    </kbd>
+                  </div>
+                </Button>
+              </div>
+              {token && user ? (
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      className="hidden md:flex items-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button
+                      className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+              {/* Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen);
+                  setIsSearchOpen(false);
+                  setIsProjectPanelOpen(false);
+                }}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
       <div className="absolute bottom-0 z-10 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
       {isClient && (
@@ -700,18 +783,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         </div>
       )}
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-4 right-4 bg-white hover:bg-gray-100 p-4 rounded-full shadow-lg z-30"
-        onClick={() => {
-          setIsMenuOpen(!isMenuOpen);
-          setIsSearchOpen(false);
-          setIsProjectPanelOpen(false);
-        }}
-      >
-        <Menu className="h-6 w-6" />
-      </Button>
+
 
       {/* Search and Menu Controls */}
       {isMobile ? (
