@@ -107,17 +107,7 @@ interface CityStats {
   plant: number;
 }
 
-const cityStats: CityStats[] = [
-  { city: "Mumbai", human: 15, animal: 8, plant: 12 },
-  { city: "Delhi", human: 20, animal: 10, plant: 15 },
-  { city: "Bangalore", human: 18, animal: 12, plant: 20 },
-  { city: "Kolkata", human: 12, animal: 6, plant: 8 },
-  { city: "Chennai", human: 10, animal: 8, plant: 10 },
-  { city: "Hyderabad", human: 14, animal: 9, plant: 11 },
-  { city: "Pune", human: 8, animal: 5, plant: 7 },
-  { city: "Ahmedabad", human: 9, animal: 7, plant: 9 },
-  // Add more cities as needed
-];
+
 
 const calculateCityStats = (projects: Project[]): CityStats[] => {
   // Create a map to store counts for each city
@@ -466,7 +456,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   return (
     <div className="h-screen w-full relative bg-gray-900">
       <div className="absolute top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-0.5">
+        <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             {/* Logo and Slogan Section */}
             <div className="flex items-center gap-4">
@@ -680,49 +670,50 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       )}
 
       {/* Category Filters */}
-      <div className="absolute top-16 left-0 right-0 z-10 w-full px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-          {/* Organization Types Buttons */}
-          <div className="flex-grow flex items-center justify-center py-4">
-            <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
-              {organizationTypes.map((type) => (
-                <Button
-                  key={type.value}
-                  variant={selectedType === type.value ? "default" : "ghost"}
-                  size="sm"
-                  className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
-                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-                    : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
-                    } px-3 py-2`}
-                  onClick={() => {
-                    setSelectedType(
-                      selectedType === type.value ? null : type.value
-                    );
-                    if (selectedType) handleFilterOrgType(selectedType);
-
-                    console.log(selectedType);
-                  }}
-                >
-                  {type.label}
-                </Button>
-              ))}
+      <div className="absolute top-20 left-0 right-0 z-10 w-full px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Main Container with Responsive Layout */}
+          <div className="flex flex-col md:relative md:flex-row md:justify-center space-y-1 md:space-y-0">
+            {/* Organization Types Buttons */}
+            <div className="flex justify-center py-2 md:py-4">
+              <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
+                {organizationTypes.map((type) => (
+                  <Button
+                    key={type.value}
+                    variant={selectedType === type.value ? "default" : "ghost"}
+                    size="sm"
+                    className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
+                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
+                      : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                      } px-3 py-2`}
+                    onClick={() => {
+                      setSelectedType(
+                        selectedType === type.value ? null : type.value
+                      );
+                      if (selectedType) handleFilterOrgType(selectedType);
+                    }}
+                  >
+                    {type.label}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Total Projects Section */}
-          <div className="sm:ml-4 mb-2">
-            <div
-              className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
-              style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
-            >
-              Total Projects:{" "}
-              <CountUp
-                start={0}
-                end={filteredProjects.length}
-                duration={2}
-                separator=","
-                enableScrollSpy={true}
-              />
+            {/* Total Projects Section */}
+            <div className="flex justify-center md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2">
+              <div
+                className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
+                style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
+              >
+                Total Projects:{" "}
+                <CountUp
+                  start={0}
+                  end={filteredProjects.length}
+                  duration={2}
+                  separator=","
+                  enableScrollSpy={true}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1030,9 +1021,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+                className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
-                  width: "300px",
+                  width: "280px",
                 }}
               >
                 <Button
@@ -1047,9 +1038,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-10 w-10 scale-110" />
                 </Button>
 
-                <div className="flex flex-col p-4">
+                <div className="flex flex-col p-5">
 
-                  <div className="relative w-full h-28 mb-3">
+                  <div className="relative w-full h-24 mb-3">
 
                     <Image
                       src={selectedProject?.pictureOfSuccess?.url}
@@ -1082,15 +1073,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <p className="text-sm line-clamp-1">{selectedProject.location.address}</p>
                     </div>
 
-                    <div className="flex space-x-2 pt-1">
-                      <Link href={`/creator-profile/${selectedProject.creator._id}`} className="flex-1">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
-                          <FaUserCircle className="mr-2 h-4 w-4" />
+                    <div className="flex justify-center space-x-4 pt-1 scale-90">
+                      <Link href={`/creator-profile/${selectedProject.creator._id}`}>
+                        <Button className="w-32 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                          <FaUserCircle className="h-4 w-4" />
                           View Profile
                         </Button>
                       </Link>
-                      <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
+                      <Link href={`/project-profile/${selectedProject._id}`}>
+                        <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
                           <FaHandsHelping className="mr-2 h-4 w-4" />
                           Support
                         </Button>
@@ -1110,11 +1101,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-36 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+                className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
                   maxWidth: "600px",
                   width: "33%",
-                  height: "calc(100% - 14rem)",
+                  height: "calc(100% - 15rem)",
                 }}
               >
                 {/* Header Section */}
@@ -1160,7 +1151,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   {!searchQuery ? (
                     // Initial Empty State
                     <div className="h-10/12 flex flex-col items-center justify-center p-6 text-center">
-                      <div className="w-24 h-24 mb-4">
+                      <div className="w-24 h-14 mb-4">
                         <svg
                           viewBox="0 0 24 24"
                           fill="none"
@@ -1206,7 +1197,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           <p className="text-gray-500">No results found</p>
                         </div>
                       ) : (
-                        <ul className="space-y-1 px-2 max-h-80 overflow-y-auto">
+                        <ul className="space-y-1 px-2 max-h-80 overflow-y-auto overflow-x-hidden">
                           {filteredProjects.map((project) => (
                             <li key={project._id}>
                               <Button
@@ -1246,24 +1237,32 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
           {/* Left Sidebar */}
           <div
-            className="absolute top-20 left-4 bottom-24 w-72 bg-white shadow-lg rounded-2xl z-10 overflow-hidden"
-            style={{ height: "80%" }}
+            className="absolute top-40 mb-8 left-4 bottom-24 w-80 bg-white/95 backdrop-blur-sm shadow-2xl rounded-3xl z-10 overflow-hidden border border-blue-100"
+            style={{ height: "60%" }}
           >
-            {/* Header */}
-            <div className="flex flex-row p-4 items-center bg-blue-600 text-white rounded-t-2xl">
-              <h2 className="text-xl font-bold flex-grow">Projects of your City</h2>
+            {/* Header with Gradient */}
+            <div className="relative p-6 h-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-2xl">
+              <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.5))]" />
+              <h2 className="text-xl font-bold">Projects of your City</h2>
+              <p className="text-sm text-blue-100 mb-6">Real-time statistics</p>
             </div>
 
             {/* Table Header */}
-            <div className="grid grid-cols-4 gap-2 px-4 py-3 bg-gray-100 border-b font-semibold text-sm">
-              <div>City</div>
-              <div className="text-center">👨</div>
-              <div className="text-center">🐕</div>
-              <div className="text-center">🌳</div>
+            <div className="grid grid-cols-4 gap-2 px-6 py-2 bg-gray-50/80 border-b border-blue-100 font-medium text-sm">
+              <div className="text-gray-600 items-center mt-1">City</div>
+              <div className="text-center flex flex-col items-center">
+                <span className="text-lg mb-1">👨</span>
+              </div>
+              <div className="text-center flex flex-col items-center">
+                <span className="text-lg mb-1">🐕</span>
+              </div>
+              <div className="text-center flex flex-col items-center">
+                <span className="text-lg mb-1">🌳</span>
+              </div>
             </div>
 
             {/* Scrolling Content */}
-            <div className="overflow-hidden" style={{ height: "calc(100% - 8rem)" }}>
+            <div className="overflow-hidden" style={{ height: "calc(100% - 9.5rem)" }}>
               <div
                 className="animate-scroll"
                 style={{
@@ -1275,16 +1274,32 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 {[...cityStats, ...cityStats].map((stat, index) => (
                   <div
                     key={`${stat.city}-${index}`}
-                    className="grid grid-cols-4 gap-2 px-4 py-3 border-b hover:bg-blue-50 transition-colors"
+                    className="grid grid-cols-4 gap-1 px-4 py-4 border-b border-gray-100 hover:bg-blue-50/50 transition-all duration-300 group"
                   >
-                    <div className="text-sm font-medium">{stat.city}</div>
-                    <div className="text-center text-sm">{stat.human}</div>
-                    <div className="text-center text-sm">{stat.animal}</div>
-                    <div className="text-center text-sm">{stat.plant}</div>
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium text-gray-700">{stat.city}</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium text-sm group-hover:bg-blue-100 transition-colors duration-300">
+                        {stat.human}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 font-medium text-sm group-hover:bg-orange-100 transition-colors duration-300">
+                        {stat.animal}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-medium text-sm group-hover:bg-green-100 transition-colors duration-300">
+                        {stat.plant}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
+
+
           </div>
 
           <div className="fixed bottom-8 right-44 flex space-x-3 justify-end rounded-full z-10">
@@ -1476,25 +1491,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
 
                   {/* Action Buttons */}
-                  <div className="flex space-x-2 mt-2">
-                    <Link
-                      href={`/creator-profile/${selectedProject.creator._id}`}
-                      className="flex-1"
-                    >
-                      <Button
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm h-10"
-                      >
+                  <div className="flex justify-center space-x-4 pt-1">
+                    <Link href={`/creator-profile/${selectedProject.creator._id}`}>
+                      <Button className="w-32 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
                         <FaUserCircle className="mr-2 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
-                    <Link
-                      href={`/project-profile/${selectedProject._id}`}
-                      className="flex-1"
-                    >
-                      <Button
-                        className="w-full bg-green-600 hover:bg-green-700 text-white text-sm h-10"
-                      >
+                    <Link href={`/project-profile/${selectedProject._id}`}>
+                      <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
                         <FaHandsHelping className="mr-2 h-4 w-4" />
                         Support
                       </Button>

@@ -266,7 +266,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
     const handleLike = async (commentId: string, action: 'like' | 'dislike') => {
         try {
             await axios.post(`/api/comments/like/${commentId}`, { action });
-            fetchComments(); // Refresh comments after liking/disliking
+            fetchComments(); 
         } catch (err) {
             console.error('Failed to like/dislike the comment');
         }
