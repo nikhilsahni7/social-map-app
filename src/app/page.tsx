@@ -465,6 +465,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
   return (
     <div className="h-screen w-full relative bg-gray-900">
+      <div className="absolute top-2 left-4 z-40 flex items-center gap-2 bg-white rounded-xl">
+        <Image
+          src="/logo.png"
+          alt="logo"
+          width={65}
+          height={80}
+          className="object-contain"
+        />
+      </div>
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
       <div className="absolute bottom-0 z-10 left-0 w-full h-[20%] bg-gradient-to-b from-transparent to-black/70 pointer-events-none"></div>
       {isClient && (
@@ -516,33 +525,68 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   }}
                   mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                  <Card className="relative w-48 bg-white border-[3px] border-blue-600 border-opacity-50 backdrop-blur-sm hover:scale-105 transition-transform duration-300 ease-in-out rounded-md">
-                    <CardHeader className="p-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm text-black font-semibold line-clamp-2">
-                          {project.title}
-                        </CardTitle>
-                        <Badge
-                          variant="outline"
-                          className="text-sm p-1 bg-blue-100 text-blue-600 rounded-md"
-                        >
-                          {project.category === "👨 Human" && "👨"}
-                          {project.category === "🌳 Plant" && "🌳"}
-                          {project.category === "🐕 Animal" && "🐕"}
-                        </Badge>
-
+                  <Card className="relative w-52 bg-white/95 backdrop-blur-md hover:scale-105 transition-all duration-300 ease-in-out rounded-xl shadow-lg border border-blue-100 hover:shadow-xl hover:border-blue-200">
+                    <CardHeader className="p-3 pb-2">
+                      {/* Title and Category Section */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <CardTitle className="text-sm font-bold text-gray-800 line-clamp-2 leading-tight mb-1">
+                            {project.title}
+                          </CardTitle>
+                          <div className="flex items-center gap-1.5">
+                            <Badge
+                              variant="outline"
+                              className="px-2 py-0.5 bg-blue-50 border-blue-200 text-blue-600 rounded-full text-[10px] font-medium"
+                            >
+                              {project.category === "👨 Human" && "👨 Human"}
+                              {project.category === "🌳 Plant" && "🌳 Plant"}
+                              {project.category === "🐕 Animal" && "🐕 Animal"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
+                          <span className="text-lg">
+                            {project.category === "👨 Human" && "👨"}
+                            {project.category === "🌳 Plant" && "🌳"}
+                            {project.category === "🐕 Animal" && "🐕"}
+                          </span>
+                        </div>
                       </div>
-                      <CardDescription className="text-blue-500 text-xs font-medium line-clamp-1">
-                        {project.category}
-                      </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-3">
-                      <p className="text-gray-700 text-xs mb-1 line-clamp-2">
-                        {project.description}
-                      </p>
-                      <p className="text-gray-500 text-xs italic line-clamp-2">
-                        {project.location.address}
-                      </p>
+
+                    <CardContent className="p-3 pt-1">
+                      {/* Description Section */}
+                      <div className="space-y-2">
+                        <div>
+                          <p className="text-[11px] font-medium text-gray-500 mb-0.5">
+                            Description
+                          </p>
+                          <p className="text-xs text-gray-700 line-clamp-2 leading-snug">
+                            {project.description}
+                          </p>
+                        </div>
+
+                        {/* Location Section */}
+                        <div>
+                          <p className="text-[11px] font-medium text-gray-500 mb-0.5 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                              <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clipRule="evenodd" />
+                            </svg>
+                            Location
+                          </p>
+                          <p className="text-xs text-gray-600 line-clamp-2 leading-snug">
+                            {project.location.address}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Hover Indicator */}
+                      <div className="absolute bottom-2 right-2 opacity-70">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-blue-500">
+                          <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                          <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     </CardContent>
                   </Card>
                 </OverlayView>
@@ -734,7 +778,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             </Button>
           </div>
 
-          {/* Search Menu */}
         </div>
       )}
 
@@ -946,7 +989,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="text-lg font-bold line-clamp-2">
+                    <h2 className="text-lg font-bold line-clamp-1">
                       {selectedProject.title}
                     </h2>
 
@@ -964,7 +1007,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                     <div>
                       <p className="text-xs font-medium text-gray-600">Location</p>
-                      <p className="text-sm line-clamp-2">{selectedProject.location.address}</p>
+                      <p className="text-sm line-clamp-1">{selectedProject.location.address}</p>
                     </div>
 
                     <div className="flex space-x-2 pt-1">
@@ -999,86 +1042,131 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 style={{
                   maxWidth: "600px",
                   width: "33%",
-                  height: "calc(100% - 15rem)",
-                  scrollbarWidth: "thin",
+                  height: "calc(100% - 14rem)",
                 }}
               >
                 {/* Header Section */}
-                <div className="bg-blue-500 text-white flex items-center justify-between px-6 py-4">
-                  <div className="flex items-center space-x-3">
-                    <h2 className="text-lg font-semibold">Find all Projects</h2>
-                  </div>
+                <div className="sticky top-0 bg-blue-600 text-white flex items-center justify-between px-4 py-3 shadow-sm">
+                  <h2 className="text-lg font-semibold">Find Projects</h2>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-gray-200 hover:bg-transparent mr-1 focus:ring-0 focus:outline-none"
+                    className="text-white hover:bg-transparent focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
-
-                {/* Content Section */}
-                <div className="p-6 h-full w-full overflow-y-auto">
+                <div className="sticky top-0 z-10 bg-white px-4 py-3 border-b border-gray-100">
                   <div className="relative">
-                    {/* Search Input */}
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       type="text"
                       placeholder="Search by Name or Location..."
                       value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full pl-12 pr-4 py-3 text-md border border-gray-300 rounded-3xl placeholder:text-sm"
+                      className="w-full pl-12 pr-10 py-3 text-sm border border-gray-200 rounded-full shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-gray-50/50"
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 -mt-1 right-2 hover:bg-transparent focus:ring-0 focus:outline-none"
-                      onClick={() => {
-                        setSearchQuery("");
-                        fetchProjects();
-                      }}
-                    >
-                      <X className="h-6 w-6" />
-                    </Button>
-                  </div>
-
-                  {/* Search Results */}
-                  <ScrollArea className="mt-6 px-2">
-                    {filteredProjects.length === 0 ? (
-                      <p className="text-center text-gray-500 py-4">
-                        No results found.
-                      </p>
-                    ) : (
-                      <ul className="space-y-3">
-                        {filteredProjects.map((project) => (
-                          <li key={project._id}>
-                            <Button
-                              variant="ghost"
-                              className="w-full h-16 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
-                              onClick={() => {
-                                handleSelectSuggestion(project.title);
-                                handleMarkerClick(project);
-                              }}
-                            >
-                              <div>
-                                <p className="font-medium text-blue-600">
-                                  {project.title}
-                                </p>
-
-                                <p className="text-sm text-gray-500">
-                                  {project.category}
-                                </p>
-                                <p className="text-sm text-black truncate">
-                                  {truncateText(project.location.address, 7)}
-                                </p>
-                              </div>
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
+                    {searchQuery && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent focus:ring-0 focus:outline-none"
+                        onClick={() => {
+                          setSearchQuery("");
+                          fetchProjects();
+                        }}
+                      >
+                        <X className="h-4 w-4 text-gray-400" />
+                      </Button>
                     )}
-                  </ScrollArea>
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="h-full overflow-y-auto">
+                  {!searchQuery ? (
+                    // Initial Empty State
+                    <div className="h-10/12 flex flex-col items-center justify-center p-6 text-center">
+                      <div className="w-24 h-24 mb-4">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="w-full h-full text-blue-100"
+                        >
+                          <path
+                            d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Search Projects
+                      </h3>
+                      <p className="text-sm text-gray-500 max-w-[200px]">
+                        Start typing to search for projects by name or location
+                      </p>
+                    </div>
+                  ) : (
+                    // Search Results
+                    <div className="py-2">
+                      {filteredProjects.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center p-6 text-center">
+                          <div className="w-16 h-16 mb-4 text-gray-300">
+                            <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+                              <path
+                                d="M10 12C10 13.1046 9.10457 14 8 14C6.89543 14 6 13.1046 6 12C6 10.8954 6.89543 10 8 10C9.10457 10 10 10.8954 10 12Z"
+                                fill="currentColor"
+                              />
+                              <path
+                                d="M18 12C18 13.1046 17.1046 14 16 14C14.8954 14 14 13.1046 14 12C14 10.8954 14.8954 10 16 10C17.1046 10 18 10.8954 18 12Z"
+                                fill="currentColor"
+                              />
+                              <path
+                                d="M12 17C9.23858 17 7 16.1046 7 15C7 13.8954 9.23858 13 12 13C14.7614 13 17 13.8954 17 15C17 16.1046 14.7614 17 12 17Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-gray-500">No results found</p>
+                        </div>
+                      ) : (
+                        <ul className="space-y-1 px-2 max-h-80 overflow-y-auto">
+                          {filteredProjects.map((project) => (
+                            <li key={project._id}>
+                              <Button
+                                variant="ghost"
+                                className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-lg p-3"
+                                onClick={() => {
+                                  handleSelectSuggestion(project.title);
+                                  handleMarkerClick(project);
+                                }}
+                              >
+                                <div>
+                                  <p className="font-medium text-blue-600 mb-0.5">
+                                    {project.title}
+                                  </p>
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="text-gray-500">
+                                      {project.category}
+                                    </span>
+                                    <span className="text-gray-300">•</span>
+                                    <span className="text-gray-600 truncate">
+                                      {truncateText(project.location.address, 7)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+
+                      )}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
@@ -1278,10 +1366,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       </div>
                     )}
                     <div className="flex-1 mt-4">
-                      <h2 className="text-base font-bold mb-1 line-clamp-2">
+                      <h2 className="text-base font-bold mb-1 line-clamp-1">
                         {selectedProject.title}
                       </h2>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-gray-600 line-clamp-1">
                         {selectedProject.description}
                       </p>
                     </div>
@@ -1291,7 +1379,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                   <div className="mt-4 ml-2">
                     <p className="text-xs font-semibold text-blue-600 mb-1">Objective</p>
-                    <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                    <p className="text-sm font-medium text-gray-900 line-clamp-1">
                       {selectedProject.objective || selectedProject.description}
                     </p>
                   </div>
@@ -1345,6 +1433,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             )}
           </AnimatePresence>
           {/*Search Menu*/}
+
           <AnimatePresence>
             {isSearchOpen && (
               <motion.div
@@ -1354,92 +1443,117 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="fixed inset-x-0 bottom-0 bg-white shadow-lg z-20 rounded-t-3xl overflow-hidden"
                 style={{
-                  height: "calc(100% - 60vh)",
-                  minHeight: "300px",
+                  height: "60vh", // Increased height for better visibility
                   maxHeight: "90vh",
                 }}
               >
                 {/* Header Section */}
-                <div className="bg-blue-500 text-white flex items-center justify-between px-4 py-3">
-                  <h2 className="text-lg font-semibold">Find all Projects</h2>
+                <div className="sticky top-0 bg-blue-600 text-white flex items-center justify-between px-4 py-3 shadow-sm">
+                  <h2 className="text-lg font-semibold">Find Projects</h2>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-transparent focus:ring-0 focus:outline-none"
+                    className="text-white hover:bg-blue-700 focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
 
-                {/* Content Section */}
-                <div className="p-4 h-full overflow-y-auto z-30">
-                  <div className="relative mb-4">
-                    {/* Search Input */}
+                {/* Search Input - Sticky */}
+                <div className="sticky top-[56px] bg-white px-4 py-3 border-b border-gray-100 z-10">
+                  <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       type="text"
-                      placeholder="Search by Name or Location"
+                      placeholder="Search by name or location..."
                       value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-full"
+                      className="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-full bg-gray-50/50"
                     />
                     {searchQuery && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute top-1/2 right-2 transform -translate-y-1/2 hover:bg-transparent focus:ring-0 focus:outline-none"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent"
                         onClick={() => {
-                          handleSearch({
-                            target: { value: "" },
-                          } as React.ChangeEvent<HTMLInputElement>);
+                          setSearchQuery("");
                           fetchProjects();
                         }}
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-4 w-4 text-gray-400" />
                       </Button>
                     )}
                   </div>
+                </div>
 
-                  {/* Search Results */}
-                  <ScrollArea className="h-[calc(100%-3rem)]">
-                    {filteredProjects.length === 0 ? (
-                      <p className="text-center text-gray-500 py-4">
-                        No results found.
+                {/* Content Section */}
+                <div className="flex-1 overflow-y-auto">
+                  {!searchQuery ? (
+                    // Empty State
+                    <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                      <div className="w-20 h-20 mb-4 text-blue-100">
+                        <Search className="w-full h-full" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Search Projects
+                      </h3>
+                      <p className="text-sm text-gray-500 max-w-[250px]">
+                        Start typing to search for projects by name or location
                       </p>
-                    ) : (
-                      <ul className="space-y-2">
+                    </div>
+                  ) : filteredProjects.length === 0 ? (
+                    // No Results State
+                    <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                      <div className="w-16 h-16 mb-4 text-gray-300">
+                        <Info className="w-full h-full" />
+                      </div>
+                      <p className="text-gray-500">No results found</p>
+                    </div>
+                  ) : (
+                    // Results List
+                    <div className="py-2 px-4 max-h-80 overflow-y-auto"> {/* Added max-h-80 and overflow-y-auto */}
+                      <p className="text-xs font-medium text-gray-500 mb-3">
+                        {filteredProjects.length} results found
+                      </p>
+                      <ul className="space-y-2 gap-2">
                         {filteredProjects.map((project) => (
                           <li key={project._id}>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start text-left hover:bg-blue-50 rounded-lg p-2"
+                              className="w-full h-14 justify-start text-left hover:bg-blue-50 rounded-xl p-3"
                               onClick={() => {
                                 handleSelectSuggestion(project.title);
                                 handleMarkerClick(project);
+                                setIsSearchOpen(false);
                               }}
                             >
-                              <div>
-                                <p className="font-medium text-blue-600 text-sm">
-                                  {project.title}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {project.category}
-                                </p>
-                                <p className="text-xs text-black truncate">
-                                  {truncateText(project.location.address, 5)}
-                                </p>
+                              <div className="flex items-start gap-3 w-full">
+
+                                <div className="flex-1 min-w-0">
+
+                                  {/* Added min-w-0 to allow truncation */}
+                                  <p className="font-semibold text-blue-600 mb-0.5 truncate">
+                                    {project.title}
+                                  </p>
+                                  <span className="text-sm scale-90 flex-shrink-0 items-center">{project.category}</span>
+                                  <p className="text-xs text-gray-600 truncate">
+                                    {project.location.address}
+                                  </p>
+                                </div>
                               </div>
                             </Button>
                           </li>
                         ))}
                       </ul>
-                    )}
-                  </ScrollArea>
+                    </div>
+
+                  )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
 
 
         </div>
