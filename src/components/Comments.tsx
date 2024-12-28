@@ -16,6 +16,8 @@ interface Comment {
     replies: Comment[];
     likes: number;
     dislikes: number;
+    likedBy: string[];
+    dislikedBy: string[];
 }
 
 interface CommentInputProps {
@@ -119,6 +121,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
         }
     }, [showReplyBox]);
 
+    const hasLiked = comment.likedBy?.includes(username);
+    const hasDisliked = comment.dislikedBy?.includes(username);
+
     return (
         <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
             <div className="flex flex-row md:flex-row space-x-4 ml-6">
@@ -145,20 +150,32 @@ const CommentItem: React.FC<CommentItemProps> = ({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            className={cn(
+                                "h-8 px-2 text-muted-foreground hover:text-foreground",
+                                hasLiked && "text-blue-500 bg-blue-50"
+                            )}
                             onClick={() => onLike(comment._id, 'like')}
                         >
-                            <ThumbsUp className="h-4 w-4 mr-1" />
-                            <span className="text-xs">{comment.likes}</span>
+                            <ThumbsUp className={cn(
+                                "h-4 w-4 mr-1",
+                                hasLiked && "fill-current"
+                            )} />
+                            <span className="text-xs">{comment.likes || 0}</span>
                         </Button>
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            className={cn(
+                                "h-8 px-2 text-muted-foreground hover:text-foreground",
+                                hasDisliked && "text-red-500 bg-red-50"
+                            )}
                             onClick={() => onLike(comment._id, 'dislike')}
                         >
-                            <ThumbsDown className="h-4 w-4 mr-1" />
-                            <span className="text-xs">{comment.dislikes}</span>
+                            <ThumbsDown className={cn(
+                                "h-4 w-4 mr-1",
+                                hasDisliked && "fill-current"
+                            )} />
+                            <span className="text-xs">{comment.dislikes || 0}</span>
                         </Button>
                         <Button
                             variant="ghost"
@@ -265,10 +282,37 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
 
     const handleLike = async (commentId: string, action: 'like' | 'dislike') => {
         try {
-            await axios.post(`/api/comments/like/${commentId}`, { action });
-            fetchComments(); 
+            const response = await axios.post(`/api/comments/${slug}/like`, {
+                commentId,
+                action
+            });
+
+            // Update comments locally
+            setComments(prevComments => {
+                const updateCommentLikes = (comments: Comment[]): Comment[] => {
+                    return comments.map(comment => {
+                        if (comment._id === commentId) {
+                            const updatedComment = { ...comment };
+                            if (action === 'like') {
+                                updatedComment.likes = (response.data.likes || 0);
+                            } else {
+                                updatedComment.dislikes = (response.data.dislikes || 0);
+                            }
+                            return updatedComment;
+                        }
+                        if (comment.replies?.length > 0) {
+                            return {
+                                ...comment,
+                                replies: updateCommentLikes(comment.replies)
+                            };
+                        }
+                        return comment;
+                    });
+                };
+                return updateCommentLikes(prevComments);
+            });
         } catch (err) {
-            console.error('Failed to like/dislike the comment');
+            console.error('Failed to like/dislike the comment:', err);
         }
     };
 
@@ -309,30 +353,30 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
 
                     {comments.length > 16 && !showAllComments && (
                         <button
-                        className="flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-300 font-semibold"
-                        onClick={handleShowAllComments}
-                    >
-                        <span>Read More Comments</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 ml-2 transition-transform duration-300"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            aria-hidden="true"
-                            style={{
-                                transform: showAllComments ? 'rotate(180deg)' : 'rotate(0deg)',
-                            }}
+                            className="flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-300 font-semibold"
+                            onClick={handleShowAllComments}
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M19 9l-7 7-7-7"
-                            />
-                        </svg>
-                    </button>
-                    
+                            <span>Read More Comments</span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 ml-2 transition-transform duration-300"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                strokeWidth="2"
+                                aria-hidden="true"
+                                style={{
+                                    transform: showAllComments ? 'rotate(180deg)' : 'rotate(0deg)',
+                                }}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </button>
+
                     )}
                 </>
             )}

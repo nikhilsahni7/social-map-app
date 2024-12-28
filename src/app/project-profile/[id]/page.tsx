@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface ProjectData {
   _id: string;
@@ -51,6 +52,7 @@ interface ProjectData {
     quantity: string;
     byWhen: string;
     dropLocation: string;
+    supportProvided: number;
   }>;
   otherSupport: string;
   pictureOfSuccess?: {
@@ -160,20 +162,25 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ supportItems }),
+        body: JSON.stringify({
+          supportItems,
+          additionalSupport
+        }),
       });
 
       if (response.ok) {
+        const data = await response.json();
+        setProjectData(data.project);
         setSupportItems({});
         setTotalSupport(0);
-        alert("Support sent successfully!");
+        setAdditionalSupport(''); // Reset additional support
+        toast.success("Support submitted successfully!");
       } else {
-        const data = await response.json();
-        alert(data.error || "Failed to send support");
+        throw new Error("Failed to submit support");
       }
     } catch (error) {
-      console.error("Error sending support:", error);
-      alert("An error occurred while sending support.");
+      console.error("Error submitting support:", error);
+      toast.error("Failed to submit support");
     } finally {
       setIsSupporting(false);
     }
@@ -424,77 +431,92 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                       transition={{ duration: 0.8 }}
                     >
                       <div className="space-y-4">
-                        <div className="hidden md:grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                        <div className="hidden md:grid md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
                           <div>Items</div>
-                          <div>Quantity</div>
+                          <div>Quantity Needed</div>
+                          <div>Support Provided</div>
                           <div>Needed By</div>
                           <div>Drop Location</div>
-                          <div>Support</div>
+                          <div>Your Support</div>
                         </div>
 
                         {projectData.supportItems.map((item, index) => (
                           <div
                             key={index}
-                            className="flex flex-col md:grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                            className="flex flex-col md:grid md:grid-cols-6 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
                           >
                             <div className="flex items-center gap-2">
                               <Package className="w-4 h-4 text-blue-600" />
                               <span>{item.item}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="md:hidden font-medium">Quantity:</span>
+                              <span className="md:hidden font-medium">Quantity Needed:</span>
                               <span>{item.quantity}</span>
                             </div>
                             <div className="flex items-center gap-2">
+                              <span className="md:hidden font-medium">Support Provided:</span>
+                              <div className="flex items-center gap-2">
+                                <span>{item.supportProvided || 0}</span>
+                                <Progress
+                                  value={(item.supportProvided / Number(item.quantity)) * 100}
+                                  className="w-20 h-2"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
                               <Clock className="w-4 h-4 text-gray-400" />
-                              <span className="md:hidden font-medium">Needed By:</span>
-                              <span>{new Date(item.byWhen).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric',
-                              })}</span>
+                              <span>{new Date(item.byWhen).toLocaleDateString()}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-gray-400" />
-                              <span className="md:hidden font-medium">Drop Location:</span>
                               <span>{item.dropLocation}</span>
-
                             </div>
-                            <div className="flex items-center gap-2 mt-2 md:mt-0">
-                              <span className="md:hidden font-medium">Support:</span>
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                onClick={() =>
-                                  updateItemQuantity(item.item, -1)
-                                }
-                                disabled={!supportItems[item.item]}
-                                className={
-                                  supportItems[item.item] ? "text-red-500" : ""
-                                }
-                              >
-                                <Minus className="h-4 w-4" />
-                              </Button>
-                              <span className="w-12 text-center font-medium">
-                                {supportItems[item.item] || 0}
-                              </span>
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                onClick={() => updateItemQuantity(item.item, 1)}
-                                disabled={
-                                  Number(supportItems[item.item]) >=
-                                  Number(item.quantity)
-                                }
-                                className={
-                                  supportItems[item.item] <
-                                    Number(item.quantity)
-                                    ? "text-green-500"
-                                    : "text-gray-400"
-                                }
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  onClick={() => updateItemQuantity(item.item, -1)}
+                                  disabled={!supportItems[item.item]}
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </Button>
+
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max={Number(item.quantity)}
+                                  value={supportItems[item.item] || ''}
+                                  placeholder="0"
+                                  onChange={(e) => {
+                                    const value = Math.min(
+                                      Math.max(0, parseInt(e.target.value) || 0),
+                                      Number(item.quantity)
+                                    );
+                                    setSupportItems(prev => ({
+                                      ...prev,
+                                      [item.item]: value || 0
+                                    }));
+                                    setTotalSupport(
+                                      Object.entries(supportItems)
+                                        .reduce((sum, [key, qty]) =>
+                                          key === item.item ? sum + (value || 0) : sum + (qty || 0),
+                                          0
+                                        )
+                                    );
+                                  }}
+                                  className="w-16 text-center mx-1 h-9 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  onClick={() => updateItemQuantity(item.item, 1)}
+                                  disabled={Number(supportItems[item.item]) >= Number(item.quantity)}
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -553,38 +575,33 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 transition={{ duration: 0.8 }}
               >
                 <div className="space-y-4">
-                  <div className="hidden md:grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                  <div className="hidden md:grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
                     <div>Items</div>
-                    <div>Quantity</div>
+                    <div className="text-right pr-8">Quantity Needed</div>
+                    <div className="text-right pr-8">Support Provided</div>
                     <div>Needed By</div>
                     <div>Drop Location</div>
                   </div>
 
                   {projectData.supportItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col md:grid md:grid-cols-4 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
-                    >
+                    <div key={index} className="flex flex-col md:grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50">
                       <div className="flex items-center gap-2">
                         <Package className="w-4 h-4 text-blue-600" />
                         <span>{item.item}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="md:hidden font-medium">Quantity:</span>
+                      <div className="flex items-center justify-end pr-8">
                         <span>{item.quantity}</span>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 pr-8">
+                        <span>{item.supportProvided || 0}</span>
+                        <Progress value={(item.supportProvided / Number(item.quantity)) * 100} className="w-20 h-2" />
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="md:hidden font-medium">Needed By:</span>
-                        <span>{new Date(item.byWhen).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })}</span>
+                        <span>{new Date(item.byWhen).toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="md:hidden font-medium">Drop Location:</span>
                         <span>{item.dropLocation}</span>
                       </div>
                     </div>

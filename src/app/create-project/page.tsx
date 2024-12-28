@@ -13,6 +13,8 @@ import {
   Clock,
   Box,
   Loader2,
+  HelpCircle,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +33,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 
 interface SupportItem {
@@ -84,6 +88,7 @@ export default function ProjectDetailsForm() {
     address: "",
     coordinates: null,
   });
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleInputChange = (
@@ -167,17 +172,6 @@ export default function ProjectDetailsForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validate support items
-    const isValidSupportItems = supportItems.every(item =>
-      item.item && item.quantity && item.byWhen && item.dropLocation
-    );
-
-    if (!isValidSupportItems) {
-      hotToast.error("Please fill in all support item details");
-      return;
-    }
-
     const token = getAuthToken();
 
     if (!token) {
@@ -429,7 +423,11 @@ export default function ProjectDetailsForm() {
                   </h3>
                   <LocationInput
                     defaultValue={formData.address}
-                    onLocationSelect={(location) => handleLocationSelect(location.address, location.coordinates[0], location.coordinates[1])}
+                    onLocationSelect={(location) => handleLocationSelect(
+                      location.address,
+                      location.coordinates[0],
+                      location.coordinates[1]
+                    )}
                   />
                 </div>
 
@@ -697,48 +695,142 @@ export default function ProjectDetailsForm() {
             </ScrollArea>
           </Card>
         </form>
-      </div>
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Project Preview</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold">{formData.title}</h3>
-              <p className="text-sm text-gray-600">by {formData.firstName} {formData.lastName}</p>
-            </div>
-            <div>
-              <h4 className="font-medium">Objective</h4>
-              <p>{formData.objective}</p>
-            </div>
-            <div>
-              <h4 className="font-medium">Description</h4>
-              <p>{formData.description}</p>
-            </div>
-            {imagePreview && (
-              <div className="relative h-48 w-full">
-                <Image
-                  src={imagePreview}
-                  alt="Project Image"
-                  fill
-                  className="object-cover rounded-md"
-                />
+
+        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-center">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">
+                  Project Preview
+                </h2>
+                <p className="text-sm text-gray-600 mt-2">Review your project details before submission</p>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-8 p-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="flex items-center text-xl font-bold text-red-600">
+                  <User className="h-5 w-5 mr-2" />
+                  Personal Information
+                </h3>
+                <div className="bg-white/50 rounded-lg p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <User className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{formData.firstName} {formData.lastName}</h4>
+                      <p className="text-sm text-gray-600">Project Creator</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-            <div>
-              <h4 className="font-medium">Support Items</h4>
-              <ul className="list-disc pl-5">
-                {supportItems.map((item, index) => (
-                  <li key={index}>
-                    {item.item} - {item.quantity} units by {item.byWhen}
-                  </li>
-                ))}
-              </ul>
+
+              {/* Project Details */}
+              <div className="space-y-4">
+                <h3 className="flex items-center text-xl font-bold text-red-600">
+                  <FileText className="h-5 w-5 mr-2" />
+                  Project Details
+                </h3>
+                <div className="bg-white/50 rounded-lg p-4 space-y-6">
+                  <div>
+                    <h4 className="text-lg font-semibold">{formData.title}</h4>
+                    <Badge className="mt-2">{formData.category}</Badge>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Objective</p>
+                      <p className="mt-1 text-gray-800">{formData.objective}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Description</p>
+                      <p className="mt-1 text-gray-800">{formData.description}</p>
+                    </div>
+                  </div>
+
+                  {imagePreview && (
+                    <div className="relative h-64 w-full rounded-lg overflow-hidden">
+                      <Image
+                        src={imagePreview}
+                        alt="Project Image"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div className="space-y-4">
+                <h3 className="flex items-center text-xl font-bold text-red-600">
+                  <Clock className="h-5 w-5 mr-2" />
+                  Duration
+                </h3>
+                <div className="bg-white/50 rounded-lg p-4">
+                  <div className="flex gap-8">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Start Date</p>
+                      <p className="mt-1 text-gray-800">{formData.startDate}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">End Date</p>
+                      <p className="mt-1 text-gray-800">{formData.endDate}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="space-y-4">
+                <h3 className="flex items-center text-xl font-bold text-red-600">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Location
+                </h3>
+                <div className="bg-white/50 rounded-lg p-4">
+                  <p className="text-gray-800">{formData.address}</p>
+                </div>
+              </div>
+
+              {/* Support Items */}
+              <div className="space-y-4">
+                <h3 className="flex items-center text-xl font-bold text-red-600">
+                  <Box className="h-5 w-5 mr-2" />
+                  Support Items
+                </h3>
+                <div className="bg-white/50 rounded-lg p-4 space-y-4">
+                  {supportItems.map((item, index) => (
+                    item.item && (
+                      <div key={index} className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-gray-800">{item.item}</p>
+                            <p className="text-sm text-gray-600 mt-1">Drop at: {item.dropLocation}</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant="secondary" className="mb-1">{item.quantity} units</Badge>
+                            <p className="text-xs text-gray-500">Need by: {item.byWhen}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  ))}
+
+                  {formData.otherSupport && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-gray-500">Additional Support Needed</p>
+                      <p className="mt-1 text-gray-800">{formData.otherSupport}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }

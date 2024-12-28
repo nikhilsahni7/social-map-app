@@ -57,9 +57,10 @@ const projectSchema = new mongoose.Schema(
     supportItems: [
       {
         item: String,
-        quantity: Number,
-        byWhen: Date,
+        quantity: String,
+        byWhen: String,
         dropLocation: String,
+        supportProvided: { type: Number, default: 0 }
       },
     ],
     otherSupport: String,
