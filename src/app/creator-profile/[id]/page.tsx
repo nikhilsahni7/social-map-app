@@ -337,15 +337,31 @@ export default function PersonProfile() {
                             {project.title}
                           </h3>
                           <p className="text-gray-600">{project.description}</p>
-                          <Link
-                            href={`/project-profile/${project.id}`}
-                            passHref
-                          >
-                            <Button variant="outline" className="w-full">
-                              View Project
-                              <ChevronRight className="w-4 h-4 ml-2" />
-                            </Button>
-                          </Link>
+                          <div className="flex flex-row justify-center gap-4">
+                            {currentUser?.id === params.id ? (
+                              <div className="flex flex-row justify-center gap-4">
+                                <Link href={`/project-profile/${project.id}`} passHref>
+                                  <Button variant="outline" className="w-full">
+                                    View Project
+                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                  </Button>
+                                </Link>
+                                <Link href={`/edit-project/${project.id}`} passHref>
+                                  <Button variant="outline" className="w-full">
+                                    Edit Project
+                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                  </Button>
+                                </Link>
+                              </div>
+                            ) : (<div className="w-full">
+                              <Link href={`/project-profile/${project.id}`} passHref>
+                                <Button variant="outline" className="w-full">
+                                  View Project
+                                  <ChevronRight className="w-4 h-4 ml-2" />
+                                </Button>
+                              </Link>
+                            </div>)}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

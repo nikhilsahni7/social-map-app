@@ -26,6 +26,12 @@ import { LocationInput } from "@/components/LocationInput";
 import { getAuthToken } from "@/lib/clientAuth";
 import { toast as hotToast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface SupportItem {
   item: string;
@@ -78,6 +84,7 @@ export default function ProjectDetailsForm() {
     address: "",
     coordinates: null,
   });
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleInputChange = (
     rowIndex: number,
@@ -160,6 +167,17 @@ export default function ProjectDetailsForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate support items
+    const isValidSupportItems = supportItems.every(item =>
+      item.item && item.quantity && item.byWhen && item.dropLocation
+    );
+
+    if (!isValidSupportItems) {
+      hotToast.error("Please fill in all support item details");
+      return;
+    }
+
     const token = getAuthToken();
 
     if (!token) {
@@ -410,8 +428,8 @@ export default function ProjectDetailsForm() {
                     Location Details
                   </h3>
                   <LocationInput
-                    address={formData.address}
-                    onAddressSelect={handleLocationSelect}
+                    defaultValue={formData.address}
+                    onLocationSelect={(location) => handleLocationSelect(location.address, location.coordinates[0], location.coordinates[1])}
                   />
                 </div>
 
@@ -650,9 +668,13 @@ export default function ProjectDetailsForm() {
                 {/* Submit Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                   {" "}
-                  <Button type="button" variant="outline" disabled={isLoading}>
-                    {" "}
-                    Preview{" "}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsPreviewOpen(true)}
+                    disabled={isLoading}
+                  >
+                    Preview
                   </Button>{" "}
                   <Button
                     type="submit"
@@ -676,6 +698,47 @@ export default function ProjectDetailsForm() {
           </Card>
         </form>
       </div>
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Project Preview</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold">{formData.title}</h3>
+              <p className="text-sm text-gray-600">by {formData.firstName} {formData.lastName}</p>
+            </div>
+            <div>
+              <h4 className="font-medium">Objective</h4>
+              <p>{formData.objective}</p>
+            </div>
+            <div>
+              <h4 className="font-medium">Description</h4>
+              <p>{formData.description}</p>
+            </div>
+            {imagePreview && (
+              <div className="relative h-48 w-full">
+                <Image
+                  src={imagePreview}
+                  alt="Project Image"
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
+            )}
+            <div>
+              <h4 className="font-medium">Support Items</h4>
+              <ul className="list-disc pl-5">
+                {supportItems.map((item, index) => (
+                  <li key={index}>
+                    {item.item} - {item.quantity} units by {item.byWhen}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

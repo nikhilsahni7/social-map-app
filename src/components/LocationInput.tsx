@@ -6,17 +6,14 @@ import { useLoadScript } from "@react-google-maps/api";
 import { Loader2 } from "lucide-react";
 
 interface LocationInputProps {
-  address: string;
-  onAddressSelect: (address: string, lat: number, lng: number) => void;
+  defaultValue?: string;
+  onLocationSelect: (location: { coordinates: number[]; address: string }) => void;
 }
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
 
-export function LocationInput({
-  address,
-  onAddressSelect,
-}: LocationInputProps) {
-  const [inputValue, setInputValue] = useState(address);
+export function LocationInput({ defaultValue, onLocationSelect }: LocationInputProps) {
+  const [inputValue, setInputValue] = useState(defaultValue);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const { isLoaded, loadError } = useLoadScript({
@@ -35,11 +32,11 @@ export function LocationInput({
           const lat = place.geometry.location.lat();
           const lng = place.geometry.location.lng();
           setInputValue(place.formatted_address);
-          onAddressSelect(place.formatted_address, lat, lng);
+          onLocationSelect({ coordinates: [lat, lng], address: place.formatted_address });
         }
       });
     },
-    [onAddressSelect]
+    [onLocationSelect]
   );
 
   const getCurrentLocation = useCallback(() => {
@@ -57,7 +54,7 @@ export function LocationInput({
             if (response.results[0]) {
               const address = response.results[0].formatted_address;
               setInputValue(address);
-              onAddressSelect(address, latitude, longitude);
+              onLocationSelect({ coordinates: [latitude, longitude], address });
             }
           } catch (error) {
             console.error("Error getting address:", error);
@@ -71,13 +68,13 @@ export function LocationInput({
         }
       );
     }
-  }, [onAddressSelect]);
+  }, [onLocationSelect]);
 
   useEffect(() => {
-    if (isLoaded && !address) {
+    if (isLoaded && !defaultValue) {
       getCurrentLocation();
     }
-  }, [isLoaded, address, getCurrentLocation]);
+  }, [isLoaded, defaultValue, getCurrentLocation]);
 
   if (loadError) {
     return <div>Error loading maps</div>;

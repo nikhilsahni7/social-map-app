@@ -481,24 +481,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Auth Buttons and Menu */}
             <div className="flex items-center gap-3">
-              {/* Search Bar - Hidden on Mobile */}
-              <div className="hidden md:flex items-center">
-                <Button
-                  onClick={() => setIsSearchOpen(true)}
-                  variant="outline"
-                  className="w-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm hover:shadow text-gray-600 hover:text-blue-600 transition-all duration-300 rounded-full h-10 flex items-center justify-between px-4 group mr-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <Search className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
-                    <span className="text-sm font-medium">Search projects...</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-50 px-1.5 font-mono text-[10px] font-medium opacity-100">
-                      <span className="text-xs">⌘</span>K
-                    </kbd>
-                  </div>
-                </Button>
-              </div>
+
               {token && user ? (
                 <Button
                   onClick={handleLogout}
@@ -676,15 +659,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="flex flex-col md:relative md:flex-row md:justify-center space-y-1 md:space-y-0">
             {/* Organization Types Buttons */}
             <div className="flex justify-center py-2 md:py-4">
-              <div className="inline-flex items-center justify-center gap-3 bg-white rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
+              <div className="inline-flex items-center justify-center gap-5 bg-blue-100 rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
                 {organizationTypes.map((type) => (
                   <Button
                     key={type.value}
                     variant={selectedType === type.value ? "default" : "ghost"}
                     size="sm"
-                    className={`rounded-full transition-transform duration-300 font-medium${selectedType === type.value
+                    className={`rounded-full scale-110 bg-white transition-transform duration-300 font-bold text-blue-600 ${selectedType === type.value
                       ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 scale-105"
-                      : "text-blue-600 border border-blue-600 hover:bg-blue-100 hover:scale-105"
+                      : "text-blue-600 border border-blue-600 hover:bg-white hover:scale-105"
                       } px-3 py-2`}
                     onClick={() => {
                       setSelectedType(
@@ -1024,8 +1007,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
                   width: "280px",
-                  height: "58%",
-                  maxHeight: "350px",
                 }}
               >
                 <Button
@@ -1304,113 +1285,12 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
           </div>
 
-          <div className="fixed bottom-8 right-44 flex space-x-3 justify-end rounded-full z-10">
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-              <PopoverTrigger asChild>
-                <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
-                  <Filter className="h-5 w-5" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-4">
-                  <div className="flex flex-row items-center">
-                    <h4 className="font-medium text-lg">Filter by Location</h4>
 
-                    <button
-                      className="ml-auto"
-                      onClick={() => {
-                        setIsOpen(false);
-                      }}
-                    >
-                      <X className="h-4 w-4 ml-auto" />
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Enter Location</Label>
-                    <Input
-                      id="location"
-                      placeholder="e.g. New York, London"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <Button
-                      onClick={handleClearFilter}
-                      variant="outline"
-                      className="flex items-center"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Clear
-                    </Button>
-                    <Button
-                      onClick={handleFilterApply}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Apply Filter
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
         </div>
       )}
 
       {isMobile && (
         <div>
-          <div
-            className="fixed bottom-8 right-4 md:right-44 flex space-x-3 justify-end rounded-full z-10"
-          >
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-              <PopoverTrigger asChild>
-                <Button className="relative py-2 px-4 justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
-                  <Filter className="h-5 w-5" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-4">
-                  <div className="flex flex-row items-center">
-                    <h4 className="font-medium text-lg">Filter by Location</h4>
-
-                    <button
-                      className="ml-auto"
-                      onClick={() => {
-                        setIsOpen(false);
-                      }}
-                    >
-                      <X className="h-4 w-4 ml-auto" />
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Enter Location</Label>
-                    <Input
-                      id="location"
-                      placeholder="e.g. New York, London"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <Button
-                      onClick={handleClearFilter}
-                      variant="outline"
-                      className="flex items-center"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Clear
-                    </Button>
-                    <Button
-                      onClick={handleFilterApply}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Apply Filter
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
 
           {/* Project Details Panel for mobile */}
           <AnimatePresence>
@@ -1493,15 +1373,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
 
                   {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-4 pt-1">
-                    <Link href={`/creator-profile/${selectedProject.creator._id}`}>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 flex items-center justify-center">
+                  <div className="flex justify-between gap-2 pt-1 w-full px-2">
+                    <Link href={`/creator-profile/${selectedProject.creator._id}`} className="flex-1">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
                         <FaUserCircle className="mr-2 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
-                    <Link href={`/project-profile/${selectedProject._id}`}>
-                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 flex items-center justify-center">
+                    <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2">
                         <FaHandsHelping className="mr-2 h-4 w-4" />
                         Support
                       </Button>

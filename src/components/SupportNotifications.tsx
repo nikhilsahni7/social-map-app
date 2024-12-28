@@ -96,9 +96,15 @@ export default function SupportNotifications({
                 {new Date(notification.createdAt).toLocaleString()}
               </p>
             </div>
-            <Link href={`/project-profile/${notification.project._id}`}>
-              <Button variant="outline">View Project</Button>
-            </Link>
+            <div>
+              {notification.project ? (
+                <Link href={`/project-profile/${notification.project._id}`}>
+                  <Button variant="outline">View Project</Button>
+                </Link>
+              ) : (
+                <Button variant="outline" disabled>Project Unavailable</Button>
+              )}
+            </div>
           </div>
         ))}
       </CardContent>
