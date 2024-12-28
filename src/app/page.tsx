@@ -1024,6 +1024,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
                   width: "280px",
+                  height: "58%",
+                  maxHeight: "350px",
                 }}
               >
                 <Button
@@ -1491,15 +1493,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
 
                   {/* Action Buttons */}
-                  <div className="flex justify-center space-x-4 pt-1">
+                  <div className="grid grid-cols-2 gap-4 pt-1">
                     <Link href={`/creator-profile/${selectedProject.creator._id}`}>
-                      <Button className="w-32 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 flex items-center justify-center">
                         <FaUserCircle className="mr-2 h-4 w-4" />
                         View Profile
                       </Button>
                     </Link>
                     <Link href={`/project-profile/${selectedProject._id}`}>
-                      <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 flex items-center justify-center">
                         <FaHandsHelping className="mr-2 h-4 w-4" />
                         Support
                       </Button>
