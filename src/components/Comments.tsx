@@ -282,29 +282,33 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
 
     const handleLike = async (commentId: string, action: 'like' | 'dislike') => {
         try {
+            // Check if user has already liked/disliked
+            const comment = comments.find(c => c._id === commentId);
+            if (action === 'like' && comment?.likedBy?.includes(username)) return;
+            if (action === 'dislike' && comment?.dislikedBy?.includes(username)) return;
+
             const response = await axios.post(`/api/comments/${slug}/like`, {
                 commentId,
-                action
+                action,
+                username
             });
 
-            // Update comments locally
+            if (!response.data.success) return;
+
             setComments(prevComments => {
                 const updateCommentLikes = (comments: Comment[]): Comment[] => {
                     return comments.map(comment => {
                         if (comment._id === commentId) {
-                            const updatedComment = { ...comment };
-                            if (action === 'like') {
-                                updatedComment.likes = (response.data.likes || 0);
-                            } else {
-                                updatedComment.dislikes = (response.data.dislikes || 0);
-                            }
-                            return updatedComment;
-                        }
-                        if (comment.replies?.length > 0) {
                             return {
                                 ...comment,
-                                replies: updateCommentLikes(comment.replies)
+                                likes: response.data.likes,
+                                dislikes: response.data.dislikes,
+                                likedBy: action === 'like' ? [username] : (comment.likedBy || []),
+                                dislikedBy: action === 'dislike' ? [username] : (comment.dislikedBy || [])
                             };
+                        }
+                        if (comment.replies?.length > 0) {
+                            return { ...comment, replies: updateCommentLikes(comment.replies) };
                         }
                         return comment;
                     });
@@ -312,7 +316,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ slug }) => {
                 return updateCommentLikes(prevComments);
             });
         } catch (err) {
-            console.error('Failed to like/dislike the comment:', err);
+            console.error('Failed to toggle like/dislike:', err);
         }
     };
 
