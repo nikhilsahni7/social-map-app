@@ -8,26 +8,25 @@ export async function GET(
 ) {
   try {
     await connectDB();
-    const { slug } = params;
-
-    if (!slug) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid slug' },
-        { status: 400 }
-      );
-    }
-
-    const comments = await Comment.find({ postId: slug, parentId: null })
-      .populate({
+    const comments = await Comment.find({ 
+      postId: params.slug,
+      parentId: null 
+    })
+    .populate({
+      path: 'replies',
+      populate: {
         path: 'replies',
-        populate: { path: 'replies' },
-      })
-      .sort({ createdAt: -1 });
+        options: { sort: { createdAt: -1 } }
+      },
+      options: { sort: { createdAt: -1 } }
+    })
+    .sort({ createdAt: -1 });
 
-    return NextResponse.json({ success: true, comments });
+    return NextResponse.json({ comments });
   } catch (error) {
+    console.error("Error fetching comments:", error);
     return NextResponse.json(
-      { success: false, message: 'Server error' },
+      { error: "Failed to fetch comments" },
       { status: 500 }
     );
   }
@@ -39,36 +38,37 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const { slug } = params;
-    const body = await request.json();
-    const { text, author, parentId } = body;
+    const { text, author, parentId } = await request.json();
 
-    if (!slug) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid slug' },
-        { status: 400 }
-      );
-    }
+    // Clean the author name before saving
+    const cleanAuthor = author.replace(/^["']|["']$/g, '').trim();
 
-    const newComment = new Comment({
+    const comment = await Comment.create({
       text,
-      author,
-      postId: slug,
+      author: cleanAuthor,
+      postId: params.slug,
       parentId,
+      likes: 0,
+      dislikes: 0,
+      likedBy: [],
+      dislikedBy: []
     });
 
-    await newComment.save();
-
     if (parentId) {
-      await Comment.findByIdAndUpdate(parentId, {
-        $push: { replies: newComment._id },
-      });
+      await Comment.findByIdAndUpdate(
+        parentId,
+        { $push: { replies: comment._id } },
+        { new: true }
+      ).populate('replies');
     }
 
-    return NextResponse.json({ success: true, comment: newComment }, { status: 201 });
+    // Return populated comment
+    const populatedComment = await Comment.findById(comment._id).populate('replies');
+    return NextResponse.json(populatedComment, { status: 201 });
   } catch (error) {
+    console.error("Error creating comment:", error);
     return NextResponse.json(
-      { success: false, message: 'Server error' },
+      { error: "Failed to create comment" },
       { status: 500 }
     );
   }

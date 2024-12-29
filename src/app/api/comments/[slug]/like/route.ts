@@ -8,8 +8,7 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const body = await request.json();
-    const { commentId, action, username } = body;
+    const { commentId, action, username } = await request.json();
 
     if (!commentId || !action || !username) {
       return NextResponse.json(
@@ -26,33 +25,35 @@ export async function POST(
       );
     }
 
-    // Initialize if needed
+    // Initialize arrays if they don't exist
     if (!comment.likedBy) comment.likedBy = [];
     if (!comment.dislikedBy) comment.dislikedBy = [];
-    if (!comment.likes) comment.likes = 0;
-    if (!comment.dislikes) comment.dislikes = 0;
 
     const hasLiked = comment.likedBy.includes(username);
     const hasDisliked = comment.dislikedBy.includes(username);
 
     if (action === 'like') {
       if (hasLiked) {
-        // Toggle off like
         comment.likes = Math.max(0, comment.likes - 1);
         comment.likedBy = comment.likedBy.filter((user: string) => user !== username);
       } else {
-        // Toggle on like
-        comment.likes = comment.likes + 1;
+        if (hasDisliked) {
+          comment.dislikes = Math.max(0, comment.dislikes - 1);
+          comment.dislikedBy = comment.dislikedBy.filter((user: string) => user !== username);
+        }
+        comment.likes += 1;
         comment.likedBy.push(username);
       }
     } else if (action === 'dislike') {
       if (hasDisliked) {
-        // Toggle off dislike
         comment.dislikes = Math.max(0, comment.dislikes - 1);
         comment.dislikedBy = comment.dislikedBy.filter((user: string) => user !== username);
       } else {
-        // Toggle on dislike
-        comment.dislikes = comment.dislikes + 1;
+        if (hasLiked) {
+          comment.likes = Math.max(0, comment.likes - 1);
+          comment.likedBy = comment.likedBy.filter((user: string) => user !== username);
+        }
+        comment.dislikes += 1;
         comment.dislikedBy.push(username);
       }
     }

@@ -100,14 +100,40 @@ const CommentItem: React.FC<CommentItemProps> = ({
     useEffect(() => {
         const storedUserName = localStorage.getItem('username');
         if (storedUserName) {
-            const nameParts = storedUserName.split(' ');
-            const firstName = nameParts[0];
-            const lastName = nameParts[nameParts.length - 1];
             setUsername(storedUserName);
-        } else {
-            console.log('No user name found in localStorage');
         }
     }, []);
+
+    // Helper function to format the date safely
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return 'Just now';
+            }
+            return formatDistanceToNow(date, {
+                addSuffix: true,
+                includeSeconds: true
+            });
+        } catch (error) {
+            return 'Just now';
+        }
+    };
+
+    // Helper function to clean and format name
+    const formatName = (name: string) => {
+        return name.replace(/^["']|["']$/g, '').trim();
+    };
+
+    // Helper function to get initials
+    const getInitials = (name: string) => {
+        const cleanName = formatName(name);
+        const names = cleanName.split(' ');
+        if (names.length >= 2) {
+            return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+        }
+        return names[0][0].toUpperCase();
+    };
 
     const handleReply = () => {
         onReply(comment._id, replyText);
@@ -126,23 +152,19 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
     return (
         <div className={cn("group py-4", depth > 0 && "ml-6 sm:ml-12")}>
-            <div className="flex flex-row md:flex-row space-x-4 ml-6">
+            <div className="flex flex-row space-x-4 ml-6">
                 <Avatar className="h-8 w-8 mt-1">
                     <AvatarFallback className="text-md font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                        {comment.author.split(' ').length > 1 ?
-                            comment.author.split(' ')[0][1] + comment.author.split(' ')[1][0] :
-                            comment.author.split(' ')[0][0]}
-
+                        {comment.author ? getInitials(comment.author) : 'U'}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-sm">{comment.author.replace(/^"|"$/g, '').trim()}</span>
-
+                        <span className="font-semibold text-sm">
+                            {comment.author ? formatName(comment.author) : 'Anonymous'}
+                        </span>
                         <span className="text-xs text-muted-foreground">
-                            {comment.createdAt && !isNaN(new Date(comment.createdAt).getTime())
-                                ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })
-                                : 'Invalid date'}
+                            {formatDate(comment.createdAt)}
                         </span>
                     </div>
                     <p className="mt-1 text-sm">{comment.text}</p>
@@ -209,7 +231,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             key={reply._id}
                             comment={reply}
                             depth={depth + 1}
-                            projectInitials={username}
+                            projectInitials={projectInitials}
                             onLike={onLike}
                             onReply={onReply}
                             submitting={submitting}
