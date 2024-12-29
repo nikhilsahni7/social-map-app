@@ -555,7 +555,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       ? {
                         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60">
-                            <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#3b82f6" />
+                            <path d="M20 0 C8.954 0 0 8.954 0 20 C0 35 20 60 20 60 C20 60 40 35 40 20 C40 8.954 31.046 0 20 0 Z" fill="#7E57C2" />
                             <circle cx="20" cy="18" r="14" fill="white" />
                             <text x="20" y="20" font-family="Segoe UI Emoji, Arial, sans-serif" font-size="18" text-anchor="middle" dominant-baseline="middle">
         ${project.category === "👨 Human" ? "👨" : ""}
@@ -685,7 +685,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             {/* Total Projects Section */}
             <div className="flex justify-center md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2">
               <div
-                className="text-sm font-semibold text-white bg-blue-600 px-4 py-2 rounded-full"
+                className="text-sm font-semibold text-white bg-[#7E57C2] px-4 py-2 rounded-full"
                 style={{ boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" }}
               >
                 Total Projects:{" "}
@@ -779,7 +779,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-3 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
+              <Button className="relative py-7 px-6 bg-[#7E57C2] hover:bg-[#7E57C2] text-white rounded-full shadow-[0_0.25rem_0_rgb(126,87,194),0_0.75rem_0.5rem_rgba(126,87,194,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(126,87,194,0.5)] flex items-center">
                 <Plus className="h-6 w-7 mr-2" />
                 Create Project
               </Button>
@@ -787,7 +787,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
+              className="relative py-7 px-6 bg-[#7E57C2] hover:bg-[#7E57C2] text-white rounded-full shadow-[0_0.25rem_0_rgb(126,87,194),0_0.75rem_0.5rem_rgba(126,87,194,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(126,87,194,0.5)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 setIsProjectPanelOpen(false);
@@ -798,13 +798,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               Search Projects
             </Button>
           </div>
+
         </div>
       ) : (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className="flex space-x-4">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center">
+              <Button className="py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#6B4DAA] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
                 <Plus className="h-6 w-6 mr-2 relative z-10" />
                 <span className="relative z-10">Create Project</span>
               </Button>
@@ -812,7 +813,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="relative py-7 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-[0_0.25rem_0_rgb(30,64,175),0_0.75rem_0.5rem_rgba(30,64,175,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(30,64,175,0.5)] flex items-center"
+              className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#6B4DAA] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 setIsProjectPanelOpen(false);
@@ -823,6 +824,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
               Search Projects
             </Button>
           </div>
+
+
 
         </div>
       )}
@@ -863,7 +866,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           onClick={() => {
                             router.push(`/creator-profile/${user.id}`);
                           }}
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
                         >
                           <FaUserCircle className="mr-3 h-5 w-5" />
                           View Profile
@@ -904,7 +907,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                         <Link href="/login">
                           <Button
                             variant="outline"
-                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
+                            className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
                           >
                             <LogIn className="mr-3 h-5 w-5" />
                             Login
@@ -915,7 +918,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                         <Link href="/signup">
                           <Button
                             variant="outline"
-                            className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700"
+                            className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
                           >
                             <UserPlus className="mr-3 h-5 w-5" />
                             Sign Up
@@ -936,7 +939,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/about">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
                         >
                           <Info className="mr-3 h-5 w-5" />
                           About Us
@@ -947,7 +950,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/contact">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
                         >
                           <Mail className="mr-3 h-5 w-5" />
                           Contact Us
@@ -967,7 +970,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <Link href="/faq">
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-white font-semibold bg-blue-600 hover:text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
                         >
                           <HelpCircle className="mr-3 h-5 w-5" />
                           Help & FAQ
@@ -1058,7 +1061,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
                     <div className="flex justify-center space-x-4 pt-1 scale-90">
                       <Link href={`/creator-profile/${selectedProject.creator._id}`}>
-                        <Button className="w-32 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                        <Button className="w-32 bg-[#7E57C2] hover:bg-[#6B4DAA] text-white text-sm py-2">
                           <FaUserCircle className="h-4 w-4" />
                           View Profile
                         </Button>
@@ -1092,7 +1095,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 }}
               >
                 {/* Header Section */}
-                <div className="sticky top-0 bg-blue-600 text-white flex items-center justify-between px-4 py-3 shadow-sm">
+                <div className="sticky top-0 bg-[#7E57C2] text-white flex items-center justify-between px-4 py-3 shadow-sm">
                   <h2 className="text-lg font-semibold">Find Projects</h2>
                   <Button
                     variant="ghost"
@@ -1224,7 +1227,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             style={{ height: "60%" }}
           >
             {/* Header with Gradient */}
-            <div className="relative p-6 h-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-2xl">
+            <div className="relative p-6 h-20 bg-[#7E57C2] text-white rounded-t-2xl">
               <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.5))]" />
               <h2 className="text-xl font-bold">Projects of your City</h2>
               <p className="text-sm text-blue-100 mb-6">Real-time statistics</p>
