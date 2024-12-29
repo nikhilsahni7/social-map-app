@@ -1006,13 +1006,13 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
                 style={{
-                  width: "400px",
+                  width: "280px",
                 }}
               >
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute scale-75 right-2 top-2 bg-white rounded-full hover:bg-white mr-1 focus:ring-0 focus:outline-none z-10"
+                  className="absolute scale-75 right-2 bg-white rounded-full hover:bg-white mr-1 focus:ring-0 focus:outline-none z-10"
                   onClick={() => {
                     fetchProjects();
                     setIsProjectPanelOpen(false);
@@ -1021,85 +1021,50 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-10 w-10 scale-110" />
                 </Button>
 
-                <div className="flex flex-col">
-                  {/* Hero Image */}
-                  <div className="relative w-full h-48">
+                <div className="flex flex-col p-5">
+
+                  <div className="relative w-full h-24 mb-3">
+
                     <Image
                       src={selectedProject?.pictureOfSuccess?.url}
                       alt=""
                       fill
                       style={{ objectFit: "cover" }}
+                      className="rounded-2xl"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h2 className="text-2xl font-bold text-white mb-2">
-                        {selectedProject.title}
-                      </h2>
-                      <Badge variant="secondary" className="bg-white/90 text-blue-600">
-                        {selectedProject.category}
-                      </Badge>
-                    </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-6 space-y-6">
-                    {/* Creator Info */}
-                    <div className="flex items-center space-x-3 pb-4 border-b">
-                      <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <FaUserCircle className="h-8 w-8 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {selectedProject.firstName} {selectedProject.lastName}
-                        </p>
-                        <p className="text-sm text-gray-500">Project Creator</p>
-                      </div>
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-bold line-clamp-1">
+                      {selectedProject.title}
+                    </h2>
+
+
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Creator</p>
+                      <p className="text-sm truncate">{selectedProject.firstName} {selectedProject.lastName}</p>
                     </div>
 
-                    {/* Project Details */}
-                    <div className="space-y-4">
-                      {/* Objective */}
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Objective</label>
-                        <p className="mt-1 text-gray-900">{selectedProject.objective}</p>
-                      </div>
 
-                      {/* Description */}
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Description</label>
-                        <p className="mt-1 text-gray-900">{selectedProject.description}</p>
-                      </div>
-
-                      {/* Location */}
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Location</label>
-                        <div className="mt-1 flex items-start space-x-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                          </svg>
-                          <p className="text-gray-900">{selectedProject.location.address}</p>
-                        </div>
-                      </div>
-
-                      {/* Coordinates */}
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Coordinates</label>
-                        <p className="mt-1 text-gray-900">
-                          {selectedProject.location.coordinates[1]}, {selectedProject.location.coordinates[0]}
-                        </p>
-                      </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Objective</p>
+                      <p className="text-sm truncate">{selectedProject.objective}</p>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4 border-t">
-                      <Link href={`/creator-profile/${selectedProject.creator._id}`} className="flex-1">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                          <FaUserCircle className="mr-2 h-4 w-4" />
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Location</p>
+                      <p className="text-sm line-clamp-1">{selectedProject.location.address}</p>
+                    </div>
+
+                    <div className="flex justify-center space-x-4 pt-1 scale-90">
+                      <Link href={`/creator-profile/${selectedProject.creator._id}`}>
+                        <Button className="w-32 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
+                          <FaUserCircle className="h-4 w-4" />
                           View Profile
                         </Button>
                       </Link>
-                      <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                      <Link href={`/project-profile/${selectedProject._id}`}>
+                        <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
                           <FaHandsHelping className="mr-2 h-4 w-4" />
                           Support
                         </Button>
