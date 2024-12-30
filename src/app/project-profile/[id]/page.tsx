@@ -59,6 +59,15 @@ interface ProjectData {
     url: string;
   };
   timestamps: string;
+  likeCount: number;
+  location: {
+    address: string;
+  };
+}
+
+interface Supporter {
+  name: string;
+  profileUrl: string;
 }
 
 export default function ProjectDetails({ params }: { params: { id: string } }) {
@@ -70,6 +79,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [totalSupport, setTotalSupport] = useState(0);
   const [showSupportSection, setShowSupportSection] = useState(false);
   const [relatedProjects, setRelatedProjects] = useState<ProjectData[]>([]);
+  const [supporters, setSupporters] = useState<Supporter[]>([]);
 
   const router = useRouter();
 
@@ -124,6 +134,36 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     }
   }, [projectData, params.id]);
 
+  // Function to check if the user is authenticated
+  const isAuthenticated = () => {
+    const token = localStorage.getItem("token");
+    return !!token;
+  };
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      router.push("/login");
+    }
+  }, []);
+
+  const fetchSupporters = async () => {
+    try {
+      const response = await fetch(`/api/projects/${params.id}/supporters`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch supporters");
+      }
+      const data = await response.json();
+      setSupporters(data);
+    } catch (err) {
+      console.error("Error fetching supporters:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSupporters();
+  }, [params.id]);
+
   const updateItemQuantity = (item: string, delta: number) => {
     setSupportItems((prev) => {
       const currentQty = prev[item] || 0;
@@ -153,6 +193,11 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   };
 
   const handleSupport = async () => {
+    if (!isAuthenticated()) {
+      router.push("/login");
+      return;
+    }
+
     setIsSupporting(true);
     try {
       const token = localStorage.getItem("token");
@@ -175,6 +220,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         setTotalSupport(0);
         setAdditionalSupport(''); // Reset additional support
         toast.success("Support submitted successfully!");
+        fetchSupporters(); // Refetch supporters after successful support
       } else {
         throw new Error("Failed to submit support");
       }
@@ -270,7 +316,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <p className="text-xl text-blue-600 font-medium mt-1">
                       {projectData.title}
                     </p>
-
+                    <div className="flex items-center gap-1 text-gray-600">
+                      ❤️
+                      <span>{projectData.likeCount || 0}</span>
+                    </div>
 
                   </div>
 
@@ -617,6 +666,33 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               <p className="text-gray-700 leading-relaxed">
                 {projectData.otherSupport}
               </p>
+            </div>
+
+            {/* Supporters Section */}
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+              <Label className="text-lg font-semibold text-blue-600 block mb-4">
+                See Who Have Supported This Project
+              </Label>
+              <div className="flex flex-wrap gap-4">
+                {supporters.map((supporter, index) => (
+                  <a
+                    key={index}
+                    href={supporter.profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2 bg-white shadow-sm rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback className="text-sm font-bold bg-blue-600 text-white">
+                        {supporter.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-blue-600 font-medium">
+                      {supporter.name}
+                    </span>
+                  </a>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>

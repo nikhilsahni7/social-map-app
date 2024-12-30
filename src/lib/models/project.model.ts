@@ -64,6 +64,18 @@ const projectSchema = new mongoose.Schema(
       },
     ],
     otherSupport: String,
+    likes: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    likeCount: {
+      type: Number,
+      default: 0
+    },
+    isLiked: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     timestamps: true,

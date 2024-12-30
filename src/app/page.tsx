@@ -173,6 +173,9 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const [cityStats, setCityStats] = useState<CityStats[]>([]);
+  const [liked, setLiked] = useState(false);
+  const [likedProjects, setLikedProjects] = useState<Set<string>>(new Set());
+  const [projectLikeCounts, setProjectLikeCounts] = useState<{ [key: string]: number }>({});
 
   const handleFilterApply = () => {
     const value = location;
@@ -427,6 +430,64 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     setCityStats(calculateCityStats(projects));
   }, [projects]);
 
+  const toggleLike = async (projectId: string) => {
+    try {
+      const isCurrentlyLiked = likedProjects.has(projectId);
+      const response = await fetch(`/api/projects/${projectId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ like: !isCurrentlyLiked }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLikedProjects((prev) => {
+          const updated = new Set(prev);
+          if (data.liked) {
+            updated.add(projectId);
+          } else {
+            updated.delete(projectId);
+          }
+          return updated;
+        });
+        setProjectLikeCounts((prev) => ({
+          ...prev,
+          [projectId]: data.likeCount,
+        }));
+      } else {
+        console.error('Failed to toggle like');
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchLikeStates = async () => {
+      if (!token) return;
+
+      try {
+        const response = await fetch('/api/projects/likes', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setLikedProjects(new Set(data.likedProjectIds));
+          setProjectLikeCounts(data.likeCounts);
+        }
+      } catch (error) {
+        console.error('Error fetching like states:', error);
+      }
+    };
+
+    fetchLikeStates();
+  }, [token]);
+
   if (loadError) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-black">
@@ -581,9 +642,21 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   }}
                   mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                 >
-                  <Card className="relative w-52 bg-white/95 backdrop-blur-md hover:scale-105 transition-all duration-300 ease-in-out rounded-xl shadow-lg border border-blue-100 hover:shadow-xl hover:border-blue-200">
+                  <Card
+                    className="relative w-52 bg-white/95 backdrop-blur-md group hover:scale-105 transition-all duration-300 ease-in-out rounded-xl shadow-lg border border-blue-100 hover:shadow-xl hover:border-blue-200"
+                    onMouseEnter={() => setHoveredProject(project)}
+                    onMouseLeave={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const isInCard = e.clientX >= rect.left &&
+                        e.clientX <= rect.right &&
+                        e.clientY >= rect.top &&
+                        e.clientY <= rect.bottom;
+                      if (!isInCard) {
+                        setHoveredProject(null);
+                      }
+                    }}
+                  >
                     <CardHeader className="p-3 pb-2">
-                      {/* Title and Category Section */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
                           <CardTitle className="text-sm font-bold text-gray-800 line-clamp-2 leading-tight mb-1">
@@ -611,7 +684,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     </CardHeader>
 
                     <CardContent className="p-3 pt-1">
-                      {/* Description Section */}
                       <div className="space-y-2">
                         <div>
                           <p className="text-[11px] font-medium text-gray-500 mb-0.5">
@@ -622,7 +694,6 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           </p>
                         </div>
 
-                        {/* Location Section */}
                         <div>
                           <p className="text-[11px] font-medium text-gray-500 mb-0.5 flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
@@ -636,12 +707,48 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                         </div>
                       </div>
 
-                      {/* Hover Indicator */}
-                      <div className="absolute bottom-2 right-2 opacity-70">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-blue-500">
-                          <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                          <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="absolute bottom-2 right-2 opacity-100 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          className={`relative text-gray-600 hover:text-red-600 transition-colors duration-200`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLike(project._id);
+                          }}
+                        >
+                          <AnimatePresence>
+                            {likedProjects.has(project._id) && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                className="absolute inset-0 text-red-600"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  className="w-4 h-4"
+                                >
+                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                </svg>
+                              </motion.div>
+                            )}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill={likedProjects.has(project._id) ? "red" : "none"}
+                              stroke="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                              />
+                            </svg>
+                          </AnimatePresence>
+                        </button>
                       </div>
                     </CardContent>
                   </Card>
@@ -779,7 +886,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-3 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="relative py-7 px-6 bg-[#7E57C2] hover:bg-[#7E57C2] text-white rounded-full shadow-[0_0.25rem_0_rgb(126,87,194),0_0.75rem_0.5rem_rgba(126,87,194,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(126,87,194,0.5)] flex items-center">
+              <Button className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
                 <Plus className="h-6 w-7 mr-2" />
                 Create Project
               </Button>
@@ -787,7 +894,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="relative py-7 px-6 bg-[#7E57C2] hover:bg-[#7E57C2] text-white rounded-full shadow-[0_0.25rem_0_rgb(126,87,194),0_0.75rem_0.5rem_rgba(126,87,194,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.3rem_rgba(126,87,194,0.5)] flex items-center"
+              className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 setIsProjectPanelOpen(false);
@@ -805,7 +912,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           <div className="flex space-x-4">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#6B4DAA] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
+              <Button className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
                 <Plus className="h-6 w-6 mr-2 relative z-10" />
                 <span className="relative z-10">Create Project</span>
               </Button>
@@ -813,14 +920,14 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#6B4DAA] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
+              className="relative py-7 px-6 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0.4rem_0.2rem_rgb(107,77,170),0_1rem_0.6rem_rgba(107,77,170,0.5)] active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 setIsProjectPanelOpen(false);
                 setIsMenuOpen(false);
               }}
             >
-              <Search className="mr-2 h-6 w-6" />
+              <Search className="h-6 w-7 mr-2" />
               Search Projects
             </Button>
           </div>
@@ -1415,7 +1522,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-blue-700 focus:ring-0 focus:outline-none"
+                    className="text-white hover:bg-transparent focus:ring-0 focus:outline-none"
                     onClick={() => setIsSearchOpen(false)}
                   >
                     <X className="h-5 w-5" />
