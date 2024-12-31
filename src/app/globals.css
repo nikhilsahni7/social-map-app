@@ -96,3 +96,22 @@ body {
 .animate-scroll:hover {
   animation-play-state: paused;
 }
+
+/* Add these styles to your globals.css */
+.hover-card-content {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+/* Ensure parent containers don't clip the hover card */
+.card, 
+.card-content,
+.scroll-area,
+.scroll-area-viewport {
+  overflow: visible !important;
+}

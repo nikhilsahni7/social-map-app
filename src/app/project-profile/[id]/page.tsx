@@ -193,37 +193,54 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   };
 
   const handleSupport = async () => {
-    if (!isAuthenticated()) {
-      router.push("/login");
-      return;
-    }
-
-    setIsSupporting(true);
     try {
-      const token = localStorage.getItem("token");
+      setIsSupporting(true);
+
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login to support this project');
+        router.push('/login');
+        return;
+      }
+
+      // Convert supportItems to the correct format
+      const supportData = Object.entries(supportItems).reduce((acc: Record<string, number>, [item, qty]) => {
+        if (qty > 0) {
+          acc[item] = qty;
+        }
+        return acc;
+      }, {});
+
       const response = await fetch(`/api/projects/${params.id}/support`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          supportItems,
+          supportItems: supportData,
           additionalSupport
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setProjectData(data.project);
-        setSupportItems({});
-        setTotalSupport(0);
-        setAdditionalSupport(''); // Reset additional support
-        toast.success("Support submitted successfully!");
-        fetchSupporters(); // Refetch supporters after successful support
-      } else {
+      if (!response.ok) {
         throw new Error("Failed to submit support");
       }
+
+      // Reset all form fields and states
+      setSupportItems({});
+      setAdditionalSupport("");
+      setTotalSupport(0);
+      setShowSupportSection(false);
+
+      // Show success notification
+      toast.success("Support submitted successfully!");
+
+      // Optionally refresh the project data
+      const updatedData = await fetch(`/api/projects/${params.id}`).then(res => res.json());
+      setProjectData(updatedData);
+
     } catch (error) {
       console.error("Error submitting support:", error);
       toast.error("Failed to submit support");
@@ -302,11 +319,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 </Avatar>
 
                 <div className="flex-1 space-y-4">
-                  {!isMobile && (<div className="flex flex-wrap gap-2">
-                    <Badge className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1">
-                      {projectData.category}
-                    </Badge>
-                  </div>
+                  {!isMobile && (
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1">
+                        {projectData.category}
+                      </Badge>
+                    </div>
                   )}
 
                   <div>
@@ -320,16 +338,10 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                       ❤️
                       <span>{projectData.likeCount || 0}</span>
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
-
-
             </div>
-
           </div>
         </div>
       </div>
@@ -384,8 +396,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     </div>
                   </div>
 
-
-
                   {/* End Date Section */}
                   <div className="flex flex-col items-center">
                     <div className="text-sm text-gray-500 mb-2">End</div>
@@ -399,8 +409,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
-
-
             </CardContent>
           </Card>
 
@@ -423,10 +431,6 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-          {/* Project Details */}
         </div>
 
         {/* Support Section */}
@@ -452,248 +456,214 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     <Heart className="w-5 h-5" />
-                    {showSupportSection ? "Support Project" : "Support Project"}
+                    {showSupportSection ? "Close Support" : "Support Project"}
                   </span>
                   <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
                 </Button>
               </div>
             </div>
-            {showSupportSection && (
-              <div>
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-50 rounded-lg text-xl">
-                        ❤️
+
+            {/* Support Items Table */}
+            {!showSupportSection && (
+              <div className="space-y-4">
+                <div className="hidden md:grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                  <div>Items</div>
+                  <div>Quantity Needed</div>
+                  <div>Support Provided</div>
+                  <div>Needed By</div>
+                  <div>Drop Location</div>
+                </div>
+
+                {projectData.supportItems.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col md:grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-blue-600" />
+                      <span>{item.item}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>{item.quantity}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <span>{item.supportProvided || 0}</span>
+                        <Progress
+                          value={(item.supportProvided / Number(item.quantity)) * 100}
+                          className="w-20 h-2"
+                        />
                       </div>
-                      <h2 className="text-2xl font-semibold text-gray-900">
-                        Your Support Section
-                      </h2>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      <span>{new Date(item.byWhen).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <span>{item.dropLocation}</span>
                     </div>
                   </div>
-
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.8 }}
-                    >
-                      <div className="space-y-4">
-                        <div className="hidden md:grid md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
-                          <div>Items</div>
-                          <div>Quantity Needed</div>
-                          <div>Support Provided</div>
-                          <div>Needed By</div>
-                          <div>Drop Location</div>
-                          <div>Your Support</div>
-                        </div>
-
-                        {projectData.supportItems.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex flex-col md:grid md:grid-cols-6 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Package className="w-4 h-4 text-blue-600" />
-                              <span>{item.item}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="md:hidden font-medium">Quantity Needed:</span>
-                              <span>{item.quantity}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="md:hidden font-medium">Support Provided:</span>
-                              <div className="flex items-center gap-2">
-                                <span>{item.supportProvided || 0}</span>
-                                <Progress
-                                  value={(item.supportProvided / Number(item.quantity)) * 100}
-                                  className="w-20 h-2"
-                                />
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-gray-400" />
-                              <span>{new Date(item.byWhen).toLocaleDateString()}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-gray-400" />
-                              <span>{item.dropLocation}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center">
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  onClick={() => updateItemQuantity(item.item, -1)}
-                                  disabled={!supportItems[item.item]}
-                                >
-                                  <Minus className="h-4 w-4" />
-                                </Button>
-
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  max={Number(item.quantity)}
-                                  value={supportItems[item.item] || ''}
-                                  placeholder="0"
-                                  onChange={(e) => {
-                                    const value = Math.min(
-                                      Math.max(0, parseInt(e.target.value) || 0),
-                                      Number(item.quantity)
-                                    );
-                                    setSupportItems(prev => ({
-                                      ...prev,
-                                      [item.item]: value || 0
-                                    }));
-                                    setTotalSupport(
-                                      Object.entries(supportItems)
-                                        .reduce((sum, [key, qty]) =>
-                                          key === item.item ? sum + (value || 0) : sum + (qty || 0),
-                                          0
-                                        )
-                                    );
-                                  }}
-                                  className="w-16 text-center mx-1 h-9 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                />
-
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  onClick={() => updateItemQuantity(item.item, 1)}
-                                  disabled={Number(supportItems[item.item]) >= Number(item.quantity)}
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        <div className="flex justify-end mt-4">
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <Button
-                                size="lg"
-                                className="bg-blue-600 hover:bg-blue-700"
-                                onClick={handleSupport}
-                                disabled={isSupporting || totalSupport === 0}
-                              >
-                                {isSupporting ? (
-                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                ) : (
-                                  <Heart className="w-4 h-4 mr-2" />
-                                )}
-                                Confirm Support
-                              </Button>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80">
-                              <h4 className="font-semibold mb-2">
-                                Your Support Summary
-                              </h4>
-                              <p className="text-sm text-gray-600">
-                                {getSupportSummary()}
-                              </p>
-                            </HoverCardContent>
-                          </HoverCard>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-
-                  <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                    <Label className="text-sm font-medium text-blue-600 block mb-2">
-                      Additional Support Needed
-                    </Label>
-                    <Input
-                      placeholder="Enter additional support details"
-                      value={additionalSupport}
-                      onChange={(e) => setAdditionalSupport(e.target.value)}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                </CardContent>
+                ))}
               </div>
             )}
 
-            <AnimatePresence>
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="space-y-4">
-                  <div className="hidden md:grid md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
-                    <div>Items</div>
-                    <div className="text-right pr-8">Quantity Needed</div>
-                    <div className="text-right pr-8">Support Provided</div>
-                    <div>Needed By</div>
-                    <div>Drop Location</div>
-                  </div>
+            {/* Your Support Section - Shows when button is clicked */}
+            {showSupportSection && (
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="space-y-4">
+                    <div className="hidden md:grid md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg font-2xl font-semibold text-gray-700">
+                      <div>Items</div>
+                      <div>Quantity Needed</div>
+                      <div>Support Provided</div>
+                      <div>Needed By</div>
+                      <div>Drop Location</div>
+                      <div>Your Support</div>
+                    </div>
 
-                  {projectData.supportItems.map((item, index) => (
-                    <div key={index} className="flex flex-col md:grid md:grid-cols-5 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-blue-600" />
-                        <span>{item.item}</span>
+                    {projectData.supportItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col md:grid md:grid-cols-6 gap-4 p-4 bg-white border border-gray-100 rounded-lg transition-colors hover:bg-gray-50"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-blue-600" />
+                          <span>{item.item}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>{item.quantity}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2">
+                            <span>{item.supportProvided || 0}</span>
+                            <Progress
+                              value={(item.supportProvided / Number(item.quantity)) * 100}
+                              className="w-20 h-2"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <span>{new Date(item.byWhen).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span>{item.dropLocation}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => updateItemQuantity(item.item, -1)}
+                              disabled={!supportItems[item.item]}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </Button>
+
+                            <Input
+                              type="number"
+                              min="0"
+                              max={Number(item.quantity)}
+                              value={supportItems[item.item] || ''}
+                              placeholder="0"
+                              onChange={(e) => {
+                                const value = Math.min(
+                                  Math.max(0, parseInt(e.target.value) || 0),
+                                  Number(item.quantity)
+                                );
+                                setSupportItems(prev => ({
+                                  ...prev,
+                                  [item.item]: value || 0
+                                }));
+                                setTotalSupport(
+                                  Object.entries(supportItems)
+                                    .reduce((sum, [key, qty]) =>
+                                      key === item.item ? sum + (value || 0) : sum + (qty || 0),
+                                      0
+                                    )
+                                );
+                              }}
+                              className="w-16 text-center mx-1 h-9 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => updateItemQuantity(item.item, 1)}
+                              disabled={Number(supportItems[item.item]) >= Number(item.quantity)}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-end pr-8">
-                        <span>{item.quantity}</span>
-                      </div>
-                      <div className="flex items-center justify-end gap-2 pr-8">
-                        <span>{item.supportProvided || 0}</span>
-                        <Progress value={(item.supportProvided / Number(item.quantity)) * 100} className="w-20 h-2" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span>{new Date(item.byWhen).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span>{item.dropLocation}</span>
+                    ))}
+
+                    <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+                      <Label className="text-sm font-medium text-blue-600 block mb-2">
+                        Additional Support
+                      </Label>
+                      <Input
+                        placeholder="Enter additional support details"
+                        value={additionalSupport}
+                        onChange={(e) => setAdditionalSupport(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+
+                    <div className="flex justify-end mt-4">
+                      <div className="relative group">
+                        <Button
+                          size="lg"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          onClick={handleSupport}
+                          disabled={isSupporting || (totalSupport === 0 && !additionalSupport)}
+                        >
+                          {isSupporting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <Heart className="w-4 h-4 mr-2" />
+                              Confirm Support
+                            </>
+                          )}
+                        </Button>
+
+                        {/* Simple hover card */}
+                        <div className="absolute bottom-full right-0 mb-2 w-64 bg-white rounded-lg shadow-lg p-4 hidden group-hover:block border border-gray-200">
+                          <h4 className="text-md font-semibold mb-2">Support Summary</h4>
+                          {Object.entries(supportItems).map(([item, qty]) => (
+                            qty > 0 && (
+                              <div key={item} className="flex justify-between text-sm py-1">
+                                <span className="text-gray-600">{item}</span>
+                                <span className="font-medium">x{qty}</span>
+                              </div>
+                            )
+                          ))}
+                          {additionalSupport && (
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+
+                              <h4 className="text-sm font-medium mb-1">Additional Support</h4>
+                              <p className="text-sm text-gray-600">{additionalSupport}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <Label className="text-sm font-medium text-blue-600 block mb-2">
-                Additional Support Needed
-              </Label>
-              <p className="text-gray-700 leading-relaxed">
-                {projectData.otherSupport}
-              </p>
-            </div>
-
-            {/* Supporters Section */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <Label className="text-lg font-semibold text-blue-600 block mb-4">
-                See Who Have Supported This Project
-              </Label>
-              <div className="flex flex-wrap gap-4">
-                {supporters.map((supporter, index) => (
-                  <a
-                    key={index}
-                    href={supporter.profileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-2 bg-white shadow-sm rounded-lg hover:bg-blue-50 transition-colors"
-                  >
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className="text-sm font-bold bg-blue-600 text-white">
-                        {supporter.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-blue-600 font-medium">
-                      {supporter.name}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
           </CardContent>
         </Card>
 

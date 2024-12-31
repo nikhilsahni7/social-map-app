@@ -20,6 +20,10 @@ interface AuthUser {
   email: string;
 }
 
+interface SupportItems {
+  [key: string]: number;
+}
+
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
@@ -32,7 +36,10 @@ export async function POST(
     }
 
     await connectDB();
-    const { supportItems, additionalSupport } = await request.json();
+    const { supportItems, additionalSupport } = await request.json() as { 
+      supportItems: SupportItems; 
+      additionalSupport: string; 
+    };
 
     const project = await Project.findById(params.id).populate("creator");
     if (!project) {
