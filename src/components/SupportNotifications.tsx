@@ -83,14 +83,21 @@ export default function SupportNotifications({
             key={notification._id}
             className="flex items-center space-x-4 mb-4"
           >
-            <Avatar className="w-10 h-10">
-              <AvatarImage
-                src={notification.sender.avatar}
-                alt={notification.sender.name}
-              />
-              <AvatarFallback>{notification.sender.name[0]}</AvatarFallback>
-            </Avatar>
+            <Link href={`/creator-profile/${notification.sender._id}`}>
+              <Avatar className="w-10 h-10 cursor-pointer hover:opacity-80">
+                <AvatarImage
+                  src={notification.sender.avatar}
+                  alt={notification.sender.name}
+                />
+                <AvatarFallback>{notification.sender.name[0]}</AvatarFallback>
+              </Avatar>
+            </Link>
             <div className="flex-1">
+              <Link href={`/creator-profile/${notification.sender._id}`}>
+                <span className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">
+                  {notification.sender.name}
+                </span>
+              </Link>
               <p className="text-sm text-gray-700">{notification.message}</p>
               <p className="text-xs text-gray-500">
                 {new Date(notification.createdAt).toLocaleString()}
