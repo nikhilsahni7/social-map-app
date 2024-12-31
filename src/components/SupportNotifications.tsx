@@ -78,7 +78,7 @@ export default function SupportNotifications({
         <CardTitle>Support Notifications</CardTitle>
       </CardHeader>
       <CardContent>
-        {notifications.map((notification) => (
+        {[...notifications].reverse().map((notification) => (
           <div
             key={notification._id}
             className="flex items-center space-x-4 mb-4"
