@@ -2,7 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -34,6 +34,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
+import { getAuthUser } from "@/lib/clientAuth";
 
 interface ProjectData {
   _id: string;
@@ -70,6 +72,21 @@ interface Supporter {
   profileUrl: string;
 }
 
+interface SupportNotification {
+  _id: string;
+  sender: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
+  message: string;
+  createdAt: string;
+}
+
+interface CurrentUser {
+  id: string;
+}
+
 export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,6 +97,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [showSupportSection, setShowSupportSection] = useState(false);
   const [relatedProjects, setRelatedProjects] = useState<ProjectData[]>([]);
   const [supporters, setSupporters] = useState<Supporter[]>([]);
+  const [supportNotifications, setSupportNotifications] = useState<SupportNotification[]>([]);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
 
   const router = useRouter();
 
@@ -253,6 +273,37 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     setShowSupportSection(!showSupportSection);
   };
   const [additionalSupport, setAdditionalSupport] = useState("")
+
+  const fetchSupportNotifications = async () => {
+    try {
+      const res = await fetch(`/api/users/${currentUser?.id}/support/notifications`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+
+      // Filter notifications for current project
+      const projectNotifications = data.notifications.filter(
+        (notif: { project?: { _id: string } }) => notif.project?._id === params.id
+      );
+
+      setSupportNotifications(projectNotifications);
+    } catch (error) {
+      console.error("Failed to fetch support notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    const user = getAuthUser();
+    setCurrentUser(user);
+  }, []);
+
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchSupportNotifications();
+    }
+  }, [currentUser?.id, params.id]);
 
   if (loading) {
     return (
@@ -664,6 +715,57 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 </motion.div>
               </AnimatePresence>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Support Notifications Card - Moved below support section */}
+        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-900">Support Providers</CardTitle>
+            <p className="text-sm text-gray-500">People who have supported this project</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-3">
+              {(showAllNotifications ? supportNotifications : supportNotifications.slice(0, 6)).map((notif: SupportNotification) => (
+                <div
+                  key={notif._id}
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <Link href={`/creator-profile/${notif.sender._id}`}>
+                    <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
+                      <AvatarImage src={notif.sender.avatar} alt={notif.sender.name} />
+                      <AvatarFallback>{notif.sender.name[0]}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                  <div className="flex-1">
+                    <Link href={`/creator-profile/${notif.sender._id}`}>
+                      <h4 className="text-sm font-medium text-blue-600 hover:underline">
+                        {notif.sender.name}
+                      </h4>
+                    </Link>
+                    <p className="text-xs text-gray-500">
+                      {new Date(notif.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {supportNotifications.length === 0 && (
+                <div className="text-center py-6">
+                  <p className="text-gray-500">No support notifications yet</p>
+                </div>
+              )}
+
+              {supportNotifications.length > 6 && (
+                <Button
+                  variant="ghost"
+                  className="mt-2 w-full text-blue-600 hover:text-blue-700"
+                  onClick={() => setShowAllNotifications(!showAllNotifications)}
+                >
+                  {showAllNotifications ? "Show Less" : `Show More (${supportNotifications.length - 6} more)`}
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
