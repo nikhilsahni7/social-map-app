@@ -718,7 +718,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
 
-        {/* Support Notifications Card - Moved below support section */}
+        {/* Support Providers Card  */}
         <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-900">Support Providers</CardTitle>
@@ -743,6 +743,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         {notif.sender.name}
                       </h4>
                     </Link>
+                    <p className="text-sm text-gray-600">{notif.message}</p>
                     <p className="text-xs text-gray-500">
                       {new Date(notif.createdAt).toLocaleString()}
                     </p>
