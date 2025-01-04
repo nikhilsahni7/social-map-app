@@ -1114,9 +1114,11 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-40 right-4 bg-white shadow-lg z-20 rounded-3xl overflow-hidden"
+                className="fixed top-40 right-4 bg-white shadow-lg z-10 rounded-3xl overflow-hidden"
                 style={{
                   width: "280px",
+                  maxHeight: "calc(100vh - 12rem)",
+                  height: "auto"
                 }}
               >
                 <Button
@@ -1131,57 +1133,55 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                   <X className="h-10 w-10 scale-110" />
                 </Button>
 
-                <div className="flex flex-col p-5">
-
-                  <div className="relative w-full h-24 mb-3">
-
-                    <Image
-                      src={selectedProject?.pictureOfSuccess?.url}
-                      alt=""
-                      fill
-                      style={{ objectFit: "cover" }}
-                      className="rounded-2xl"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <h2 className="text-lg font-bold line-clamp-1">
-                      {selectedProject.title}
-                    </h2>
-
-
-                    <div>
-                      <p className="text-xs font-medium text-gray-600">Creator</p>
-                      <p className="text-sm truncate">{selectedProject.firstName} {selectedProject.lastName}</p>
+                <ScrollArea className="h-full">
+                  <div className="flex flex-col p-5">
+                    <div className="relative w-full h-24 mb-3 flex-shrink-0">
+                      <Image
+                        src={selectedProject?.pictureOfSuccess?.url}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                        className="rounded-2xl"
+                      />
                     </div>
 
+                    <div className="space-y-2 flex-grow">
+                      <h2 className="text-lg font-bold line-clamp-1">
+                        {selectedProject.title}
+                      </h2>
 
-                    <div>
-                      <p className="text-xs font-medium text-gray-600">Objective</p>
-                      <p className="text-sm truncate">{selectedProject.objective}</p>
-                    </div>
+                      <div>
+                        <p className="text-xs font-medium text-gray-600">Creator</p>
+                        <p className="text-sm truncate">{selectedProject.firstName} {selectedProject.lastName}</p>
+                      </div>
 
-                    <div>
-                      <p className="text-xs font-medium text-gray-600">Location</p>
-                      <p className="text-sm line-clamp-1">{selectedProject.location.address}</p>
-                    </div>
+                      <div>
+                        <p className="text-xs font-medium text-gray-600">Objective</p>
+                        <p className="text-sm truncate">{selectedProject.objective}</p>
+                      </div>
 
-                    <div className="flex justify-center space-x-4 pt-1 scale-90">
-                      <Link href={`/creator-profile/${selectedProject.creator._id}`}>
-                        <Button className="w-32 bg-[#7E57C2] hover:bg-[#6B4DAA] text-white text-sm py-2">
-                          <FaUserCircle className="h-4 w-4" />
-                          View Profile
-                        </Button>
-                      </Link>
-                      <Link href={`/project-profile/${selectedProject._id}`}>
-                        <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
-                          <FaHandsHelping className="mr-2 h-4 w-4" />
-                          Support
-                        </Button>
-                      </Link>
+                      <div>
+                        <p className="text-xs font-medium text-gray-600">Location</p>
+                        <p className="text-sm line-clamp-1">{selectedProject.location.address}</p>
+                      </div>
+
+                      <div className="flex justify-center space-x-4 pt-1 scale-90">
+                        <Link href={`/creator-profile/${selectedProject.creator._id}`}>
+                          <Button className="w-32 bg-[#7E57C2] hover:bg-[#6B4DAA] text-white text-sm py-2">
+                            <FaUserCircle className="h-4 w-4" />
+                            View Profile
+                          </Button>
+                        </Link>
+                        <Link href={`/project-profile/${selectedProject._id}`}>
+                          <Button className="w-32 bg-green-600 hover:bg-green-700 text-white text-sm py-2">
+                            <FaHandsHelping className="mr-2 h-4 w-4" />
+                            Support
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ScrollArea>
               </motion.div>
             )}
           </AnimatePresence>
