@@ -425,11 +425,11 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                                   onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
                                     toast.success('Link copied to clipboard!', {
-                                      icon: '✓',
+                                      icon: '✅',
                                       style: {
                                         borderRadius: '10px',
-                                        background: '#333',
-                                        color: '#fff',
+                                        background: '#fffff',
+                                        color: 'black',
                                       },
                                     });
                                     setIsShareOpen(false);
