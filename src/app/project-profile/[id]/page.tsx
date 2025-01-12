@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { CommentSection } from "@/components/Comments";
-import { Loader2, ChevronRight, } from "lucide-react";
+import { Loader2, ChevronRight, Share } from "lucide-react";
 import "react-vertical-timeline-component/style.min.css";
 import { FaCalendarAlt, FaFlag, FaProjectDiagram } from "react-icons/fa";
 import {
@@ -385,9 +385,30 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <p className="text-xl text-blue-600 font-medium mt-1">
                       {projectData.title}
                     </p>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      ❤️
-                      <span>{projectData.likeCount || 0}</span>
+                    <div className="flex items-center gap-4 text-gray-600">
+                      <div className="flex items-center gap-1">
+                        ❤️
+                        <span>{projectData.likeCount || 0}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center gap-1 text-sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast.success('Link copied to clipboard!', {
+                            icon: '✅',
+                            style: {
+                              borderRadius: '10px',
+                              background: '#fffff',
+                              color: 'black',
+                            },
+                          });
+                        }}
+                      >
+                        <Share className="h-4 w-4" />
+                        Share
+                      </Button>
                     </div>
                   </div>
                 </div>
