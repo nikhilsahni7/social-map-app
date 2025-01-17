@@ -172,14 +172,11 @@ export default function PersonProfile() {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-white">
         <div className="text-center space-y-4">
-          <Loader2 className="w-16 h-16 text-white animate-spin mx-auto" />
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
-            Loading...
-          </h2>
-          <p className="text-lg text-blue-300">
-            Fetching profile data, please wait
+          <Loader2 className="w-12 h-12 text-[#7E57C2] animate-spin mx-auto" />
+          <p className="text-lg text-black font-semibold">
+            One moment, please... Fetching profile data
           </p>
         </div>
       </div>
