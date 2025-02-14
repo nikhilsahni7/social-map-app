@@ -201,23 +201,43 @@ export default function PersonProfile() {
   return (
     <div
       className="min-h-screen bg-gray-100">
-      <main>
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+              />
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+      <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
             {/* Profile Header */}
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative h-60">
-                  <Image
-                    src={personData.banner}
-                    alt="Profile Banner"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+                <div className="relative h-20">
+                  
                   <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white/90 to-transparent"></div>
                 </div>
-                <div className="relative px-8 pb-8">
+                <div className="mt-6 relative px-8 pb-8">
                   <Avatar className="w-40 h-40 border-4 border-blue-500 rounded-full bg-gradient-to-b from-blue-500 to-blue-700 shadow-xl absolute -top-20 left-8">
                     <AvatarImage
                       src={personData.avatar}

@@ -966,7 +966,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
                         >
                           <FaUserCircle className="mr-3 h-5 w-5" />
-                          View Profile
+                          Owner Profile
                         </Button>
                       </li>
                       <li>
@@ -1159,7 +1159,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                         <Link href={`/creator-profile/${selectedProject.creator._id}`}>
                           <Button className="w-32 bg-[#7E57C2] hover:bg-[#6B4DAA] text-white text-sm py-2">
                             <FaUserCircle className="h-4 w-4" />
-                            View Profile
+                            Owner Profile
                           </Button>
                         </Link>
                         <Link href={`/project-profile/${selectedProject._id}`}>
@@ -1542,7 +1542,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <Link href={`/creator-profile/${selectedProject.creator._id}`} className="flex-1">
                       <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2">
                         <FaUserCircle className="mr-2 h-4 w-4" />
-                        View Profile
+                        Owner Profile
                       </Button>
                     </Link>
                     <Link href={`/project-profile/${selectedProject._id}`} className="flex-1">

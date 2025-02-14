@@ -22,13 +22,13 @@ interface Notification {
 }
 
 interface NotificationDropdownProps {
-  notifications: Notification[];
+  notifications?: Notification[]; 
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
 }
 
 export function NotificationDropdown({
-  notifications,
+  notifications = [], 
   onAccept,
   onReject,
 }: NotificationDropdownProps) {
