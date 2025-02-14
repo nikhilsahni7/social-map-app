@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Router from "next/router";
 import {
   MapPin,
   Mail,
@@ -21,6 +22,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { useRouter } from "next/navigation";
 import SupportNotifications from "@/components/SupportNotifications";
 
 interface Project {
@@ -54,8 +56,10 @@ export default function PersonProfile() {
   const params = useParams();
   const [personData, setPersonData] = useState<PersonData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Array<any>>([]);
   const currentUser = getAuthUser();
+  const router = useRouter();
+  
 
   const fetchProfile = async () => {
     try {
@@ -172,13 +176,8 @@ export default function PersonProfile() {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-white">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 text-[#7E57C2] animate-spin mx-auto" />
-          <p className="text-lg text-black font-semibold">
-            One moment, please... Fetching profile data
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -199,8 +198,34 @@ export default function PersonProfile() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.push("/")}>
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+                
+              />
+              </button>
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>         
+    </div>
+        </div>
+      </div>
       <main>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
@@ -267,13 +292,9 @@ export default function PersonProfile() {
                         {renderConnectionButton()}
                         {currentUser?.id === params.id && (
                           <NotificationDropdown
-                            notifications={notifications}
-                            onAccept={(id: string) =>
-                              handleConnectionResponse(id, "accepted")
-                            }
-                            onReject={(id: string) =>
-                              handleConnectionResponse(id, "rejected")
-                            }
+                            notifications={notifications || []}
+                            onAccept={(id) => handleConnectionResponse(id, "accepted")}
+                            onReject={(id) => handleConnectionResponse(id, "rejected")}
                           />
                         )}
                         <Button variant="outline" size="icon" asChild>

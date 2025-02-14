@@ -341,22 +341,41 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}
-      <div className="relative">
-        <div className="h-[40vh] md:h-[50vh] overflow-hidden">
-          <Image
-            width={1920}
-            height={600}
-            src="/digital.jpg"
-            alt="Project Banner"
-            className="w-full h-full object-cover"
-            priority
-          />
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.push("/")}>
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+                
+              />
+              </button>
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+
+
+            
+    </div>
         </div>
       </div>
 
+
       <div className="w-full">
-        <div className="relative -mt-28">
+        <div className="relative mt-20">
           <div className="bg-white rounded-b-2xl shadow-lg p-8 backdrop-blur-lg bg-white/90">
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
               <div className="flex flex-row items-center gap-4">
