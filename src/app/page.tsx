@@ -966,7 +966,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
                         >
                           <FaUserCircle className="mr-3 h-5 w-5" />
-                          Owner Profile
+                          View Profile
                         </Button>
                       </li>
                       <li>
