@@ -517,7 +517,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             {/* Logo and Slogan Section */}
-            <div className="flex items-center gap-4">
+            {!isMobile && (
+              <div className="flex items-center gap-4">
               <Image
                 src="/logo.png"
                 alt="logo"
@@ -525,6 +526,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 height={80}
                 className="object-contain"
               />
+              
               <div className="hidden md:block">
                 <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
                 <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
@@ -534,6 +536,20 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 <p className="text-gray-600 text-sm">Find any social project one the map</p>
               </div>
             </div>
+            )}
+            
+            {isMobile && (
+              <div className='flex flex-col items-center ml-16'>
+                <Image
+                  src="/logo.png"
+                  alt="logo"
+                  width={60}
+                  height={80}
+                  className="object-contain -py-4 "
+                />
+                <p className="scale-75 text-blue-600 font-semibold text-lg">Provoke Goodness</p>
+              </div>
+            )}
 
 
 
@@ -873,10 +889,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           )}
 
           {/* Button Section (Mobile) */}
-          <div className="flex flex-col items-center fixed bottom-4 left-4 right-4 z-10 space-y-3 mb-2">
+          <div className="flex flex-row items-center fixed bottom-2 left-4 right-4 z-10 space-y-2 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="relative py-5 px-4 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
+              <Button className="relative scale-90 mt-2 py-1 px-3 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
                 <Plus className="h-6 w-7 mr-2" />
                 Create Project
               </Button>
@@ -884,7 +900,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
 
             {/* Search Button */}
             <Button
-              className="relative py-5 px-4 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full shadow-[0_0.3rem_0_rgb(126,87,194),0_1rem_0.6rem_rgba(126,87,194,0.4)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
+              className="relative scale-90 py-1 px-3 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center"
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 setIsProjectPanelOpen(false);
@@ -1392,8 +1408,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       {isMobile && (
         <div>
           <div
-            className="absolute -left-12 scale-50 top-20 mb-8 bottom-24 w-56 bg-white/95 backdrop-blur-sm shadow-2xl rounded-3xl z-10 overflow-hidden border border-blue-100"
-            style={{ height: "85%" }}
+            className="absolute -left-12 scale-50 top-48 mb-8 bottom-24 w-56 bg-white/95 backdrop-blur-sm shadow-2xl rounded-3xl z-10 overflow-hidden border border-blue-100"
+            style={{ height: "50%" }}
           >
             {/* Header with Gradient */}
             <div className="relative p-4 h-12 bg-[#7E57C2] text-white rounded-t-2xl">
