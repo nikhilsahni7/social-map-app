@@ -1532,7 +1532,17 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <button
                         className="relative text-gray-600 hover:text-red-600 transition-colors duration-200"
                         onClick={(e) => {
-                          e.stopPropagation();
+                          e.stopPropagation();                       
+                          setLikedProjects((prev) =>
+                            likedProjects.has(selectedProject._id)
+                              ? new Set(
+                                  Array.from(prev).filter(
+                                    (id) => id !== selectedProject._id
+                                  )
+                                )
+                              : new Set([...prev, selectedProject._id])
+                          );
+
                           toggleLike(selectedProject._id);
                         }}
                       >
@@ -1543,6 +1553,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                               animate={{ scale: 1 }}
                               exit={{ scale: 0 }}
                               className="absolute inset-0 text-red-600"
+                              transition={{ duration: 0 }}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
