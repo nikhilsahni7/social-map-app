@@ -1518,6 +1518,51 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <div className="flex-1 mt-4">
                       <h2 className="text-base font-bold mb-1 line-clamp-1">
                         {selectedProject.title}
+                        {filteredProjects.map((project) => (
+  <button
+    key={project._id}
+    className="relative text-gray-600 hover:text-red-600 transition-colors duration-200"
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleLike(project._id);
+    }}
+  >
+    <AnimatePresence>
+      {likedProjects.has(project._id) && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          className="absolute inset-0 text-red-600"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-4 h-4"
+          >
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={likedProjects.has(project._id) ? "red" : "none"}
+      stroke="currentColor"
+      className="w-4 h-4"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+      />
+    </svg>
+  </button>
+))}
+
                       </h2>
                       <p className="text-sm text-gray-600 line-clamp-1">
                         {selectedProject.description}
