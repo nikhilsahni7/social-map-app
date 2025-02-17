@@ -74,6 +74,48 @@ export default function PersonProfile() {
     const user = getAuthUser();
   }, []);
 
+  const CurvedText = () => {
+    const text = "Provoke Goodness";
+    const radius = 30;
+    
+    return (
+      <div className="relative w-24 h-24 scale-125 ml-14 -mt-5">
+        {text.split('').map((char, i) => {
+          const angle = (i * 360 / text.length);
+          const radian = angle * (Math.PI / 180);
+          const x = radius * Math.cos(radian);
+          const y = radius * Math.sin(radian);
+          
+          return (
+            <span
+              key={i}
+              className="absolute text-blue-600 font-semibold text-sm transform-gpu"
+              style={{
+                left: `${50 + x}%`,
+                top: `${50 + y}%`,
+                transform: `rotate(${angle + 90}deg)`,
+              }}
+            >
+              {char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const fetchProfile = async () => {
     try {
       const res = await fetch(`/api/users/${params.id}`, {
@@ -220,23 +262,20 @@ export default function PersonProfile() {
     }
   };
 
-  const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+
 
   return (
     <div>
-      <Button onClick={handleMenuToggle} className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300">
-        <Menu className="h-5 w-5" />
-      </Button>
 
       
 
       <div className="min-h-screen bg-gray-100">
+
         <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
           <div className="max-w-7xl mx-auto px-4 py-2">
             <div className="flex items-center justify-between">
               {/* Logo and Slogan Section */}
+              {!isMobile && (
               <div className="flex items-center gap-4">
                 <button onClick={() => router.push("/")}>
                   <Image
@@ -257,6 +296,28 @@ export default function PersonProfile() {
                   <p className="text-gray-600 text-sm">Find any social project one the map</p>
                 </div>
               </div>
+              )}
+
+              {isMobile && (
+        <div className='flex flex-row items-start ml-4'>
+          <div className="flex flex-col items-center">
+            <Image 
+              src="/logo.png"
+              alt="logo"
+              width={60}
+              height={80}
+              className="object-contain -py-4"
+            />
+            <span className='text-sm font-bold text-blue-700 ml-2'>
+              Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit
+            </span>
+          </div>
+          <div className="scale-75">
+            <CurvedText />
+          </div>
+          
+        </div>
+      )}
 
               <div className="flex items-center gap-3">
                 {token && currentUser ? (
@@ -283,6 +344,8 @@ export default function PersonProfile() {
               
             </div>
           </div>
+
+      
         </div>
         <main className="pt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -130,6 +130,37 @@ export default function ProjectDetailsForm() {
     });
   };
 
+  const CurvedText = () => {
+    const text = "Provoke Goodness";
+    const radius = 30;
+    
+    return (
+      <div className="relative w-24 h-24 scale-125 ml-14 -mt-5">
+        {text.split('').map((char, i) => {
+          const angle = (i * 360 / text.length);
+          const radian = angle * (Math.PI / 180);
+          const x = radius * Math.cos(radian);
+          const y = radius * Math.sin(radian);
+          
+          return (
+            <span
+              key={i}
+              className="absolute text-blue-600 font-semibold text-sm transform-gpu"
+              style={{
+                left: `${50 + x}%`,
+                top: `${50 + y}%`,
+                transform: `rotate(${angle + 90}deg)`,
+              }}
+            >
+              {char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+  
+
   const handleFormInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -139,6 +170,19 @@ export default function ProjectDetailsForm() {
       [name]: value,
     }));
   };
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -275,10 +319,12 @@ export default function ProjectDetailsForm() {
   return (
     <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center">
       <div className="min-h-screen bg-gray-100">
+        
         <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
           <div className="max-w-7xl mx-auto px-4 py-2">
             <div className="flex items-center justify-between">
               {/* Logo and Slogan Section */}
+              {!isMobile && (
               <div className="flex items-center gap-4">
                 <button onClick={() => router.push("/")}>
                   <Image
@@ -299,6 +345,28 @@ export default function ProjectDetailsForm() {
                   <p className="text-gray-600 text-sm">Find any social project one the map</p>
                 </div>
               </div>
+              )}
+
+              {isMobile && (
+        <div className='flex flex-row items-start ml-4'>
+          <div className="flex flex-col items-center">
+            <Image 
+              src="/logo.png"
+              alt="logo"
+              width={60}
+              height={80}
+              className="object-contain -py-4"
+            />
+            <span className='text-sm font-bold text-blue-700 ml-2'>
+              Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit
+            </span>
+          </div>
+          <div className="scale-75">
+            <CurvedText />
+          </div>
+          
+        </div>
+      )}
 
               <div className="flex items-center gap-3">
                 {token && currentUser ? (
@@ -326,6 +394,8 @@ export default function ProjectDetailsForm() {
             </div>
           </div>
         </div>
+        
+        
       <div className="space-y-8 mt-24">
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">

@@ -277,6 +277,36 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       console.error("Error fetching projects:", error);
     }
   };
+  const CurvedText = () => {
+    const text = "Provoke Goodness";
+    const radius = 30;
+    
+    return (
+      <div className="relative w-24 h-24 scale-125 ml-14 -mt-5">
+        {text.split('').map((char, i) => {
+          const angle = (i * 360 / text.length);
+          const radian = angle * (Math.PI / 180);
+          const x = radius * Math.cos(radian);
+          const y = radius * Math.sin(radian);
+          
+          return (
+            <span
+              key={i}
+              className="absolute text-blue-600 font-semibold text-sm transform-gpu"
+              style={{
+                left: `${50 + x}%`,
+                top: `${50 + y}%`,
+                transform: `rotate(${angle + 90}deg)`,
+              }}
+            >
+              {char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+  
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
@@ -543,20 +573,24 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             )}
             
             {isMobile && (
-              <div className='flex flex-col items-center ml-20'>
-                
-                <Image
-                  src="/logo.png"
-                  alt="logo"
-                  width={60}
-                  height={80}
-                  className="object-contain -py-4"
-                />
-                <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
-                <p className="scale-75 text-blue-600 font-semibold text-lg">Provoke Goodness</p>
-                
-              </div>  
-            )}
+        <div className='flex flex-row items-start ml-4'>
+          <div className="flex flex-col items-center">
+            <Image 
+              src="/logo.png"
+              alt="logo"
+              width={60}
+              height={80}
+              className="object-contain -py-4"
+            />
+            <span className='text-sm font-bold text-blue-700 ml-2'>
+              Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit
+            </span>
+          </div>
+          <div className="scale-75">
+            <CurvedText />
+          </div>
+        </div>
+      )}
 
 
 
@@ -762,7 +796,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           {/* Main Container with Responsive Layout */}
           <div className="flex flex-col md:relative md:flex-row md:justify-center space-y-1 md:space-y-0">
             {/* Organization Types Buttons */}
-            <div className="flex justify-center py-2 md:py-4">
+            <div className="flex justify-center py-2 md:py-4 mt-5 md:mt-2">
               <div className="inline-flex items-center justify-center gap-5 bg-blue-100 rounded-full px-4 py-3 border-2 border-opacity-70 border-blue-800 shadow-[0_8px_20px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.2)]">
                 {organizationTypes.map((type) => (
                   <Button

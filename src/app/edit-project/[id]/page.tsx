@@ -85,7 +85,6 @@ export default function EditProjectForm() {
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [user, setUser] = useState<any>(null);
     const [formData, setFormData] = useState<FormData>({
         firstName: "",
         lastName: "",

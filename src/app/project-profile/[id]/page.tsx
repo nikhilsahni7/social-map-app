@@ -227,6 +227,50 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     });
   };
 
+  
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const CurvedText = () => {
+    const text = "Provoke Goodness";
+    const radius = 30;
+    
+    return (
+      <div className="relative w-24 h-24 scale-125 ml-14 -mt-5">
+        {text.split('').map((char, i) => {
+          const angle = (i * 360 / text.length);
+          const radian = angle * (Math.PI / 180);
+          const x = radius * Math.cos(radian);
+          const y = radius * Math.sin(radian);
+          
+          return (
+            <span
+              key={i}
+              className="absolute text-blue-600 font-semibold text-sm transform-gpu"
+              style={{
+                left: `${50 + x}%`,
+                top: `${50 + y}%`,
+                transform: `rotate(${angle + 90}deg)`,
+              }}
+            >
+              {char}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+  
+
   const getSupportSummary = () => {
     if (totalSupport === 0) return "Select items to support";
     const items = Object.entries(supportItems)
@@ -364,74 +408,73 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {!isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
-            {/* Logo and Slogan Section */}
-            <div className="flex items-center gap-4">
-              <button onClick={() => router.push("/")}>
-              <Image
-                src="/logo.png"
-                alt="logo"
-                width={65}
-                height={80}
-                className="object-contain"
-                
-              />
-              <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
-              </button>
-              <div className="hidden md:block">
-                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
-                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex items-center justify-between">
+              {/* Logo and Slogan Section */}
+              {!isMobile && (
+              <div className="flex items-center gap-4">
+                <button onClick={() => router.push("/")}>
+                  <Image
+                    src="/logo.png"
+                    alt="logo"
+                    width={65}
+                    height={80}
+                    className="object-contain"
+                  />
+                  <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+                </button>
+                <div className="hidden md:block">
+                  <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                  <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+                </div>
+                <div className="hidden md:block ml-36">
+                  <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                  <p className="text-gray-600 text-sm">Find any social project one the map</p>
+                </div>
               </div>
-              <div className="hidden md:block ml-36">
-                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
-                <p className="text-gray-600 text-sm">Find any social project one the map</p>
-              </div>
-            </div>
+              )}
 
-
-            <div className="flex items-center gap-3">
-
-{token && user ? (
-  <div></div>
-) : (
-  <>
-    
-  </>
-)}
-{/* Menu Button */}
-<Button
-  variant="ghost"
-  size="icon"
-  className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
-  onClick={handleMenuToggle}
->
-  <Menu className="h-5 w-5" />
-</Button>
-</div>
-            
-    </div>
+              {isMobile && (
+        <div className='flex flex-row items-start ml-4'>
+          <div className="flex flex-col items-center">
+            <Image 
+              src="/logo.png"
+              alt="logo"
+              width={60}
+              height={80}
+              className="object-contain -py-4"
+            />
+            <span className='text-sm font-bold text-blue-700 ml-2'>
+              Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit
+            </span>
+          </div>
+          <div className="scale-75">
+            <CurvedText />
+          </div>
+          
         </div>
-      </div>
       )}
-      
-      {isMobile && (
-              <div className='flex flex-col items-center ml-20'>
+
+              <div className="flex items-center gap-3">
                 
-                <Image
-                  src="/logo.png"
-                  alt="logo"
-                  width={60}
-                  height={80}
-                  className="object-contain -py-4"
-                />
-                <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
-                <p className="scale-75 text-blue-600 font-semibold text-lg">Provoke Goodness</p>
-                
-              </div>  
-            )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+
+                  }}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </div>
+
+              
+            </div>
+          </div>
+        </div>
 
 
       <div className="w-full">
