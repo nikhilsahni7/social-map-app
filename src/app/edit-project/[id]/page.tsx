@@ -13,6 +13,10 @@ import {
     Clock,
     Box,
     Loader2,
+    LogOut,
+    Info,
+    Mail,
+    HelpCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +28,7 @@ import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LocationInput } from "@/components/LocationInput";
 import { getAuthToken } from "@/lib/clientAuth";
+import { Menu } from "lucide-react";
 import { toast as hotToast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -37,6 +42,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { getAuthUser, logout } from "@/lib/clientAuth";
+
 
 interface SupportItem {
     item: string;
@@ -76,6 +83,9 @@ export default function EditProjectForm() {
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
+    const [token, setToken] = useState<string | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [formData, setFormData] = useState<FormData>({
         firstName: "",
         lastName: "",
@@ -231,6 +241,7 @@ export default function EditProjectForm() {
             coordinates: { lat, lng }
         }));
     };
+    
 
     const handleInputChange = (index: number, field: keyof SupportItem, value: string) => {
         const newItems = [...supportItems];
@@ -301,16 +312,54 @@ export default function EditProjectForm() {
         }
     };
 
+    const handleLogout = () => {
+        logout();
+        router.push('/login');
+    };
+
     return (
         <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center">
-            <div className="space-y-8">
+            <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.push("/")}>
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+                
+              />
+              </button>
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+
+            <div className="flex items-center gap-3">
+
+</div>
+            
+    </div>
+        </div>
+      </div>
+            <div className="space-y-8 mt-20">
                 <div className="absolute top-6 right-6 scale-110">
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button
                                 type="button"
                                 variant="destructive"
-                                className="bg-red-600 hover:bg-red-700"
+                                className="bg-red-600 hover:bg-red-700 mt-16"
                             >
                                 Delete Project
                             </Button>
@@ -736,7 +785,7 @@ export default function EditProjectForm() {
                                     </Button>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
                                             Other Support
                                         </label>
                                         <Input

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -116,12 +117,44 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.push("/")}>
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+                
+              />
+              <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+              </button>
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+
+
+            
+    </div>
+        </div>
+      </div>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md mt-24">
           {!isEmailSent ? (
             <>
               <CardHeader>

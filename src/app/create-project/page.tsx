@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent, useEffect } from "react";
 import {
   PlusCircle,
   Trash2,
@@ -16,6 +16,21 @@ import {
   HelpCircle,
   MapPin,
 } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  LinkedinIcon,
+  TwitterIcon,
+  Users,
+  Eye,
+  ChevronRight,
+  UserCircle,
+  LogOut,
+  Info,
+  Mail,
+  UserPlus
+} from "lucide-react";
+import Link from "next/link";
+import { Search, X, Menu, ZoomIn, ZoomOut, Compass, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,9 +40,9 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LocationInput } from "@/components/LocationInput";
-import { getAuthToken } from "@/lib/clientAuth";
 import { toast as hotToast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { getAuthToken, logout, getAuthUser } from "@/lib/clientAuth";
 import {
   Dialog,
   DialogContent,
@@ -74,6 +89,18 @@ export default function ProjectDetailsForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+
+  useEffect(() => {
+    setToken(getAuthToken());
+    const user = getAuthUser();
+    const currentUser = user;
+  }, []);
+
+  const currentUser = getAuthUser();
+
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -111,6 +138,11 @@ export default function ProjectDetailsForm() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
   };
 
   const handleCategorySelect = (category: string) => {
@@ -242,7 +274,59 @@ export default function ProjectDetailsForm() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-red-50 to-indigo-50 bg-cover bg-center">
-      <div className="space-y-8">
+      <div className="min-h-screen bg-gray-100">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex items-center justify-between">
+              {/* Logo and Slogan Section */}
+              <div className="flex items-center gap-4">
+                <button onClick={() => router.push("/")}>
+                  <Image
+                    src="/logo.png"
+                    alt="logo"
+                    width={65}
+                    height={80}
+                    className="object-contain"
+                  />
+                  <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+                </button>
+                <div className="hidden md:block">
+                  <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                  <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+                </div>
+                <div className="hidden md:block ml-36">
+                  <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                  <p className="text-gray-600 text-sm">Find any social project one the map</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {token && currentUser ? (
+                  <div></div>
+                ) : (
+                  <>
+                    
+                  </>
+                )}
+                {/* Menu Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+
+                  }}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </div>
+
+              
+            </div>
+          </div>
+        </div>
+      <div className="space-y-8 mt-24">
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-indigo-600 bg-clip-text text-transparent">
             Create Your Project
@@ -830,7 +914,171 @@ export default function ProjectDetailsForm() {
             </div>
           </DialogContent>
         </Dialog>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ x: 300 }}
+            animate={{ x: 0 }}
+            exit={{ x: 300 }}
+            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 overflow-y-auto"
+          >
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="p-6 bg-blue-600 text-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Menu</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-white hover:bg-blue-700 transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </div>
+                {token && currentUser ? (
+                  <div className="bg-gray-50 p-4 rounded-lg mb-2">
+                    <p className="text-lg font-semibold text-gray-800">
+                      {currentUser.name}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-3">{currentUser.email}</p>
+                    <ul className="space-y-2">
+                      <li>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            router.push(`/creator-profile/${currentUser.id}`);
+                          }}
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
+                        >
+                          <UserCircle className="mr-3 h-5 w-5" />
+                          View Profile
+                        </Button>
+                      </li>
+                      <li>
+                        <Button
+                          variant="outline"
+                          onClick={handleLogout}
+                          className="w-full justify-start text-white font-semibold bg-red-600 hover:text-white hover:bg-red-700"
+                        >
+                          <LogOut className="mr-3 h-5 w-5" />
+                          Logout
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <h3 className="font-semibold text-lg">Did My Bit</h3>
+                      <p className="text-sm text-blue-100">
+                        Make an impact, one bit at a time
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Menu Items */}
+              <nav className="flex-grow p-6 space-y-2">
+                <div>
+                  {token && currentUser ? (
+                    <></>
+                  ) : (
+                    <ul className="space-y-3">
+                      <li>
+                        <Link href="/login">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
+                          >
+                            <LogIn className="mr-3 h-5 w-5" />
+                            Login
+                          </Button>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/signup">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA]"
+                          >
+                            <UserPlus className="mr-3 h-5 w-5" />
+                            Sign Up
+                          </Button>
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+
+                {/* About Us */}
+                <div className="">
+                  <h4 className="text-sm font-semibold text-gray-500 mb-2">
+                    ABOUT US
+                  </h4>
+                  <ul className="space-y-4">
+                    <li>
+                      <Link href="/about">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
+                        >
+                          <Info className="mr-3 h-5 w-5" />
+                          About Us
+                        </Button>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/contact">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
+                        >
+                          <Mail className="mr-3 h-5 w-5" />
+                          Contact Us
+                        </Button>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Support */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-500 mb-2">
+                    SUPPORT
+                  </h4>
+                  <ul className="space-y-4">
+                    <li>
+                      <Link href="/faq">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-white font-semibold bg-[#7E57C2] hover:text-white hover:bg-[#6B4DAA] rounded-lg transition-all duration-200"
+                        >
+                          <HelpCircle className="mr-3 h-5 w-5" />
+                          Help & FAQ
+                        </Button>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+
+              {/* Footer */}
+              <div className="p-6 bg-gray-50">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    2024 Did My Bit. All rights reserved.
+                  </p>
+                  <p className="text-xs text-blue-600 font-medium mt-2">
+                    Making the world better, one bit at a time
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
+    </div>
     </div>
   );
 }

@@ -536,14 +536,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
               </div>
               <div className="hidden md:block ml-36">
-                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
-                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+                <p className="text-blue-600 font-semibold text-lg">Find Someone in your neighbourhood to support!</p>
+                <p className="text-gray-600 text-sm">Find social projects on the map</p>
               </div>
             </div>
             )}
             
             {isMobile && (
               <div className='flex flex-col items-center ml-20'>
+                
                 <Image
                   src="/logo.png"
                   alt="logo"
@@ -553,7 +554,8 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 />
                 <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
                 <p className="scale-75 text-blue-600 font-semibold text-lg">Provoke Goodness</p>
-              </div>
+                
+              </div>  
             )}
 
 
@@ -565,23 +567,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                 <div></div>
               ) : (
                 <>
-                  <Link href="/login">
-                    <Button
-                      variant="ghost"
-                      className="hidden md:flex items-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button
-                      className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Sign Up
-                    </Button>
-                  </Link>
+                  
                 </>
               )}
               {/* Menu Button */}
@@ -1532,7 +1518,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                       <button
                         className="relative text-gray-600 hover:text-red-600 transition-colors duration-200"
                         onClick={(e) => {
-                          e.stopPropagation();                       
+                          e.stopPropagation();
                           setLikedProjects((prev) =>
                             likedProjects.has(selectedProject._id)
                               ? new Set(

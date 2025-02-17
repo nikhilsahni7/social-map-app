@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -19,6 +20,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
+import { Menu } from "lucide-react";
+import { getAuthToken, getAuthUser, logout } from "@/lib/clientAuth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -26,6 +29,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
   const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -97,11 +102,46 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Logo and Slogan Section */}
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.push("/")}>
+              <Image
+                src="/logo.png"
+                alt="logo"
+                width={65}
+                height={80}
+                className="object-contain"
+                
+              />
+              <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+              </button>
+              <div className="hidden md:block">
+                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
+              </div>
+              <div className="hidden md:block ml-36">
+                <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
+                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+
+
+</div>
+
+            
+    </div>
+        </div>
+      </div>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md mt-24"
       >
         <Card className="w-full">
           <CardHeader>
