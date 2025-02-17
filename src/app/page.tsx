@@ -308,6 +308,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     mapTypeControl: false,
     fullscreenControl: false,
     styles: mapStyles,
+    gestureHandling: "greedy",
   };
 
   // Handle search
@@ -519,13 +520,16 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             {/* Logo and Slogan Section */}
             {!isMobile && (
               <div className="flex items-center gap-4">
-              <Image
-                src="/logo.png"
-                alt="logo"
-                width={65}
-                height={80}
-                className="object-contain"
-              />
+                <div className='flex flex-col'>
+                  <Image
+                    src="/logo.png"
+                    alt="logo"
+                    width={65}
+                    height={80}
+                    className="object-contain"
+                  />
+                  <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+              </div>
               
               <div className="hidden md:block">
                 <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
@@ -539,14 +543,15 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             )}
             
             {isMobile && (
-              <div className='flex flex-col items-center ml-16'>
+              <div className='flex flex-col items-center ml-20'>
                 <Image
                   src="/logo.png"
                   alt="logo"
                   width={60}
                   height={80}
-                  className="object-contain -py-4 "
+                  className="object-contain -py-4"
                 />
+                <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
                 <p className="scale-75 text-blue-600 font-semibold text-lg">Provoke Goodness</p>
               </div>
             )}
@@ -889,10 +894,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           )}
 
           {/* Button Section (Mobile) */}
-          <div className="flex flex-row items-center fixed bottom-2 left-4 right-4 z-10 space-y-2 mb-2">
+          <div className="flex flex-row items-center fixed bottom-2 left-4 right-4 z-10 mb-2">
             {/* Create Project Button */}
             <Link href="/create-project">
-              <Button className="relative scale-90 mt-2 py-1 px-3 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
+              <Button className="relative scale-90 py-1 px-3 bg-gradient-to-b from-[#7E57C2] to-[#5B4091] hover:from-[#6B4DAA] hover:to-[#5B4091] text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 active:translate-y-[0.2rem] active:shadow-[0_0.1rem_0.2rem_rgba(107,77,170,0.6)] flex items-center">
                 <Plus className="h-6 w-7 mr-2" />
                 Create Project
               </Button>
@@ -1518,55 +1523,53 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                     <div className="flex-1 mt-4">
                       <h2 className="text-base font-bold mb-1 line-clamp-1">
                         {selectedProject.title}
-                        {filteredProjects.map((project) => (
-  <button
-    key={project._id}
-    className="relative text-gray-600 hover:text-red-600 transition-colors duration-200"
-    onClick={(e) => {
-      e.stopPropagation();
-      toggleLike(project._id);
-    }}
-  >
-    <AnimatePresence>
-      {likedProjects.has(project._id) && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          className="absolute inset-0 text-red-600"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-4 h-4"
-          >
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-        </motion.div>
-      )}
-    </AnimatePresence>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill={likedProjects.has(project._id) ? "red" : "none"}
-      stroke="currentColor"
-      className="w-4 h-4"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-      />
-    </svg>
-  </button>
-))}
-
                       </h2>
                       <p className="text-sm text-gray-600 line-clamp-1">
                         {selectedProject.description}
                       </p>
+                    </div>
+                    <div className="flex items-center justify-end mt-7">
+                      <button
+                        className="relative text-gray-600 hover:text-red-600 transition-colors duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(selectedProject._id);
+                        }}
+                      >
+                        <AnimatePresence>
+                          {likedProjects.has(selectedProject._id) && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                              className="absolute inset-0 text-red-600"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-4 h-4"
+                              >
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                              </svg>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill={likedProjects.has(selectedProject._id) ? "red" : "none"}
+                          stroke="currentColor"
+                          className="w-4 h-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                          />
+                        </svg>
+                      </button>
                     </div>
                   </div>
 
