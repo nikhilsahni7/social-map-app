@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
 import SupportNotifications from "@/components/SupportNotifications";
-
+import { FaArrowLeft, FaHome } from 'react-icons/fa';
 interface Project {
   id: string;
   title: string;
@@ -273,6 +273,16 @@ export default function PersonProfile() {
 
         <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
           <div className="max-w-7xl mx-auto px-4 py-2">
+          {isMobile && (
+              <div>
+              <button onClick={() => router.back()} className="bg-blue-600 scale-90 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <FaArrowLeft size={10} />
+            </button>
+            <button onClick={() => router.push('/')} className="bg-blue-600 scale-90 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <FaHome size={10} />
+            </button>
+            </div>
+            )}
             <div className="flex items-center justify-between">
               {/* Logo and Slogan Section */}
               {!isMobile && (
@@ -347,7 +357,7 @@ export default function PersonProfile() {
 
       
         </div>
-        <main className="pt-20">
+        <main className="md:pt-20 pt-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="space-y-6">
               {/* Profile Header */}

@@ -1,14 +1,15 @@
 // app/login/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { FaArrowLeft, FaHome } from 'react-icons/fa';
 import {
   Card,
   CardContent,
@@ -20,17 +21,26 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
-import { Menu } from "lucide-react";
-import { getAuthToken, getAuthUser, logout } from "@/lib/clientAuth";
 
-export default function LoginPage() {
+
+export default function  LoginPage () {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,21 +63,18 @@ export default function LoginPage() {
         throw new Error(data.error || "Login failed");
       }
 
+      // Store auth data
       localStorage.setItem("token", data.token);
-
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("username", JSON.stringify(data.user.name));
 
-
-
-
       toast.success("Welcome back!");
-      router.push("/");
+      
+      const redirectPath = searchParams.get("redirect") || "/";
+      router.push(redirectPath);
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Invalid credentials"
-      );
+      toast.error(error instanceof Error ? error.message : "Invalid credentials");
     } finally {
       setIsLoading(false);
     }
@@ -88,13 +95,9 @@ export default function LoginPage() {
         throw new Error(data.error || "Failed to resend verification email");
       }
 
-      toast.success(
-        "If your email is unverified, you will receive a new verification link shortly"
-      );
+      toast.success("If your email is unverified, you will receive a new verification link shortly");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to resend verification"
-      );
+      toast.error(error instanceof Error ? error.message : "Failed to resend verification");
     } finally {
       setIsLoading(false);
     }
@@ -102,46 +105,68 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
-      <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
-            {/* Logo and Slogan Section */}
+            {isMobile && (
+              <div className="flex gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="scale-90"
+                >
+                  <FaArrowLeft size={10} />
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => router.push('/')}
+                  className="scale-90"
+                >
+                  <FaHome size={10} />
+                </Button>
+              </div>
+            )}
+            
+            {/* Logo Section */}
             <div className="flex items-center gap-4">
-              <button onClick={() => router.push("/")}>
-              <Image
-                src="/logo.png"
-                alt="logo"
-                width={65}
-                height={80}
-                className="object-contain"
-                
-              />
-              <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
+              <button onClick={() => router.push("/")} className="flex items-center">
+                <Image
+                  src="/logo.png"
+                  alt="logo"
+                  width={65}
+                  height={80}
+                  className="object-contain"
+                />
+                <span className="text-sm font-bold">
+                  <span className="text-blue-700">Did</span>
+                  <span className="text-yellow-500">My</span>
+                  <span className="text-blue-700">Bit</span>
+                </span>
               </button>
+              
               <div className="hidden md:block">
                 <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
                 <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
               </div>
+              
               <div className="hidden md:block ml-36">
                 <p className="text-blue-600 font-semibold text-lg">Find Someone to Support you Bit!</p>
-                <p className="text-gray-600 text-sm">Find any social project one the map</p>
+                <p className="text-gray-600 text-sm">Find any social project on the map</p>
               </div>
             </div>
-
-            <div className="flex items-center gap-3">
-
-
-</div>
-
-            
-    </div>
+          </div>
         </div>
-      </div>
+      </header>
+
+      {/* Login Form */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md mt-24"
+        className="w-full max-w-md mt-20"
       >
         <Card className="w-full">
           <CardHeader>
@@ -152,6 +177,7 @@ export default function LoginPage() {
               Please sign in to your account
             </CardDescription>
           </CardHeader>
+          
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -163,9 +189,9 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full"
                 />
               </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -175,9 +201,9 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full"
                 />
               </div>
+              
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="remember" />
@@ -189,10 +215,12 @@ export default function LoginPage() {
                   variant="link"
                   className="text-sm text-blue-600 hover:underline p-0"
                   onClick={() => router.push("/forgot-password")}
+                  type="button"
                 >
                   Forgot password?
                 </Button>
               </div>
+              
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -204,6 +232,7 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
             {needsVerification && (
               <div className="mt-4">
                 <p className="text-sm text-red-600 mb-2">
@@ -220,20 +249,24 @@ export default function LoginPage() {
               </div>
             )}
           </CardContent>
+
           <Separator className="my-4" />
+          
           <CardFooter className="flex flex-col space-y-4">
             <p className="text-center text-sm text-gray-600">
               Don&apos;t have an account?{" "}
-              <a
-                href="/signup"
-                className="font-medium text-blue-600 hover:underline"
+              <Button
+                variant="link"
+                className="p-0 text-blue-600 hover:underline"
+                onClick={() => router.push("/signup")}
               >
                 Sign up
-              </a>
+              </Button>
             </p>
           </CardFooter>
         </Card>
       </motion.div>
     </div>
   );
-}
+};
+

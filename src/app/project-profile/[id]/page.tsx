@@ -32,6 +32,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Search, X, Menu, ZoomIn, ZoomOut, Compass, LogIn } from "lucide-react";
 import { getAuthToken, getAuthUser, logout } from "@/lib/clientAuth";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,7 +41,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { UserCircle, UserPlus } from 'lucide-react';
 import { Info, HelpCircle } from 'lucide-react';
-
+import { FaArrowLeft, FaHome } from 'react-icons/fa';
 
 interface ProjectData {
   _id: string;
@@ -110,6 +111,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<any>(null);
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const [isMobile, setIsMobile] = useState(false);
   const [token, setToken] = useState<string | null>(null);
@@ -187,7 +189,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated()) {
-      router.push("/login");
+      
+
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
   }, []);
 
@@ -409,7 +413,20 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
+      
+  
+  
           <div className="max-w-7xl mx-auto px-4 py-2">
+            {isMobile && (
+              <div>
+              <button onClick={() => router.back()} className="bg-blue-600 scale-90 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <FaArrowLeft size={10} />
+            </button>
+            <button onClick={() => router.push('/')} className="bg-blue-600 scale-90 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <FaHome size={10} />
+            </button>
+            </div>
+            )}
             <div className="flex items-center justify-between">
               {/* Logo and Slogan Section */}
               {!isMobile && (
@@ -455,7 +472,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
           
         </div>
       )}
-
+  
               <div className="flex items-center gap-3">
                 
                 <Button
@@ -472,13 +489,15 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </div>
 
               
+
+              
             </div>
           </div>
         </div>
 
 
       <div className="w-full">
-        <div className="relative mt-24">
+        <div className="relative md:mt-24 mt-32">
           <div className="bg-white rounded-b-2xl shadow-lg p-8 backdrop-blur-lg bg-white/90">
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
               <div className="flex flex-row items-center gap-4">
@@ -703,7 +722,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800"
                   }
                   alt="Project Success Vision"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
             </CardContent>
