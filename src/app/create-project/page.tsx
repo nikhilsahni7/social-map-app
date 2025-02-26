@@ -175,7 +175,7 @@ export default function ProjectDetailsForm() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Adjust this breakpoint as needed
+      setIsMobile(window.innerWidth < 768); 
     };
 
     checkMobile();
@@ -989,7 +989,7 @@ export default function ProjectDetailsForm() {
             initial={{ x: 300 }}
             animate={{ x: 0 }}
             exit={{ x: 300 }}
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 overflow-y-auto"
+            className="fixed -top-9 right-0 h-full w-80 bg-white shadow-lg z-50"
           >
             <div className="flex flex-col h-full">
               {/* Header */}
@@ -1139,7 +1139,7 @@ export default function ProjectDetailsForm() {
                   <p className="text-sm text-gray-600">
                     2024 Did My Bit. All rights reserved.
                   </p>
-                  <p className="text-xs text-blue-600 font-medium mt-2">
+                  <p className="text-xs text-blue-600 font-medium mt-1">
                     Making the world better, one bit at a time
                   </p>
                 </div>

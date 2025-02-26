@@ -1,4 +1,3 @@
-// app/login/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -21,9 +20,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-hot-toast";
+import dynamic from "next/dynamic";
 
-
-export default function  LoginPage () {
+// Use dynamic import with SSR disabled to avoid window/localStorage issues
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -102,6 +102,15 @@ export default function  LoginPage () {
       setIsLoading(false);
     }
   };
+
+  if(isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100">
+      <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+      <p className="mt-4 text-gray-600 text-sm">Loading...</p>
+    </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 p-4">
@@ -270,3 +279,4 @@ export default function  LoginPage () {
   );
 };
 
+export default dynamic(() => Promise.resolve(LoginPage), { ssr: false });
