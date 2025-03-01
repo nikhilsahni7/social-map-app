@@ -545,81 +545,63 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   return (
     <div className="h-screen w-full relative bg-gray-900">
       <div className="absolute top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
-            {/* Logo and Slogan Section */}
-            {!isMobile && (
-              <div className="flex items-center gap-4">
-                <div className='flex flex-col'>
-                  <Image
-                    src="/logo.png"
-                    alt="logo"
-                    width={65}
-                    height={80}
-                    className="object-contain"
-                  />
-                  <span className='text-sm font-bold text-blue-700'>Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit</span>
-              </div>
-              
-              <div className="hidden md:block">
-                <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
-                <p className="text-gray-600 text-sm">Make an impact, one bit at a time</p>
-              </div>
-              <div className="hidden md:block ml-36">
-                <p className="text-blue-600 font-semibold text-lg">Find Someone in your neighbourhood to support!</p>
-                <p className="text-gray-600 text-sm">Find social projects on the map</p>
-              </div>
-            </div>
-            )}
-            
-            {isMobile && (
-        <div className='flex flex-row items-start ml-4'>
-          <div className="flex flex-col items-center">
-            <Image 
-              src="/logo.png"
-              alt="logo"
-              width={60}
-              height={80}
-              className="object-contain -py-4"
-            />
-            <span className='text-sm font-bold text-blue-700 ml-2'>
-              Did<span className='text-sm font-bold text-yellow-500'>My</span>Bit
-            </span>
-          </div>
-          <div className="scale-75">
-            <CurvedText />
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-2">
+  <div className="flex items-center justify-between">
+    
+    {/* Left Spacer (Keeps logo centered) */}
+    <div className="flex-1" />
+
+    {/* Logo and Slogan Section */}
+    {!isMobile && (
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center">
+          <Image
+            src="/logo2.png"
+            alt="logo"
+            width={65}
+            height={80}
+            className="object-contain scale-150"
+          />
         </div>
-      )}
+      </div>
+    )}
 
-
-
-            {/* Auth Buttons and Menu */}
-            <div className="flex items-center gap-3">
-
-              {token && user ? (
-                <div></div>
-              ) : (
-                <>
-                  
-                </>
-              )}
-              {/* Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
-                onClick={() => {
-                  setIsMenuOpen(!isMenuOpen);
-                  setIsSearchOpen(false);
-                  setIsProjectPanelOpen(false);
-                }}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+    {isMobile && (
+      <div className="flex flex-row items-start">
+        <div className="flex flex-col items-center">
+          <Image 
+            src="/logo2.png"
+            alt="logo"
+            width={60}
+            height={80}
+            className="object-contain scale-150"
+          />
+          {/* <span className="text-sm font-bold text-blue-700 ml-2">
+            Did<span className="text-sm font-bold text-yellow-500">My</span>Bit
+          </span> */}
         </div>
+      </div>
+    )}
+
+    {/* Right Section: Auth Buttons and Menu */}
+    <div className="flex-1 flex justify-end">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+        onClick={() => {
+          setIsMenuOpen(!isMenuOpen);
+          setIsSearchOpen(false);
+          setIsProjectPanelOpen(false);
+        }}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+    </div>
+
+  </div>
+</div>
+
       </div>
 
       <div className="absolute top-0 z-30 left-0 w-full h-[20%] bg-gradient-to-b from-black/80 to-transparent pointer-events-none"></div>
