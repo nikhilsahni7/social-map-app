@@ -280,7 +280,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   const CurvedText = () => {
     const text = "Provoke Goodness";
     const radius = 30;
-    
+
     return (
       <div className="relative w-24 h-24 scale-125 ml-14 -mt-5">
         {text.split('').map((char, i) => {
@@ -288,7 +288,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
           const radian = angle * (Math.PI / 180);
           const x = radius * Math.cos(radian);
           const y = radius * Math.sin(radian);
-          
+
           return (
             <span
               key={i}
@@ -306,7 +306,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
       </div>
     );
   };
-  
+
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
@@ -545,62 +545,70 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
   return (
     <div className="h-screen w-full relative bg-gray-900">
       <div className="absolute top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-2">
-  <div className="flex items-center justify-between">
-    
-    {/* Left Spacer (Keeps logo centered) */}
-    <div className="flex-1" />
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
 
-    {/* Logo and Slogan Section */}
-    {!isMobile && (
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col items-center">
-          <Image
-            src="/logo2.png"
-            alt="logo"
-            width={65}
-            height={80}
-            className="object-contain scale-150"
-          />
+            {/* Logo and Slogan Section */}
+            {!isMobile && (
+              <div className="flex items-center gap-6 ml-6">
+                <div className="flex flex-col items-center">
+                  <Image
+                    src="/logo2.png"
+                    alt="logo"
+                    width={65}
+                    height={80}
+                    className="object-contain scale-150"
+                  />
+                </div>
+                <div className="hidden md:block">
+                  <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                  <p className="text-gray-600 text-sm">Make an impact, one bit at a time.</p>
+                </div>
+                <div className="hidden md:block ml-36">
+                  <p className="text-blue-600 font-semibold text-lg">Discover and Connect with Someone to Support!</p>
+                  <p className="text-gray-600 text-sm">Explore a variety of social projects and Organizations available on the map.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Left Spacer (Keeps logo centered) */}
+            <div className="flex-1" />
+
+            {isMobile && (
+              <div className="flex flex-row items-center gap-4">
+                <Image
+                  src="/logo2.png"
+                  alt="logo"
+                  width={60}
+                  height={80}
+                  className="object-contain scale-125"
+                />
+                <div className="block md:hidden scale-95">
+                  <p className="text-blue-600 font-semibold text-lg">DidMyBit</p>
+                  <p className="text-gray-600 text-sm">Make an impact, one bit at a time.</p>
+                </div>
+
+              </div>
+            )}
+
+            {/* Right Section: Auth Buttons and Menu */}
+            <div className="flex-1 flex justify-end">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen);
+                  setIsSearchOpen(false);
+                  setIsProjectPanelOpen(false);
+                }}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
+
+          </div>
         </div>
-      </div>
-    )}
-
-    {isMobile && (
-      <div className="flex flex-row items-start">
-        <div className="flex flex-col items-center">
-          <Image 
-            src="/logo2.png"
-            alt="logo"
-            width={60}
-            height={80}
-            className="object-contain scale-150"
-          />
-          {/* <span className="text-sm font-bold text-blue-700 ml-2">
-            Did<span className="text-sm font-bold text-yellow-500">My</span>Bit
-          </span> */}
-        </div>
-      </div>
-    )}
-
-    {/* Right Section: Auth Buttons and Menu */}
-    <div className="flex-1 flex justify-end">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="bg-white hover:bg-gray-100 p-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
-        onClick={() => {
-          setIsMenuOpen(!isMenuOpen);
-          setIsSearchOpen(false);
-          setIsProjectPanelOpen(false);
-        }}
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-    </div>
-
-  </div>
-</div>
 
       </div>
 
@@ -1422,7 +1430,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
             <div className="relative p-4 h-12 bg-[#7E57C2] text-white rounded-t-2xl">
               <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.5))]" />
               <h2 className="text-md font-bold">Projects of your City</h2>
-              
+
             </div>
 
             {/* Table Header */}
@@ -1538,10 +1546,10 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
                           setLikedProjects((prev) =>
                             likedProjects.has(selectedProject._id)
                               ? new Set(
-                                  Array.from(prev).filter(
-                                    (id) => id !== selectedProject._id
-                                  )
+                                Array.from(prev).filter(
+                                  (id) => id !== selectedProject._id
                                 )
+                              )
                               : new Set([...prev, selectedProject._id])
                           );
 
