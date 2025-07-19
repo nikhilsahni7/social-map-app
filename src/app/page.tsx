@@ -339,6 +339,7 @@ export default function SocialConnectMap({ params, searchParams }: PageProps) {
     fullscreenControl: false,
     styles: mapStyles,
     gestureHandling: "greedy",
+    repeat: true,
   };
 
   // Handle search
